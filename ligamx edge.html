@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b1210">
+<title>LigaMX Edge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1210;        /* floodlit-pitch night */
+  --surface:#121b18;
+  --surface2:#18241f;
+  --line:#22322b;
+  --text:#e8efe9;
+  --muted:#8fa39a;
+  --amber:#f5b53f;     /* stadium light — value accent */
+  --amber-dim:#8a6a2a;
+  --home:#7fd1a8;
+  --away:#9db4e8;
+  --radius:14px;
+  font-size:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;
+  min-height:100vh;padding-bottom:90px}
+.cond{font-family:'Barlow Condensed',system-ui,sans-serif}
+
+header{padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 10px;display:flex;align-items:baseline;justify-content:space-between}
+header h1{font-family:'Barlow Condensed';font-weight:700;font-size:1.5rem;letter-spacing:.04em;text-transform:uppercase}
+header h1 span{color:var(--amber)}
+#dataDate{font-size:.72rem;color:var(--muted)}
+
+/* scoreboard strip */
+.board{margin:6px 12px 12px;background:linear-gradient(180deg,var(--surface2),var(--surface));
+  border:1px solid var(--line);border-radius:var(--radius);padding:14px 12px}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.teamSel{width:100%;appearance:none;background:var(--bg);color:var(--text);border:1px solid var(--line);
+  border-radius:10px;padding:12px 10px;font-family:'Barlow Condensed';font-weight:600;font-size:1.05rem;
+  letter-spacing:.02em;text-align:center}
+.teamSel.home{border-bottom:3px solid var(--home)}
+.teamSel.away{border-bottom:3px solid var(--away)}
+.vsMark{font-family:'Barlow Condensed';font-weight:700;color:var(--muted);font-size:1rem}
+.venueNote{margin-top:8px;text-align:center;font-size:.72rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+
+/* tabs */
+.tabs{display:flex;gap:6px;margin:0 12px 10px}
+.tab{flex:1;border:1px solid var(--line);background:var(--surface);color:var(--muted);
+  border-radius:10px;padding:10px 0;font-family:'Barlow Condensed';font-weight:600;font-size:.95rem;
+  letter-spacing:.06em;text-transform:uppercase}
+.tab.on{background:var(--amber);color:#1a1408;border-color:var(--amber)}
+
+/* market tickets */
+#markets{padding:0 12px;display:flex;flex-direction:column;gap:10px}
+.ticket{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+.tHead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.tName{font-family:'Barlow Condensed';font-weight:600;font-size:1.05rem;letter-spacing:.03em;text-transform:uppercase}
+.tLam{font-size:.72rem;color:var(--muted)}
+.tLam b{color:var(--text);font-weight:600}
+.lineRow{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;align-items:stretch}
+.stepper{display:flex;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stepper button{background:none;border:none;color:var(--amber);font-size:1.25rem;width:34px;height:100%;font-weight:600}
+.stepper .val{min-width:44px;text-align:center;font-family:'Barlow Condensed';font-weight:700;font-size:1.2rem}
+.odd{border-radius:10px;border:1px solid var(--line);background:var(--surface2);padding:6px 4px;text-align:center}
+.odd .lab{font-size:.62rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.odd .px{font-family:'Barlow Condensed';font-weight:700;font-size:1.35rem;line-height:1.15}
+.odd .pc{font-size:.62rem;color:var(--muted)}
+.odd.fav .px{color:var(--amber)}
+
+/* H2H */
+.h3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:4px}
+
+/* data screen */
+#dataView{padding:0 12px;display:none;flex-direction:column;gap:10px}
+#dataView p{font-size:.85rem;color:var(--muted);line-height:1.45}
+#jsonBox{width:100%;height:150px;background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  color:var(--text);padding:10px;font-size:.75rem;font-family:monospace}
+.btn{background:var(--amber);color:#1a1408;border:none;border-radius:10px;padding:13px;
+  font-family:'Barlow Condensed';font-weight:700;font-size:1rem;letter-spacing:.05em;text-transform:uppercase}
+.btn.ghost{background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+#msg{font-size:.8rem;color:var(--home)}
+
+/* bottom nav */
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(11,18,16,.95);backdrop-filter:blur(8px);
+  border-top:1px solid var(--line);padding:8px 0 calc(env(safe-area-inset-bottom,0px) + 8px)}
+nav button{flex:1;background:none;border:none;color:var(--muted);font-family:'Barlow Condensed';
+  font-weight:600;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;padding:8px 0}
+nav button.on{color:var(--amber)}
+.note{margin:14px 12px 0;font-size:.68rem;color:var(--muted);line-height:1.5;text-align:center}
+@media (prefers-reduced-motion:no-preference){
+  .ticket{animation:up .25s ease both}
+  @keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Liga<span>MX</span> Edge</h1>
+  <div id="dataDate"></div>
+</header>
+
+<div id="mainView">
+  <div class="board">
+    <div class="vs">
+      <select id="homeSel" class="teamSel home"></select>
+      <div class="vsMark cond">VS</div>
+      <select id="awaySel" class="teamSel away"></select>
+    </div>
+    <div class="venueNote">local &nbsp;·&nbsp; visitante</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-mode="total">Totales</button>
+    <button class="tab" data-mode="team">Por equipo</button>
+    <button class="tab" data-mode="h2h">H2H</button>
+  </div>
+
+  <div id="markets"></div>
+  <p class="note">Cuotas justas sin margen (100%). Si Playdoit/Novibet paga MÁS que la cuota justa, hay valor.<br>
+  Tarjetas y faltas dependen mucho del árbitro — el modelo las acerca al promedio de liga.</p>
+</div>
+
+<div id="dataView">
+  <p><b style="color:var(--text)">Actualizar datos.</b> Corre el scraper en Colab, genera el nuevo <code>model.json</code> y pega el contenido aquí. Se guarda en tu teléfono.</p>
+  <textarea id="jsonBox" placeholder='Pega aquí el JSON del modelo…'></textarea>
+  <button class="btn" onclick="saveModel()">Guardar datos nuevos</button>
+  <button class="btn ghost" onclick="resetModel()">Restaurar datos originales</button>
+  <div id="msg"></div>
+</div>
+
+<nav>
+  <button id="navMain" class="on" onclick="showView('main')">Mercados</button>
+  <button id="navData" onclick="showView('data')">Datos</button>
+</nav>
+
+<script>
+const EMBEDDED = {"meta": {"league": "Liga MX", "built": "2026-07-18", "matches": 955, "date_range": ["2023-07-01", "2026-05-25"], "half_life": 25.0, "stats": ["Shots", "Shots on Target", "Corners", "Fouls", "Yellow", "Red", "Offsides"]}, "league": {"Shots": {"home": 14.6482, "away": 11.9613, "r": 11.5183}, "Shots on Target": {"home": 5.0115, "away": 4.0209, "r": 16.1194}, "Corners": {"home": 5.3696, "away": 4.4503, "r": 8.3472}, "Fouls": {"home": 12.0565, "away": 11.8974, "r": 56.5209}, "Yellow": {"home": 2.1236, "away": 2.2482, "r": null}, "Red": {"home": 0.1476, "away": 0.1801, "r": null}, "Offsides": {"home": 1.6702, "away": 1.5372, "r": 5.6328}, "goals": {"home": 1.6461, "away": 1.2115, "r": null}}, "teams": {"Am\u00e9rica": {"home": {"Shots": {"for": 15.415, "against": 9.385}, "Shots on Target": {"for": 5.873, "against": 3.043}, "Corners": {"for": 5.603, "against": 3.782}, "Fouls": {"for": 10.0, "against": 11.354}, "Yellow": {"for": 1.538, "against": 2.119}, "Red": {"for": 0.089, "against": 0.192}, "Offsides": {"for": 1.741, "against": 1.198}, "goals": {"for": 1.882, "against": 0.849}, "n": 62}, "away": {"Shots": {"for": 12.836, "against": 12.095}, "Shots on Target": {"for": 4.407, "against": 3.894}, "Corners": {"for": 5.295, "against": 4.433}, "Fouls": {"for": 9.47, "against": 13.587}, "Yellow": {"for": 1.698, "against": 2.453}, "Red": {"for": 0.052, "against": 0.248}, "Offsides": {"for": 1.623, "against": 1.147}, "goals": {"for": 1.423, "against": 1.185}, "n": 62}}, "Atlas": {"home": {"Shots": {"for": 13.042, "against": 13.122}, "Shots on Target": {"for": 4.034, "against": 4.413}, "Corners": {"for": 5.004, "against": 4.715}, "Fouls": {"for": 13.061, "against": 12.825}, "Yellow": {"for": 2.222, "against": 2.492}, "Red": {"for": 0.234, "against": 0.125}, "Offsides": {"for": 1.582, "against": 1.111}, "goals": {"for": 1.365, "against": 1.402}, "n": 49}, "away": {"Shots": {"for": 10.546, "against": 15.214}, "Shots on Target": {"for": 2.975, "against": 5.155}, "Corners": {"for": 3.723, "against": 5.679}, "Fouls": {"for": 12.092, "against": 12.756}, "Yellow": {"for": 2.256, "against": 2.139}, "Red": {"for": 0.203, "against": 0.125}, "Offsides": {"for": 1.425, "against": 1.179}, "goals": {"for": 0.93, "against": 1.788}, "n": 53}}, "Atl\u00e9tico de San Luis": {"home": {"Shots": {"for": 11.764, "against": 12.963}, "Shots on Target": {"for": 4.214, "against": 4.554}, "Corners": {"for": 4.868, "against": 4.198}, "Fouls": {"for": 11.148, "against": 12.446}, "Yellow": {"for": 1.933, "against": 2.004}, "Red": {"for": 0.068, "against": 0.132}, "Offsides": {"for": 1.153, "against": 2.271}, "goals": {"for": 1.592, "against": 1.436}, "n": 55}, "away": {"Shots": {"for": 11.497, "against": 15.384}, "Shots on Target": {"for": 3.949, "against": 5.373}, "Corners": {"for": 4.192, "against": 4.985}, "Fouls": {"for": 10.605, "against": 12.599}, "Yellow": {"for": 1.71, "against": 1.948}, "Red": {"for": 0.2, "against": 0.069}, "Offsides": {"for": 0.974, "against": 2.032}, "goals": {"for": 1.265, "against": 1.871}, "n": 54}}, "Cruz Azul": {"home": {"Shots": {"for": 17.978, "against": 9.195}, "Shots on Target": {"for": 5.95, "against": 2.882}, "Corners": {"for": 6.588, "against": 3.342}, "Fouls": {"for": 12.074, "against": 11.008}, "Yellow": {"for": 2.122, "against": 2.133}, "Red": {"for": 0.117, "against": 0.254}, "Offsides": {"for": 2.146, "against": 2.003}, "goals": {"for": 1.869, "against": 0.985}, "n": 59}, "away": {"Shots": {"for": 14.298, "against": 11.421}, "Shots on Target": {"for": 5.079, "against": 3.713}, "Corners": {"for": 4.845, "against": 4.599}, "Fouls": {"for": 11.798, "against": 12.277}, "Yellow": {"for": 2.103, "against": 1.868}, "Red": {"for": 0.118, "against": 0.213}, "Offsides": {"for": 1.608, "against": 1.957}, "goals": {"for": 1.538, "against": 1.158}, "n": 62}}, "FC Juarez": {"home": {"Shots": {"for": 13.253, "against": 11.931}, "Shots on Target": {"for": 4.334, "against": 4.219}, "Corners": {"for": 4.519, "against": 4.645}, "Fouls": {"for": 12.305, "against": 11.881}, "Yellow": {"for": 2.237, "against": 1.804}, "Red": {"for": 0.17, "against": 0.322}, "Offsides": {"for": 1.519, "against": 1.561}, "goals": {"for": 1.543, "against": 1.582}, "n": 52}, "away": {"Shots": {"for": 11.606, "against": 15.376}, "Shots on Target": {"for": 3.72, "against": 5.093}, "Corners": {"for": 4.377, "against": 5.347}, "Fouls": {"for": 11.983, "against": 12.644}, "Yellow": {"for": 2.613, "against": 2.102}, "Red": {"for": 0.123, "against": 0.172}, "Offsides": {"for": 0.995, "against": 2.111}, "goals": {"for": 1.182, "against": 1.877}, "n": 50}}, "Guadalajara": {"home": {"Shots": {"for": 16.269, "against": 10.096}, "Shots on Target": {"for": 5.495, "against": 3.574}, "Corners": {"for": 6.438, "against": 3.718}, "Fouls": {"for": 11.793, "against": 10.833}, "Yellow": {"for": 2.042, "against": 2.357}, "Red": {"for": 0.121, "against": 0.167}, "Offsides": {"for": 1.709, "against": 1.064}, "goals": {"for": 1.776, "against": 0.903}, "n": 55}, "away": {"Shots": {"for": 12.679, "against": 12.201}, "Shots on Target": {"for": 3.851, "against": 4.248}, "Corners": {"for": 4.83, "against": 4.39}, "Fouls": {"for": 12.101, "against": 11.741}, "Yellow": {"for": 2.185, "against": 2.739}, "Red": {"for": 0.138, "against": 0.09}, "Offsides": {"for": 2.4, "against": 1.24}, "goals": {"for": 1.215, "against": 1.441}, "n": 55}}, "Le\u00f3n": {"home": {"Shots": {"for": 14.504, "against": 12.894}, "Shots on Target": {"for": 4.866, "against": 4.543}, "Corners": {"for": 5.597, "against": 4.739}, "Fouls": {"for": 12.651, "against": 11.239}, "Yellow": {"for": 2.041, "against": 2.189}, "Red": {"for": 0.108, "against": 0.183}, "Offsides": {"for": 1.719, "against": 1.587}, "goals": {"for": 1.512, "against": 1.312}, "n": 52}, "away": {"Shots": {"for": 12.271, "against": 16.189}, "Shots on Target": {"for": 4.395, "against": 6.076}, "Corners": {"for": 4.416, "against": 5.487}, "Fouls": {"for": 12.186, "against": 12.367}, "Yellow": {"for": 2.073, "against": 2.121}, "Red": {"for": 0.274, "against": 0.223}, "Offsides": {"for": 2.088, "against": 1.611}, "goals": {"for": 1.007, "against": 1.977}, "n": 52}}, "Mazatl\u00e1n FC": {"home": {"Shots": {"for": 11.686, "against": 14.96}, "Shots on Target": {"for": 4.129, "against": 5.332}, "Corners": {"for": 4.575, "against": 5.645}, "Fouls": {"for": 12.724, "against": 12.541}, "Yellow": {"for": 2.456, "against": 2.373}, "Red": {"for": 0.185, "against": 0.264}, "Offsides": {"for": 1.743, "against": 1.779}, "goals": {"for": 1.525, "against": 1.664}, "n": 41}, "away": {"Shots": {"for": 9.719, "against": 16.755}, "Shots on Target": {"for": 3.345, "against": 5.889}, "Corners": {"for": 3.994, "against": 5.959}, "Fouls": {"for": 11.743, "against": 11.353}, "Yellow": {"for": 2.447, "against": 1.856}, "Red": {"for": 0.123, "against": 0.103}, "Offsides": {"for": 1.507, "against": 1.597}, "goals": {"for": 0.832, "against": 2.013}, "n": 43}}, "Monterrey": {"home": {"Shots": {"for": 15.572, "against": 10.543}, "Shots on Target": {"for": 5.563, "against": 3.882}, "Corners": {"for": 5.253, "against": 4.487}, "Fouls": {"for": 11.506, "against": 12.253}, "Yellow": {"for": 1.535, "against": 2.445}, "Red": {"for": 0.115, "against": 0.178}, "Offsides": {"for": 1.537, "against": 1.951}, "goals": {"for": 1.834, "against": 1.206}, "n": 61}, "away": {"Shots": {"for": 12.687, "against": 13.317}, "Shots on Target": {"for": 4.435, "against": 4.736}, "Corners": {"for": 4.2, "against": 4.945}, "Fouls": {"for": 11.464, "against": 12.742}, "Yellow": {"for": 2.118, "against": 2.095}, "Red": {"for": 0.15, "against": 0.144}, "Offsides": {"for": 1.369, "against": 2.501}, "goals": {"for": 1.446, "against": 1.547}, "n": 58}}, "Necaxa": {"home": {"Shots": {"for": 15.217, "against": 13.007}, "Shots on Target": {"for": 4.978, "against": 4.208}, "Corners": {"for": 5.157, "against": 4.955}, "Fouls": {"for": 12.892, "against": 10.927}, "Yellow": {"for": 2.221, "against": 1.947}, "Red": {"for": 0.124, "against": 0.151}, "Offsides": {"for": 1.269, "against": 1.349}, "goals": {"for": 1.436, "against": 1.166}, "n": 50}, "away": {"Shots": {"for": 12.685, "against": 15.995}, "Shots on Target": {"for": 4.47, "against": 5.369}, "Corners": {"for": 4.426, "against": 5.977}, "Fouls": {"for": 13.374, "against": 11.346}, "Yellow": {"for": 2.246, "against": 1.902}, "Red": {"for": 0.284, "against": 0.123}, "Offsides": {"for": 1.391, "against": 1.163}, "goals": {"for": 1.434, "against": 2.104}, "n": 51}}, "Pachuca": {"home": {"Shots": {"for": 15.475, "against": 10.151}, "Shots on Target": {"for": 5.338, "against": 3.437}, "Corners": {"for": 6.215, "against": 3.892}, "Fouls": {"for": 13.193, "against": 11.891}, "Yellow": {"for": 2.226, "against": 2.497}, "Red": {"for": 0.295, "against": 0.248}, "Offsides": {"for": 1.773, "against": 1.597}, "goals": {"for": 1.472, "against": 1.059}, "n": 56}, "away": {"Shots": {"for": 13.654, "against": 13.016}, "Shots on Target": {"for": 4.449, "against": 4.684}, "Corners": {"for": 4.664, "against": 5.116}, "Fouls": {"for": 13.39, "against": 12.096}, "Yellow": {"for": 2.239, "against": 2.269}, "Red": {"for": 0.305, "against": 0.223}, "Offsides": {"for": 1.688, "against": 1.579}, "goals": {"for": 1.315, "against": 1.451}, "n": 54}}, "Puebla": {"home": {"Shots": {"for": 14.044, "against": 14.582}, "Shots on Target": {"for": 4.419, "against": 4.72}, "Corners": {"for": 4.54, "against": 5.941}, "Fouls": {"for": 12.183, "against": 11.933}, "Yellow": {"for": 2.301, "against": 1.821}, "Red": {"for": 0.186, "against": 0.033}, "Offsides": {"for": 1.417, "against": 1.095}, "goals": {"for": 1.156, "against": 1.784}, "n": 52}, "away": {"Shots": {"for": 10.607, "against": 16.891}, "Shots on Target": {"for": 3.62, "against": 5.587}, "Corners": {"for": 4.453, "against": 5.403}, "Fouls": {"for": 13.317, "against": 12.077}, "Yellow": {"for": 2.248, "against": 1.883}, "Red": {"for": 0.223, "against": 0.054}, "Offsides": {"for": 1.24, "against": 1.671}, "goals": {"for": 0.8, "against": 2.013}, "n": 50}}, "Pumas UNAM": {"home": {"Shots": {"for": 13.722, "against": 12.702}, "Shots on Target": {"for": 4.594, "against": 4.074}, "Corners": {"for": 5.035, "against": 4.744}, "Fouls": {"for": 12.184, "against": 10.272}, "Yellow": {"for": 2.211, "against": 1.984}, "Red": {"for": 0.145, "against": 0.137}, "Offsides": {"for": 1.735, "against": 1.376}, "goals": {"for": 1.624, "against": 1.101}, "n": 57}, "away": {"Shots": {"for": 11.033, "against": 15.352}, "Shots on Target": {"for": 3.452, "against": 4.745}, "Corners": {"for": 3.587, "against": 5.803}, "Fouls": {"for": 13.024, "against": 11.487}, "Yellow": {"for": 2.728, "against": 1.929}, "Red": {"for": 0.155, "against": 0.214}, "Offsides": {"for": 1.525, "against": 2.098}, "goals": {"for": 1.38, "against": 1.439}, "n": 58}}, "Quer\u00e9taro": {"home": {"Shots": {"for": 11.686, "against": 15.217}, "Shots on Target": {"for": 3.638, "against": 4.538}, "Corners": {"for": 4.193, "against": 5.936}, "Fouls": {"for": 13.331, "against": 11.728}, "Yellow": {"for": 2.591, "against": 2.216}, "Red": {"for": 0.197, "against": 0.381}, "Offsides": {"for": 2.053, "against": 1.368}, "goals": {"for": 1.28, "against": 1.182}, "n": 36}, "away": {"Shots": {"for": 10.112, "against": 15.671}, "Shots on Target": {"for": 3.278, "against": 5.094}, "Corners": {"for": 4.541, "against": 6.356}, "Fouls": {"for": 11.693, "against": 11.3}, "Yellow": {"for": 1.985, "against": 1.766}, "Red": {"for": 0.255, "against": 0.127}, "Offsides": {"for": 1.924, "against": 1.234}, "goals": {"for": 0.771, "against": 1.739}, "n": 35}}, "Santos": {"home": {"Shots": {"for": 13.172, "against": 15.999}, "Shots on Target": {"for": 4.441, "against": 5.317}, "Corners": {"for": 4.88, "against": 5.613}, "Fouls": {"for": 13.383, "against": 14.643}, "Yellow": {"for": 2.673, "against": 2.406}, "Red": {"for": 0.212, "against": 0.076}, "Offsides": {"for": 1.712, "against": 2.007}, "goals": {"for": 1.288, "against": 1.466}, "n": 51}, "away": {"Shots": {"for": 9.496, "against": 18.525}, "Shots on Target": {"for": 3.208, "against": 6.351}, "Corners": {"for": 4.276, "against": 6.23}, "Fouls": {"for": 11.821, "against": 13.637}, "Yellow": {"for": 2.196, "against": 2.204}, "Red": {"for": 0.276, "against": 0.092}, "Offsides": {"for": 1.31, "against": 2.227}, "goals": {"for": 0.966, "against": 2.424}, "n": 50}}, "Tigres UANL": {"home": {"Shots": {"for": 15.944, "against": 10.869}, "Shots on Target": {"for": 5.544, "against": 3.469}, "Corners": {"for": 5.725, "against": 3.375}, "Fouls": {"for": 12.463, "against": 13.948}, "Yellow": {"for": 2.029, "against": 2.473}, "Red": {"for": 0.154, "against": 0.21}, "Offsides": {"for": 2.033, "against": 1.359}, "goals": {"for": 2.045, "against": 0.822}, "n": 58}, "away": {"Shots": {"for": 12.83, "against": 14.442}, "Shots on Target": {"for": 4.494, "against": 4.726}, "Corners": {"for": 5.185, "against": 4.815}, "Fouls": {"for": 12.135, "against": 13.032}, "Yellow": {"for": 2.478, "against": 2.425}, "Red": {"for": 0.236, "against": 0.252}, "Offsides": {"for": 1.326, "against": 1.293}, "goals": {"for": 1.201, "against": 1.309}, "n": 60}}, "Tijuana": {"home": {"Shots": {"for": 14.393, "against": 11.399}, "Shots on Target": {"for": 5.226, "against": 4.002}, "Corners": {"for": 4.719, "against": 4.268}, "Fouls": {"for": 13.182, "against": 13.761}, "Yellow": {"for": 2.226, "against": 2.309}, "Red": {"for": 0.113, "against": 0.241}, "Offsides": {"for": 1.715, "against": 1.143}, "goals": {"for": 1.86, "against": 1.14}, "n": 54}, "away": {"Shots": {"for": 11.332, "against": 16.084}, "Shots on Target": {"for": 3.478, "against": 5.92}, "Corners": {"for": 3.503, "against": 5.788}, "Fouls": {"for": 11.905, "against": 11.904}, "Yellow": {"for": 2.378, "against": 2.07}, "Red": {"for": 0.09, "against": 0.139}, "Offsides": {"for": 1.32, "against": 1.445}, "goals": {"for": 1.088, "against": 1.734}, "n": 50}}, "Toluca": {"home": {"Shots": {"for": 17.408, "against": 10.524}, "Shots on Target": {"for": 6.245, "against": 3.42}, "Corners": {"for": 5.135, "against": 3.619}, "Fouls": {"for": 12.312, "against": 10.899}, "Yellow": {"for": 2.082, "against": 2.31}, "Red": {"for": 0.191, "against": 0.085}, "Offsides": {"for": 1.607, "against": 1.846}, "goals": {"for": 2.26, "against": 0.962}, "n": 55}, "away": {"Shots": {"for": 14.338, "against": 12.011}, "Shots on Target": {"for": 5.048, "against": 4.331}, "Corners": {"for": 5.448, "against": 4.497}, "Fouls": {"for": 12.135, "against": 12.155}, "Yellow": {"for": 2.149, "against": 2.284}, "Red": {"for": 0.208, "against": 0.116}, "Offsides": {"for": 1.908, "against": 1.967}, "goals": {"for": 1.47, "against": 1.26}, "n": 58}}}, "shrinkage": {"Shots": 0.75, "Shots on Target": 0.6, "Corners": 0.6, "Fouls": 0.25, "Yellow": 0.0, "Red": 0.0, "Offsides": 0.5}};
+
+let M;
+try { M = JSON.parse(localStorage.getItem('lmxModel')) || EMBEDDED; }
+catch(e){ M = EMBEDDED; }
+
+const STATS = M.meta.stats;
+const H2H_STATS = ['Shots','Shots on Target','Corners','Fouls'];
+let mode = 'total';
+const lines = {};   // market -> chosen line
+
+// ---------- math ----------
+function lgamma(x){ // Lanczos
+  const g=[76.18009172947146,-86.50532032941677,24.01409824083091,
+           -1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+  let y=x, t=x+5.5; t-=(x+0.5)*Math.log(t);
+  let s=1.000000000190015;
+  for(let j=0;j<6;j++) s+=g[j]/++y;
+  return -t+Math.log(2.5066282746310005*s/x);
+}
+function pmf(k, mean, r){
+  if(mean<=0) return k===0?1:0;
+  if(r==null){ // Poisson
+    return Math.exp(k*Math.log(mean)-mean-lgamma(k+1));
+  }
+  const p=r/(r+mean);
+  return Math.exp(lgamma(k+r)-lgamma(r)-lgamma(k+1)+r*Math.log(p)+k*Math.log(1-p));
+}
+function dist(mean, r){
+  const sd=Math.sqrt(r==null?mean:mean+mean*mean/r);
+  const max=Math.max(10, Math.ceil(mean+8*sd));
+  const d=new Array(max+1); let tot=0;
+  for(let k=0;k<=max;k++){ d[k]=pmf(k,mean,r); tot+=d[k]; }
+  for(let k=0;k<=max;k++) d[k]/=tot;
+  return d;
+}
+function conv(a,b){
+  const c=new Array(a.length+b.length-1).fill(0);
+  for(let i=0;i<a.length;i++) for(let j=0;j<b.length;j++) c[i+j]+=a[i]*b[j];
+  return c;
+}
+function pOver(d, line){ let s=0; for(let k=Math.ceil(line);k<d.length;k++) s+=d[k]; return s; }
+function fair(p){ return p>0.0005 ? (1/p) : null; }
+function fmtO(o){ return o==null ? '—' : (o>=100 ? '99+' : o.toFixed(2)); }
+
+// ---------- model ----------
+function lambdas(stat, home, away){
+  const w=M.shrinkage[stat] ?? 0.5;
+  const lg=M.league[stat];
+  const Th=M.teams[home], Ta=M.teams[away];
+  const mh=Th.home[stat]['for']*(Ta.away[stat]['against']/lg.home);
+  const ma=Ta.away[stat]['for']*(Th.home[stat]['against']/lg.away);
+  return {
+    h: w*mh+(1-w)*lg.home,
+    a: w*ma+(1-w)*lg.away,
+    r: lg.r
+  };
+}
+function defLine(x){ return Math.max(0.5, Math.round(x-0.5)+0.5); }
+
+// ---------- UI ----------
+const homeSel=document.getElementById('homeSel'), awaySel=document.getElementById('awaySel');
+function fillTeams(){
+  const names=Object.keys(M.teams).sort((a,b)=>a.localeCompare(b));
+  for(const sel of [homeSel,awaySel]){
+    sel.innerHTML=names.map(n=>`<option>${n}</option>`).join('');
+  }
+  homeSel.value=names[0]; awaySel.value=names[1];
+  document.getElementById('dataDate').textContent=
+    `${M.meta.matches} partidos · datos al ${M.meta.date_range[1]}`;
+}
+function ticket(name, lamTxt, key, d, dflt){
+  if(!(key in lines)) lines[key]=dflt;
+  const L=lines[key];
+  const po=pOver(d,L), pu=1-po;
+  const oo=fair(po), ou=fair(pu);
+  const favO=oo!=null&&ou!=null&&oo<ou;
+  return `<div class="ticket">
+    <div class="tHead"><div class="tName">${name}</div><div class="tLam">${lamTxt}</div></div>
+    <div class="lineRow">
+      <div class="stepper">
+        <button onclick="bump('${key}',-1)">−</button>
+        <div class="val cond">${L}</div>
+        <button onclick="bump('${key}',1)">+</button>
+      </div>
+      <div class="odd ${favO?'fav':''}"><div class="lab">Más de</div><div class="px cond">${fmtO(oo)}</div><div class="pc">${(po*100).toFixed(1)}%</div></div>
+      <div class="odd ${!favO?'fav':''}"><div class="lab">Menos de</div><div class="px cond">${fmtO(ou)}</div><div class="pc">${(pu*100).toFixed(1)}%</div></div>
+    </div>
+  </div>`;
+}
+function h2hTicket(stat, dh, da){
+  let pH=0,pT=0,pA=0;
+  for(let i=0;i<dh.length;i++) for(let j=0;j<da.length;j++){
+    const pr=dh[i]*da[j];
+    if(i>j) pH+=pr; else if(i===j) pT+=pr; else pA+=pr;
+  }
+  const best=Math.max(pH,pT,pA);
+  const cell=(lab,p)=>`<div class="odd ${p===best?'fav':''}"><div class="lab">${lab}</div><div class="px cond">${fmtO(fair(p))}</div><div class="pc">${(p*100).toFixed(1)}%</div></div>`;
+  return `<div class="ticket">
+    <div class="tHead"><div class="tName">H2H · ${stat}</div><div class="tLam"></div></div>
+    <div class="h3col">${cell(short(homeSel.value),pH)}${cell('Empate',pT)}${cell(short(awaySel.value),pA)}</div>
+  </div>`;
+}
+function short(n){ return n.length>10 ? n.slice(0,9)+'…' : n; }
+
+function render(){
+  const home=homeSel.value, away=awaySel.value;
+  const box=document.getElementById('markets');
+  if(home===away){ box.innerHTML='<div class="ticket"><div class="tName">Elige dos equipos distintos</div></div>'; return; }
+  let html='';
+  for(const s of STATS){
+    const {h,a,r}=lambdas(s,home,away);
+    const dh=dist(h,r), da=dist(a,r);
+    if(mode==='total'){
+      const dt=conv(dh,da);
+      const key=`T|${s}|${home}|${away}`;
+      html+=ticket(s, `esp: <b>${(h+a).toFixed(1)}</b> (${h.toFixed(1)}+${a.toFixed(1)})`, key, dt, defLine(h+a));
+    }else if(mode==='team'){
+      const kh=`H|${s}|${home}|${away}`, ka=`A|${s}|${home}|${away}`;
+      html+=ticket(`${short(home)} · ${s}`, `esp: <b>${h.toFixed(1)}</b>`, kh, dh, defLine(h));
+      html+=ticket(`${short(away)} · ${s}`, `esp: <b>${a.toFixed(1)}</b>`, ka, da, defLine(a));
+    }else if(mode==='h2h' && H2H_STATS.includes(s)){
+      html+=h2hTicket(s, dh, da);
+    }
+  }
+  box.innerHTML=html;
+}
+function bump(key,dir){ lines[key]=Math.max(0.5, lines[key]+dir*(1)); render(); }
+// half-step: cards/reds want 0.5 steps too; use 1.0 step keeps .5 lines aligned
+
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on'); mode=t.dataset.mode; render();
+});
+homeSel.onchange=render; awaySel.onchange=render;
+
+// ---------- data view ----------
+function showView(v){
+  document.getElementById('mainView').style.display = v==='main'?'block':'none';
+  document.getElementById('dataView').style.display = v==='data'?'flex':'none';
+  document.getElementById('navMain').classList.toggle('on',v==='main');
+  document.getElementById('navData').classList.toggle('on',v==='data');
+}
+function saveModel(){
+  const msg=document.getElementById('msg');
+  try{
+    const j=JSON.parse(document.getElementById('jsonBox').value);
+    if(!j.teams||!j.league||!j.meta) throw new Error('estructura inválida');
+    if(!j.shrinkage) j.shrinkage=M.shrinkage;
+    localStorage.setItem('lmxModel', JSON.stringify(j));
+    M=j; fillTeams(); render();
+    msg.textContent='Datos actualizados ✓ ('+j.meta.matches+' partidos)';
+  }catch(e){ msg.textContent='Error: JSON inválido — '+e.message; msg.style.color='#e88'; }
+}
+function resetModel(){
+  localStorage.removeItem('lmxModel'); M=EMBEDDED; fillTeams(); render();
+  document.getElementById('msg').textContent='Datos originales restaurados ✓';
+}
+
+fillTeams(); render();
+</script>
+</body>
+</html>
