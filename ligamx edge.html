@@ -110,6 +110,10 @@ nav button.on{color:var(--amber)}
       <select id="awaySel" class="teamSel away"></select>
     </div>
     <div class="venueNote">local &nbsp;·&nbsp; visitante</div>
+    <div id="refWrap" style="margin-top:10px;display:none">
+      <select id="refSel" class="teamSel" style="border-bottom:3px solid var(--amber-dim)"></select>
+      <div class="venueNote" id="refNote">árbitro — ajusta faltas</div>
+    </div>
   </div>
 
   <div class="tabs">
@@ -120,7 +124,7 @@ nav button.on{color:var(--amber)}
 
   <div id="markets"></div>
   <p class="note">Cuotas justas sin margen (100%). Si Playdoit/Novibet paga MÁS que la cuota justa, hay valor.<br>
-  Tarjetas y faltas dependen mucho del árbitro — el modelo las acerca al promedio de liga.</p>
+  Tarjetas: no hay efecto de árbitro comprobable (es ruido) — se quedan cerca del promedio de liga.<br>Faltas: el árbitro SÍ importa; elígelo arriba para ajustar.</p>
 </div>
 
 <div id="dataView">
@@ -189,11 +193,13 @@ function lambdas(stat, home, away){
   const Th=M.teams[home], Ta=M.teams[away];
   const mh=Th.home[stat]['for']*(Ta.away[stat]['against']/lg.home);
   const ma=Ta.away[stat]['for']*(Th.home[stat]['against']/lg.away);
-  return {
-    h: w*mh+(1-w)*lg.home,
-    a: w*ma+(1-w)*lg.away,
-    r: lg.r
-  };
+  let out={ h: w*mh+(1-w)*lg.home, a: w*ma+(1-w)*lg.away, r: lg.r };
+  if(stat==='Fouls' && M.referees){
+    const ref=document.getElementById('refSel').value;
+    const rm=M.referees[ref];
+    if(rm && rm.mult){ out.h*=rm.mult; out.a*=rm.mult; }
+  }
+  return out;
 }
 function defLine(x){ return Math.max(0.5, Math.round(x-0.5)+0.5); }
 
@@ -205,6 +211,13 @@ function fillTeams(){
     sel.innerHTML=names.map(n=>`<option>${n}</option>`).join('');
   }
   homeSel.value=names[0]; awaySel.value=names[1];
+  const rw=document.getElementById('refWrap'), rs=document.getElementById('refSel');
+  if(M.referees && Object.keys(M.referees).length){
+    const refs=Object.entries(M.referees).sort((a,b)=>b[1].n-a[1].n);
+    rs.innerHTML='<option value="">Árbitro: promedio de liga</option>'+
+      refs.map(([n,d])=>`<option value="${n}">${n} · ${d.mult>1?'+':''}${((d.mult-1)*100).toFixed(0)}% faltas</option>`).join('');
+    rw.style.display='block';
+  } else { rw.style.display='none'; }
   document.getElementById('dataDate').textContent=
     `${M.meta.matches} partidos · datos al ${M.meta.date_range[1]}`;
 }
@@ -272,6 +285,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   t.classList.add('on'); mode=t.dataset.mode; render();
 });
 homeSel.onchange=render; awaySel.onchange=render;
+document.getElementById('refSel').onchange=render;
 
 // ---------- data view ----------
 function showView(v){
