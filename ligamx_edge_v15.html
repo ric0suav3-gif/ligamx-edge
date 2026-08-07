@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b1210">
+<title>LigaMX Edge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1210;        /* floodlit-pitch night */
+  --surface:#121b18;
+  --surface2:#18241f;
+  --line:#22322b;
+  --text:#e8efe9;
+  --muted:#8fa39a;
+  --amber:#f5b53f;     /* stadium light — value accent */
+  --amber-dim:#8a6a2a;
+  --home:#7fd1a8;
+  --away:#9db4e8;
+  --radius:14px;
+  font-size:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;
+  min-height:100vh;padding-bottom:90px}
+.cond{font-family:'Barlow Condensed',system-ui,sans-serif}
+
+header{padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 10px;display:flex;align-items:baseline;justify-content:space-between}
+header h1{font-family:'Barlow Condensed';font-weight:700;font-size:1.5rem;letter-spacing:.04em;text-transform:uppercase}
+header h1 span{color:var(--amber)}
+#dataDate{font-size:.72rem;color:var(--muted)}
+.warn{margin:0 12px 10px;background:rgba(245,181,63,.12);border:1px solid var(--amber-dim);border-radius:12px;padding:9px 12px;font-size:.76rem;color:var(--amber);line-height:1.4}
+
+/* scoreboard strip */
+.board{margin:6px 12px 12px;background:linear-gradient(180deg,var(--surface2),var(--surface));
+  border:1px solid var(--line);border-radius:var(--radius);padding:14px 12px}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.teamSel{width:100%;appearance:none;background:var(--bg);color:var(--text);border:1px solid var(--line);
+  border-radius:10px;padding:12px 10px;font-family:'Barlow Condensed';font-weight:600;font-size:1.05rem;
+  letter-spacing:.02em;text-align:center}
+.teamSel.home{border-bottom:3px solid var(--home)}
+.teamSel.away{border-bottom:3px solid var(--away)}
+.vsMark{font-family:'Barlow Condensed';font-weight:700;color:var(--muted);font-size:1rem}
+.venueNote{margin-top:8px;text-align:center;font-size:.72rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+
+/* tabs */
+.tabs{display:flex;gap:6px;margin:0 12px 10px}
+.tab{flex:1;border:1px solid var(--line);background:var(--surface);color:var(--muted);
+  border-radius:10px;padding:10px 0;font-family:'Barlow Condensed';font-weight:600;font-size:.95rem;
+  letter-spacing:.06em;text-transform:uppercase}
+.tab.on{background:var(--amber);color:#1a1408;border-color:var(--amber)}
+
+/* market tickets */
+#markets{padding:0 12px;display:flex;flex-direction:column;gap:10px}
+.ticket{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+.tHead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.tName{font-family:'Barlow Condensed';font-weight:600;font-size:1.05rem;letter-spacing:.03em;text-transform:uppercase}
+.tLam{font-size:.72rem;color:var(--muted)}
+.tLam b{color:var(--text);font-weight:600}
+.lineRow{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;align-items:stretch}
+.stepper{display:flex;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stepper button{background:none;border:none;color:var(--amber);font-size:1.25rem;width:34px;height:100%;font-weight:600}
+.stepper .val{min-width:44px;text-align:center;font-family:'Barlow Condensed';font-weight:700;font-size:1.2rem}
+.odd{border-radius:10px;border:1px solid var(--line);background:var(--surface2);padding:6px 4px;text-align:center}
+.odd .lab{font-size:.62rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.odd .px{font-family:'Barlow Condensed';font-weight:700;font-size:1.35rem;line-height:1.15}
+.odd .pc{font-size:.62rem;color:var(--muted)}
+.odd.fav .px{color:var(--amber)}
+
+/* H2H */
+.h3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:4px}
+.h4col{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:4px}
+
+/* data screen */
+#dataView{padding:0 12px;display:none;flex-direction:column;gap:10px}
+#dataView p{font-size:.85rem;color:var(--muted);line-height:1.45}
+#jsonBox{width:100%;height:150px;background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  color:var(--text);padding:10px;font-size:.75rem;font-family:monospace}
+.btn{background:var(--amber);color:#1a1408;border:none;border-radius:10px;padding:13px;
+  font-family:'Barlow Condensed';font-weight:700;font-size:1rem;letter-spacing:.05em;text-transform:uppercase}
+.btn.ghost{background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+#msg{font-size:.8rem;color:var(--home)}
+
+/* bottom nav */
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(11,18,16,.95);backdrop-filter:blur(8px);
+  border-top:1px solid var(--line);padding:8px 0 calc(env(safe-area-inset-bottom,0px) + 8px)}
+nav button{flex:1;background:none;border:none;color:var(--muted);font-family:'Barlow Condensed';
+  font-weight:600;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;padding:8px 0}
+nav button.on{color:var(--amber)}
+.note{margin:14px 12px 0;font-size:.68rem;color:var(--muted);line-height:1.5;text-align:center}
+@media (prefers-reduced-motion:no-preference){
+  .ticket{animation:up .25s ease both}
+  @keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Liga<span>MX</span> Edge</h1>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+    <select id="leagueSel" style="appearance:none;background:var(--bg);color:var(--amber);border:1px solid var(--amber-dim);border-radius:8px;padding:4px 8px;font-family:'Barlow Condensed';font-weight:600;font-size:.85rem;letter-spacing:.04em">
+      <option value="ligamx">LIGA MX</option>
+      <option value="leaguescup">LEAGUES CUP</option>
+    </select>
+    <div id="dataDate"></div>
+  </div>
+</header>
+
+<div id="mainView">
+  <div class="board">
+    <div class="vs">
+      <select id="homeSel" class="teamSel home"></select>
+      <div class="vsMark cond">VS</div>
+      <select id="awaySel" class="teamSel away"></select>
+    </div>
+    <select id="fixSel" class="teamSel" style="margin-bottom:8px;border-bottom:3px solid var(--amber-dim);display:none"></select>
+    <div class="venueNote">local &nbsp;·&nbsp; visitante</div>
+    <div id="refWrap" style="margin-top:10px;display:none">
+      <select id="refSel" class="teamSel" style="border-bottom:3px solid var(--amber-dim)"></select>
+      <div class="venueNote" id="refNote">árbitro — ajusta faltas</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-mode="total">Totales</button>
+    <button class="tab" data-mode="team">Por equipo</button>
+    <button class="tab" data-mode="h2h">H2H</button>
+    <button class="tab" data-mode="goles">Goles</button>
+    <button class="tab" data-mode="ah">AH</button>
+    <button class="tab" data-mode="picks">Picks</button>
+  </div>
+
+  <div id="lowWarn" class="warn" style="display:none"></div>
+  <div id="markets"></div>
+  <p class="note">Cuotas justas sin margen (100%). Si Playdoit/Novibet paga MÁS que la cuota justa, hay valor.<br>
+  Tarjetas: no hay efecto de árbitro comprobable (es ruido) — se quedan cerca del promedio de liga.<br>Faltas: el árbitro SÍ importa; elígelo arriba para ajustar.</p>
+</div>
+
+<div id="regView" style="padding:0 12px;display:none;flex-direction:column;gap:10px"></div>
+<div id="dataView">
+  <p><b style="color:var(--text)">Actualizar datos.</b> Corre el scraper en Colab, genera el nuevo <code>model.json</code> y pega el contenido aquí. Se guarda en tu teléfono.</p>
+  <textarea id="jsonBox" placeholder='Pega aquí el JSON del modelo…'></textarea>
+  <button class="btn" onclick="saveModel()">Guardar datos nuevos</button>
+  <button class="btn ghost" onclick="resetModel()">Restaurar datos originales</button>
+  <div id="msg"></div>
+</div>
+
+<nav>
+  <button id="navMain" class="on" onclick="showView('main')">Mercados</button>
+  <button id="navReg" onclick="showView('reg')">Registro</button>
+  <button id="navData" onclick="showView('data')">Datos</button>
+</nav>
+
+<script>
+const MODELS = {"ligamx": {"meta": {"league": "Liga MX", "built": "2026-08-02", "matches": 980, "date_range": ["2023-07-01", "2026-08-02"], "half_life": 25.0, "stats": ["Shots", "Shots on Target", "Corners", "Fouls", "Yellow", "Red", "Offsides", "Goals", "Cards"], "atlante_real": 3}, "league": {"Shots": {"home": 14.6245, "away": 11.9837, "r": 11.6356}, "Shots on Target": {"home": 5.002, "away": 4.0367, "r": 15.534}, "Corners": {"home": 5.3765, "away": 4.4561, "r": 8.0183}, "Fouls": {"home": 12.0582, "away": 11.9153, "r": 57.0517}, "Yellow": {"home": 2.1204, "away": 2.2398, "r": null}, "Red": {"home": 0.148, "away": 0.1827, "r": null}, "Offsides": {"home": 1.6694, "away": 1.5408, "r": 5.5465}, "Goals": {"home": 1.6357, "away": 1.2214, "r": null}, "Cards": {"home": 2.2684, "away": 2.4224, "r": null}}, "teams": {"América": {"home": {"Shots": {"for": 15.415, "against": 9.385}, "Shots on Target": {"for": 5.873, "against": 3.043}, "Corners": {"for": 5.603, "against": 3.782}, "Fouls": {"for": 10.0, "against": 11.354}, "Yellow": {"for": 1.538, "against": 2.119}, "Red": {"for": 0.089, "against": 0.192}, "Offsides": {"for": 1.741, "against": 1.198}, "Goals": {"for": 1.882, "against": 0.849}, "Cards": {"for": 1.627, "against": 2.312}, "n": 62}, "away": {"Shots": {"for": 13.205, "against": 11.893}, "Shots on Target": {"for": 4.544, "against": 3.837}, "Corners": {"for": 5.632, "against": 4.275}, "Fouls": {"for": 9.732, "against": 13.745}, "Yellow": {"for": 1.75, "against": 2.519}, "Red": {"for": 0.114, "against": 0.232}, "Offsides": {"for": 1.616, "against": 1.299}, "Goals": {"for": 1.396, "against": 1.141}, "Cards": {"for": 1.864, "against": 2.751}, "n": 64}}, "Atlante": {"home": {"Shots": {"for": 11.539, "against": 15.16}, "Shots on Target": {"for": 4.124, "against": 5.438}, "Corners": {"for": 4.473, "against": 5.778}, "Fouls": {"for": 12.934, "against": 12.599}, "Yellow": {"for": 2.398, "against": 2.398}, "Red": {"for": 0.178, "against": 0.293}, "Offsides": {"for": 1.753, "against": 1.828}, "Goals": {"for": 1.504, "against": 1.638}, "Cards": {"for": 2.576, "against": 2.692}, "n": 42}, "away": {"Shots": {"for": 9.854, "against": 16.588}, "Shots on Target": {"for": 3.473, "against": 5.975}, "Corners": {"for": 4.07, "against": 6.187}, "Fouls": {"for": 11.873, "against": 11.287}, "Yellow": {"for": 2.375, "against": 1.829}, "Red": {"for": 0.114, "against": 0.095}, "Offsides": {"for": 1.507, "against": 1.667}, "Goals": {"for": 0.921, "against": 2.012}, "Cards": {"for": 2.488, "against": 1.924}, "n": 45}}, "Atlas": {"home": {"Shots": {"for": 12.895, "against": 13.117}, "Shots on Target": {"for": 3.924, "against": 4.398}, "Corners": {"for": 5.041, "against": 4.616}, "Fouls": {"for": 13.059, "against": 12.978}, "Yellow": {"for": 2.323, "against": 2.474}, "Red": {"for": 0.298, "against": 0.157}, "Offsides": {"for": 1.524, "against": 1.07}, "Goals": {"for": 1.315, "against": 1.424}, "Cards": {"for": 2.621, "against": 2.631}, "n": 50}, "away": {"Shots": {"for": 10.509, "against": 15.093}, "Shots on Target": {"for": 3.182, "against": 5.107}, "Corners": {"for": 3.709, "against": 5.666}, "Fouls": {"for": 11.982, "against": 12.771}, "Yellow": {"for": 2.204, "against": 2.129}, "Red": {"for": 0.189, "against": 0.151}, "Offsides": {"for": 1.497, "against": 1.133}, "Goals": {"for": 1.003, "against": 1.733}, "Cards": {"for": 2.393, "against": 2.28}, "n": 55}}, "Atlético de San Luis": {"home": {"Shots": {"for": 11.883, "against": 12.959}, "Shots on Target": {"for": 4.164, "against": 4.614}, "Corners": {"for": 4.843, "against": 4.082}, "Fouls": {"for": 10.898, "against": 12.28}, "Yellow": {"for": 1.903, "against": 1.97}, "Red": {"for": 0.063, "against": 0.123}, "Offsides": {"for": 1.175, "against": 2.185}, "Goals": {"for": 1.551, "against": 1.439}, "Cards": {"for": 1.966, "against": 2.094}, "n": 57}, "away": {"Shots": {"for": 11.549, "against": 15.441}, "Shots on Target": {"for": 3.951, "against": 5.255}, "Corners": {"for": 4.151, "against": 5.126}, "Fouls": {"for": 10.724, "against": 12.683}, "Yellow": {"for": 1.685, "against": 1.95}, "Red": {"for": 0.193, "against": 0.067}, "Offsides": {"for": 1.01, "against": 1.996}, "Goals": {"for": 1.291, "against": 1.876}, "Cards": {"for": 1.878, "against": 2.017}, "n": 55}}, "Cruz Azul": {"home": {"Shots": {"for": 18.11, "against": 9.282}, "Shots on Target": {"for": 6.086, "against": 3.057}, "Corners": {"for": 6.615, "against": 3.387}, "Fouls": {"for": 11.969, "against": 10.877}, "Yellow": {"for": 2.113, "against": 2.123}, "Red": {"for": 0.109, "against": 0.238}, "Offsides": {"for": 2.138, "against": 2.002}, "Goals": {"for": 1.877, "against": 1.053}, "Cards": {"for": 2.222, "against": 2.36}, "n": 61}, "away": {"Shots": {"for": 14.487, "against": 11.473}, "Shots on Target": {"for": 5.242, "against": 3.756}, "Corners": {"for": 4.817, "against": 4.579}, "Fouls": {"for": 11.738, "against": 12.168}, "Yellow": {"for": 2.066, "against": 1.872}, "Red": {"for": 0.114, "against": 0.206}, "Offsides": {"for": 1.588, "against": 1.991}, "Goals": {"for": 1.587, "against": 1.186}, "Cards": {"for": 2.18, "against": 2.079}, "n": 63}}, "FC Juarez": {"home": {"Shots": {"for": 13.059, "against": 11.9}, "Shots on Target": {"for": 4.173, "against": 4.274}, "Corners": {"for": 4.447, "against": 4.562}, "Fouls": {"for": 12.216, "against": 12.373}, "Yellow": {"for": 2.187, "against": 1.748}, "Red": {"for": 0.159, "against": 0.334}, "Offsides": {"for": 1.624, "against": 1.557}, "Goals": {"for": 1.471, "against": 1.682}, "Cards": {"for": 2.345, "against": 2.082}, "n": 54}, "away": {"Shots": {"for": 11.404, "against": 15.615}, "Shots on Target": {"for": 3.585, "against": 5.198}, "Corners": {"for": 4.291, "against": 5.84}, "Fouls": {"for": 12.056, "against": 12.585}, "Yellow": {"for": 2.591, "against": 2.062}, "Red": {"for": 0.119, "against": 0.166}, "Offsides": {"for": 0.959, "against": 2.107}, "Goals": {"for": 1.139, "against": 1.845}, "Cards": {"for": 2.709, "against": 2.228}, "n": 51}}, "Guadalajara": {"home": {"Shots": {"for": 16.357, "against": 10.086}, "Shots on Target": {"for": 5.532, "against": 3.633}, "Corners": {"for": 6.956, "against": 3.602}, "Fouls": {"for": 11.84, "against": 11.015}, "Yellow": {"for": 2.005, "against": 2.333}, "Red": {"for": 0.146, "against": 0.156}, "Offsides": {"for": 1.695, "against": 1.059}, "Goals": {"for": 1.69, "against": 0.909}, "Cards": {"for": 2.151, "against": 2.489}, "n": 57}, "away": {"Shots": {"for": 13.072, "against": 12.021}, "Shots on Target": {"for": 3.995, "against": 4.205}, "Corners": {"for": 4.905, "against": 4.273}, "Fouls": {"for": 12.097, "against": 11.577}, "Yellow": {"for": 2.109, "against": 2.644}, "Red": {"for": 0.133, "against": 0.087}, "Offsides": {"for": 2.317, "against": 1.197}, "Goals": {"for": 1.207, "against": 1.426}, "Cards": {"for": 2.242, "against": 2.731}, "n": 56}}, "León": {"home": {"Shots": {"for": 14.572, "against": 12.659}, "Shots on Target": {"for": 5.014, "against": 4.503}, "Corners": {"for": 5.52, "against": 4.689}, "Fouls": {"for": 12.603, "against": 11.399}, "Yellow": {"for": 2.109, "against": 2.352}, "Red": {"for": 0.135, "against": 0.206}, "Offsides": {"for": 1.635, "against": 1.755}, "Goals": {"for": 1.511, "against": 1.324}, "Cards": {"for": 2.244, "against": 2.557}, "n": 54}, "away": {"Shots": {"for": 12.226, "against": 15.934}, "Shots on Target": {"for": 4.31, "against": 5.967}, "Corners": {"for": 4.615, "against": 5.399}, "Fouls": {"for": 12.215, "against": 12.354}, "Yellow": {"for": 2.07, "against": 2.045}, "Red": {"for": 0.265, "against": 0.215}, "Offsides": {"for": 2.05, "against": 1.625}, "Goals": {"for": 0.972, "against": 1.943}, "Cards": {"for": 2.335, "against": 2.261}, "n": 53}}, "Monterrey": {"home": {"Shots": {"for": 15.687, "against": 10.558}, "Shots on Target": {"for": 5.811, "against": 3.852}, "Corners": {"for": 5.245, "against": 4.504}, "Fouls": {"for": 11.589, "against": 12.145}, "Yellow": {"for": 1.484, "against": 2.364}, "Red": {"for": 0.112, "against": 0.172}, "Offsides": {"for": 1.552, "against": 1.886}, "Goals": {"for": 1.873, "against": 1.232}, "Cards": {"for": 1.596, "against": 2.536}, "n": 62}, "away": {"Shots": {"for": 12.478, "against": 13.358}, "Shots on Target": {"for": 4.34, "against": 4.75}, "Corners": {"for": 4.021, "against": 4.95}, "Fouls": {"for": 11.734, "against": 13.021}, "Yellow": {"for": 2.11, "against": 2.189}, "Red": {"for": 0.207, "against": 0.201}, "Offsides": {"for": 1.343, "against": 2.4}, "Goals": {"for": 1.45, "against": 1.509}, "Cards": {"for": 2.317, "against": 2.391}, "n": 60}}, "Necaxa": {"home": {"Shots": {"for": 15.206, "against": 12.721}, "Shots on Target": {"for": 5.123, "against": 4.087}, "Corners": {"for": 5.319, "against": 4.815}, "Fouls": {"for": 13.117, "against": 11.214}, "Yellow": {"for": 2.171, "against": 1.951}, "Red": {"for": 0.115, "against": 0.176}, "Offsides": {"for": 1.286, "against": 1.36}, "Goals": {"for": 1.476, "against": 1.154}, "Cards": {"for": 2.286, "against": 2.126}, "n": 52}, "away": {"Shots": {"for": 12.685, "against": 15.995}, "Shots on Target": {"for": 4.47, "against": 5.369}, "Corners": {"for": 4.426, "against": 5.977}, "Fouls": {"for": 13.374, "against": 11.346}, "Yellow": {"for": 2.246, "against": 1.902}, "Red": {"for": 0.284, "against": 0.123}, "Offsides": {"for": 1.391, "against": 1.163}, "Goals": {"for": 1.434, "against": 2.104}, "Cards": {"for": 2.529, "against": 2.026}, "n": 51}}, "Pachuca": {"home": {"Shots": {"for": 15.39, "against": 10.421}, "Shots on Target": {"for": 5.223, "against": 3.491}, "Corners": {"for": 6.036, "against": 3.965}, "Fouls": {"for": 13.255, "against": 11.826}, "Yellow": {"for": 2.219, "against": 2.514}, "Red": {"for": 0.284, "against": 0.239}, "Offsides": {"for": 1.747, "against": 1.749}, "Goals": {"for": 1.456, "against": 1.091}, "Cards": {"for": 2.503, "against": 2.754}, "n": 57}, "away": {"Shots": {"for": 13.573, "against": 12.949}, "Shots on Target": {"for": 4.382, "against": 4.605}, "Corners": {"for": 4.688, "against": 5.173}, "Fouls": {"for": 13.232, "against": 11.951}, "Yellow": {"for": 2.329, "against": 2.286}, "Red": {"for": 0.319, "against": 0.208}, "Offsides": {"for": 1.88, "against": 1.573}, "Goals": {"for": 1.327, "against": 1.386}, "Cards": {"for": 2.648, "against": 2.494}, "n": 56}}, "Puebla": {"home": {"Shots": {"for": 13.794, "against": 14.916}, "Shots on Target": {"for": 4.369, "against": 4.837}, "Corners": {"for": 4.414, "against": 5.978}, "Fouls": {"for": 11.999, "against": 11.936}, "Yellow": {"for": 2.219, "against": 1.757}, "Red": {"for": 0.179, "against": 0.032}, "Offsides": {"for": 1.367, "against": 1.056}, "Goals": {"for": 1.15, "against": 1.756}, "Cards": {"for": 2.398, "against": 1.788}, "n": 53}, "away": {"Shots": {"for": 10.669, "against": 16.939}, "Shots on Target": {"for": 3.681, "against": 5.478}, "Corners": {"for": 4.49, "against": 5.446}, "Fouls": {"for": 13.394, "against": 11.932}, "Yellow": {"for": 2.231, "against": 1.856}, "Red": {"for": 0.242, "against": 0.05}, "Offsides": {"for": 1.259, "against": 1.588}, "Goals": {"for": 0.814, "against": 1.942}, "Cards": {"for": 2.474, "against": 1.906}, "n": 52}}, "Pumas UNAM": {"home": {"Shots": {"for": 13.56, "against": 12.781}, "Shots on Target": {"for": 4.471, "against": 4.14}, "Corners": {"for": 5.171, "against": 4.718}, "Fouls": {"for": 12.143, "against": 10.092}, "Yellow": {"for": 2.17, "against": 1.917}, "Red": {"for": 0.14, "against": 0.132}, "Offsides": {"for": 1.744, "against": 1.5}, "Goals": {"for": 1.568, "against": 1.166}, "Cards": {"for": 2.31, "against": 2.049}, "n": 58}, "away": {"Shots": {"for": 10.899, "against": 15.158}, "Shots on Target": {"for": 3.49, "against": 4.662}, "Corners": {"for": 3.381, "against": 5.779}, "Fouls": {"for": 13.058, "against": 11.292}, "Yellow": {"for": 2.613, "against": 1.901}, "Red": {"for": 0.145, "against": 0.2}, "Offsides": {"for": 1.557, "against": 2.127}, "Goals": {"for": 1.523, "against": 1.41}, "Cards": {"for": 2.758, "against": 2.1}, "n": 60}}, "Querétaro": {"home": {"Shots": {"for": 11.756, "against": 15.7}, "Shots on Target": {"for": 3.671, "against": 4.576}, "Corners": {"for": 4.18, "against": 6.396}, "Fouls": {"for": 13.597, "against": 11.665}, "Yellow": {"for": 2.873, "against": 2.24}, "Red": {"for": 0.181, "against": 0.391}, "Offsides": {"for": 2.129, "against": 1.255}, "Goals": {"for": 1.3, "against": 1.209}, "Cards": {"for": 3.054, "against": 2.631}, "n": 38}, "away": {"Shots": {"for": 10.453, "against": 15.555}, "Shots on Target": {"for": 3.353, "against": 4.96}, "Corners": {"for": 4.604, "against": 6.124}, "Fouls": {"for": 11.619, "against": 11.46}, "Yellow": {"for": 2.029, "against": 1.776}, "Red": {"for": 0.244, "against": 0.122}, "Offsides": {"for": 2.101, "against": 1.224}, "Goals": {"for": 0.824, "against": 1.707}, "Cards": {"for": 2.273, "against": 1.897}, "n": 36}}, "Santos": {"home": {"Shots": {"for": 13.094, "against": 15.82}, "Shots on Target": {"for": 4.318, "against": 5.305}, "Corners": {"for": 4.884, "against": 5.591}, "Fouls": {"for": 13.297, "against": 14.513}, "Yellow": {"for": 2.649, "against": 2.355}, "Red": {"for": 0.205, "against": 0.074}, "Offsides": {"for": 1.687, "against": 1.971}, "Goals": {"for": 1.242, "against": 1.449}, "Cards": {"for": 2.854, "against": 2.429}, "n": 52}, "away": {"Shots": {"for": 9.551, "against": 18.542}, "Shots on Target": {"for": 3.2, "against": 6.592}, "Corners": {"for": 4.302, "against": 6.186}, "Fouls": {"for": 11.719, "against": 13.65}, "Yellow": {"for": 2.117, "against": 2.125}, "Red": {"for": 0.266, "against": 0.088}, "Offsides": {"for": 1.263, "against": 2.219}, "Goals": {"for": 1.004, "against": 2.445}, "Cards": {"for": 2.383, "against": 2.213}, "n": 51}}, "Tigres UANL": {"home": {"Shots": {"for": 15.98, "against": 10.941}, "Shots on Target": {"for": 5.424, "against": 3.487}, "Corners": {"for": 5.836, "against": 3.362}, "Fouls": {"for": 12.549, "against": 13.949}, "Yellow": {"for": 2.028, "against": 2.423}, "Red": {"for": 0.149, "against": 0.203}, "Offsides": {"for": 1.997, "against": 1.38}, "Goals": {"for": 2.044, "against": 0.862}, "Cards": {"for": 2.177, "against": 2.625}, "n": 59}, "away": {"Shots": {"for": 13.079, "against": 14.479}, "Shots on Target": {"for": 4.494, "against": 4.843}, "Corners": {"for": 5.34, "against": 4.731}, "Fouls": {"for": 12.189, "against": 13.165}, "Yellow": {"for": 2.545, "against": 2.53}, "Red": {"for": 0.253, "against": 0.235}, "Offsides": {"for": 1.239, "against": 1.371}, "Goals": {"for": 1.221, "against": 1.42}, "Cards": {"for": 2.797, "against": 2.765}, "n": 62}}, "Tijuana": {"home": {"Shots": {"for": 14.227, "against": 11.271}, "Shots on Target": {"for": 5.209, "against": 3.933}, "Corners": {"for": 4.534, "against": 4.457}, "Fouls": {"for": 13.067, "against": 13.844}, "Yellow": {"for": 2.142, "against": 2.356}, "Red": {"for": 0.105, "against": 0.259}, "Offsides": {"for": 1.802, "against": 1.1}, "Goals": {"for": 1.868, "against": 1.096}, "Cards": {"for": 2.247, "against": 2.614}, "n": 56}, "away": {"Shots": {"for": 11.139, "against": 16.009}, "Shots on Target": {"for": 3.389, "against": 5.778}, "Corners": {"for": 3.412, "against": 5.76}, "Fouls": {"for": 11.836, "against": 11.691}, "Yellow": {"for": 2.364, "against": 2.031}, "Red": {"for": 0.087, "against": 0.134}, "Offsides": {"for": 1.308, "against": 1.393}, "Goals": {"for": 1.049, "against": 1.671}, "Cards": {"for": 2.451, "against": 2.165}, "n": 51}}, "Toluca": {"home": {"Shots": {"for": 17.394, "against": 10.436}, "Shots on Target": {"for": 6.167, "against": 3.406}, "Corners": {"for": 5.269, "against": 3.528}, "Fouls": {"for": 12.024, "against": 10.903}, "Yellow": {"for": 2.045, "against": 2.264}, "Red": {"for": 0.185, "against": 0.082}, "Offsides": {"for": 1.551, "against": 1.852}, "Goals": {"for": 2.217, "against": 0.998}, "Cards": {"for": 2.229, "against": 2.346}, "n": 56}, "away": {"Shots": {"for": 14.326, "against": 12.045}, "Shots on Target": {"for": 5.182, "against": 4.32}, "Corners": {"for": 5.331, "against": 4.65}, "Fouls": {"for": 12.164, "against": 12.217}, "Yellow": {"for": 2.144, "against": 2.274}, "Red": {"for": 0.201, "against": 0.146}, "Offsides": {"for": 1.911, "against": 1.934}, "Goals": {"for": 1.488, "against": 1.217}, "Cards": {"for": 2.345, "against": 2.421}, "n": 59}}}, "shrinkage": {"Shots": 0.75, "Shots on Target": 0.6, "Corners": 0.75, "Fouls": 0.25, "Yellow": 0.25, "Red": 0, "Offsides": 0.5, "Goals": 0.5, "Cards": 0.4}, "referees": {"Adonai Gonzalez": {"mult": 0.9537, "n": 64}, "César Arturo Ramos Palazuelos": {"mult": 0.973, "n": 62}, "Daniel Quintero Huitrón": {"mult": 1.0096, "n": 59}, "Fernando Gomez": {"mult": 1.0261, "n": 60}, "Fernando Guerrero Ramírez": {"mult": 1.0304, "n": 30}, "Guillermo Pacheco Larios": {"mult": 0.883, "n": 39}, "Ismael Rosario Lopez Penuelas": {"mult": 0.9483, "n": 48}, "Iván López Sánchez": {"mult": 1.1404, "n": 28}, "Jesús Rafael López Valle": {"mult": 0.9567, "n": 44}, "Jorge Abraham Camacho Peregrina": {"mult": 0.9321, "n": 37}, "Katia Itzel García": {"mult": 1.0328, "n": 26}, "Luis Enrique Santander Aguirre": {"mult": 1.057, "n": 50}, "Marco Antonio Ortiz Nava": {"mult": 0.9967, "n": 65}, "Mario Terrazas Chávez": {"mult": 1.0743, "n": 20}, "Maximiliano Quintero Hernández": {"mult": 0.9873, "n": 35}, "Oscar Garcia": {"mult": 1.0167, "n": 50}, "Vicente Reynoso Arce": {"mult": 1.0225, "n": 28}, "Víctor Alfonso Cáceres Hernández": {"mult": 0.9974, "n": 65}}, "halves": {"share": {"h1": 0.4603, "h2": 0.5397}, "n": 724}, "season_adj": {}}, "leaguescup": {"meta": {"league": "Leagues Cup", "built": "2026-08-07", "matches_mx": 980, "matches_mls": 1319, "matches_lc_hist": 216, "stats": ["Shots", "Shots on Target", "Corners", "Fouls", "Yellow", "Red", "Offsides", "Goals", "Cards", "ThrowIns", "GoalKicks"], "half_life": 25.0, "factors": {"goals_mult": 1.1, "mx_shot_edge": 1.11, "mx_corner_edge": 1.065, "corners_mult": 0.97, "yellow_mult": 0.93}, "mx_hosts_2026": {"Toluca": 0.3, "América": 0.2, "Tigres UANL": 0.15}, "altitude": ["Toluca", "América"], "matches": 231, "date_range": ["2023-07-21", "2026-08-06"], "neutral_venue": true, "note_2026": "15 partidos de la edición 2026 integrados", "mx_venue_fixtures": {"2026-08-05|Toluca": {"alt": 0.3}, "2026-08-06|América": {"alt": 0.2}, "2026-08-11|Tigres UANL": {"alt": 0.15}, "2026-08-12|Toluca": {"alt": 0.3}}, "venue_rule": "sede mexicana solo en las fechas listadas; resto cancha neutral"}, "league": {"Shots": {"home": 14.523, "away": 11.7526, "r": 11.635550434705644, "neutral": 13.1378}, "Shots on Target": {"home": 5.1454, "away": 4.1029, "r": 15.534040429016624, "neutral": 4.6242}, "Corners": {"home": 5.2819, "away": 4.2648, "r": 8.018289181397709, "neutral": 4.7734}, "Fouls": {"home": 11.9798, "away": 11.9368, "r": 57.05170184701424, "neutral": 11.9583}, "Yellow": {"home": 1.8959, "away": 2.0212, "r": null, "neutral": 1.9585}, "Red": {"home": 0.1172, "away": 0.1387, "r": null, "neutral": 0.128}, "Offsides": {"home": 1.7198, "away": 1.5957, "r": 5.546515774500878, "neutral": 1.6578}, "Goals": {"home": 1.8504, "away": 1.419, "r": null, "neutral": 1.6347}, "Cards": {"home": 2.1558, "away": 2.3121, "r": null, "neutral": 2.234}, "ThrowIns": {"home": 18.3333, "away": 18.3333, "neutral": 18.3333, "r": 24.3073}, "GoalKicks": {"home": 6.7, "away": 6.7, "neutral": 6.7, "r": 12.5174}}, "teams": {"América": {"home": {"Shots": {"for": 15.415, "against": 9.385}, "Shots on Target": {"for": 5.873, "against": 3.043}, "Corners": {"for": 5.603, "against": 3.782}, "Fouls": {"for": 10.0, "against": 11.354}, "Yellow": {"for": 1.538, "against": 2.119}, "Red": {"for": 0.089, "against": 0.192}, "Offsides": {"for": 1.741, "against": 1.198}, "Goals": {"for": 1.882, "against": 0.849}, "Cards": {"for": 1.627, "against": 2.312}, "n": 62, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 13.205, "against": 11.893}, "Shots on Target": {"for": 4.544, "against": 3.837}, "Corners": {"for": 5.632, "against": 4.275}, "Fouls": {"for": 9.732, "against": 13.745}, "Yellow": {"for": 1.75, "against": 2.519}, "Red": {"for": 0.114, "against": 0.232}, "Offsides": {"for": 1.616, "against": 1.299}, "Goals": {"for": 1.396, "against": 1.141}, "Cards": {"for": 1.864, "against": 2.751}, "n": 64, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MX"}, "Atlante": {"home": {"Shots": {"for": 11.539, "against": 15.16}, "Shots on Target": {"for": 4.124, "against": 5.438}, "Corners": {"for": 4.473, "against": 5.778}, "Fouls": {"for": 12.934, "against": 12.599}, "Yellow": {"for": 2.398, "against": 2.398}, "Red": {"for": 0.178, "against": 0.293}, "Offsides": {"for": 1.753, "against": 1.828}, "Goals": {"for": 1.504, "against": 1.638}, "Cards": {"for": 2.576, "against": 2.692}, "n": 42, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 9.555, "against": 15.332}, "Shots on Target": {"for": 4.007, "against": 5.284}, "Corners": {"for": 3.346, "against": 6.822}, "Fouls": {"for": 13.317, "against": 12.237}, "Yellow": {"for": 1.894, "against": 1.189}, "Red": {"for": 0.074, "against": 0.062}, "Offsides": {"for": 1.68, "against": 2.834}, "Goals": {"for": 0.949, "against": 1.308}, "Cards": {"for": 1.967, "against": 1.251}, "n": 45, "ThrowIns": {"for": 17.0, "against": 21.0}, "GoalKicks": {"for": 4.0, "against": 4.0}}, "league": "MX"}, "Atlas": {"home": {"Shots": {"for": 12.895, "against": 13.117}, "Shots on Target": {"for": 3.924, "against": 4.398}, "Corners": {"for": 5.041, "against": 4.616}, "Fouls": {"for": 13.059, "against": 12.978}, "Yellow": {"for": 2.323, "against": 2.474}, "Red": {"for": 0.298, "against": 0.157}, "Offsides": {"for": 1.524, "against": 1.07}, "Goals": {"for": 1.315, "against": 1.424}, "Cards": {"for": 2.621, "against": 2.631}, "n": 50, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 12.081, "against": 11.56}, "Shots on Target": {"for": 2.768, "against": 5.07}, "Corners": {"for": 4.161, "against": 4.733}, "Fouls": {"for": 11.638, "against": 11.801}, "Yellow": {"for": 1.783, "against": 2.084}, "Red": {"for": 0.123, "against": 0.098}, "Offsides": {"for": 1.673, "against": 1.086}, "Goals": {"for": 1.002, "against": 2.176}, "Cards": {"for": 1.905, "against": 2.182}, "n": 55, "ThrowIns": {"for": 25.0, "against": 20.0}, "GoalKicks": {"for": 2.0, "against": 7.0}}, "league": "MX"}, "Atlético de San Luis": {"home": {"Shots": {"for": 11.883, "against": 12.959}, "Shots on Target": {"for": 4.164, "against": 4.614}, "Corners": {"for": 4.843, "against": 4.082}, "Fouls": {"for": 10.898, "against": 12.28}, "Yellow": {"for": 1.903, "against": 1.97}, "Red": {"for": 0.063, "against": 0.123}, "Offsides": {"for": 1.175, "against": 2.185}, "Goals": {"for": 1.551, "against": 1.439}, "Cards": {"for": 1.966, "against": 2.094}, "n": 57, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 13.807, "against": 12.837}, "Shots on Target": {"for": 5.018, "against": 5.166}, "Corners": {"for": 5.148, "against": 3.682}, "Fouls": {"for": 8.021, "against": 12.794}, "Yellow": {"for": 1.095, "against": 1.618}, "Red": {"for": 0.125, "against": 0.044}, "Offsides": {"for": 1.357, "against": 1.997}, "Goals": {"for": 1.539, "against": 2.619}, "Cards": {"for": 1.221, "against": 1.661}, "n": 55, "ThrowIns": {"for": 23.0, "against": 9.0}, "GoalKicks": {"for": 3.0, "against": 7.0}}, "league": "MX"}, "Cruz Azul": {"home": {"Shots": {"for": 15.271, "against": 10.933}, "Shots on Target": {"for": 5.006, "against": 3.037}, "Corners": {"for": 4.65, "against": 4.652}, "Fouls": {"for": 10.58, "against": 9.17}, "Yellow": {"for": 2.073, "against": 1.73}, "Red": {"for": 0.071, "against": 0.155}, "Offsides": {"for": 1.74, "against": 1.651}, "Goals": {"for": 1.57, "against": 0.684}, "Cards": {"for": 2.144, "against": 1.884}, "n": 61, "ThrowIns": {"for": 18.87, "against": 23.42}, "GoalKicks": {"for": 8.873, "against": 6.423}}, "away": {"Shots": {"for": 14.487, "against": 11.473}, "Shots on Target": {"for": 5.242, "against": 3.756}, "Corners": {"for": 4.817, "against": 4.579}, "Fouls": {"for": 11.738, "against": 12.168}, "Yellow": {"for": 2.066, "against": 1.872}, "Red": {"for": 0.114, "against": 0.206}, "Offsides": {"for": 1.588, "against": 1.991}, "Goals": {"for": 1.587, "against": 1.186}, "Cards": {"for": 2.18, "against": 2.079}, "n": 63, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MX"}, "FC Juarez": {"home": {"Shots": {"for": 13.059, "against": 11.9}, "Shots on Target": {"for": 4.173, "against": 4.274}, "Corners": {"for": 4.447, "against": 4.562}, "Fouls": {"for": 12.216, "against": 12.373}, "Yellow": {"for": 2.187, "against": 1.748}, "Red": {"for": 0.159, "against": 0.334}, "Offsides": {"for": 1.624, "against": 1.557}, "Goals": {"for": 1.471, "against": 1.682}, "Cards": {"for": 2.345, "against": 2.082}, "n": 54, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 11.263, "against": 14.0}, "Shots on Target": {"for": 3.38, "against": 4.779}, "Corners": {"for": 3.489, "against": 6.596}, "Fouls": {"for": 13.436, "against": 12.38}, "Yellow": {"for": 2.384, "against": 2.04}, "Red": {"for": 0.077, "against": 0.108}, "Offsides": {"for": 0.973, "against": 2.42}, "Goals": {"for": 1.44, "against": 1.549}, "Cards": {"for": 2.461, "against": 2.148}, "n": 51, "ThrowIns": {"for": 18.0, "against": 14.0}, "GoalKicks": {"for": 7.0, "against": 7.0}}, "league": "MX"}, "Guadalajara": {"home": {"Shots": {"for": 16.357, "against": 10.086}, "Shots on Target": {"for": 5.532, "against": 3.633}, "Corners": {"for": 6.956, "against": 3.602}, "Fouls": {"for": 11.84, "against": 11.015}, "Yellow": {"for": 2.005, "against": 2.333}, "Red": {"for": 0.146, "against": 0.156}, "Offsides": {"for": 1.695, "against": 1.059}, "Goals": {"for": 1.69, "against": 0.909}, "Cards": {"for": 2.151, "against": 2.489}, "n": 57, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 13.072, "against": 12.021}, "Shots on Target": {"for": 3.995, "against": 4.205}, "Corners": {"for": 4.905, "against": 4.273}, "Fouls": {"for": 12.097, "against": 11.577}, "Yellow": {"for": 2.109, "against": 2.644}, "Red": {"for": 0.133, "against": 0.087}, "Offsides": {"for": 2.317, "against": 1.197}, "Goals": {"for": 1.207, "against": 1.426}, "Cards": {"for": 2.242, "against": 2.731}, "n": 56, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MX"}, "León": {"home": {"Shots": {"for": 14.572, "against": 12.659}, "Shots on Target": {"for": 5.014, "against": 4.503}, "Corners": {"for": 5.52, "against": 4.689}, "Fouls": {"for": 12.603, "against": 11.399}, "Yellow": {"for": 2.109, "against": 2.352}, "Red": {"for": 0.135, "against": 0.206}, "Offsides": {"for": 1.635, "against": 1.755}, "Goals": {"for": 1.511, "against": 1.324}, "Cards": {"for": 2.244, "against": 2.557}, "n": 54, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 10.397, "against": 12.457}, "Shots on Target": {"for": 3.502, "against": 4.579}, "Corners": {"for": 4.75, "against": 4.909}, "Fouls": {"for": 13.54, "against": 12.23}, "Yellow": {"for": 2.045, "against": 2.379}, "Red": {"for": 0.172, "against": 0.14}, "Offsides": {"for": 1.333, "against": 1.056}, "Goals": {"for": 0.982, "against": 1.263}, "Cards": {"for": 2.218, "against": 2.52}, "n": 53, "ThrowIns": {"for": 30.0, "against": 19.0}, "GoalKicks": {"for": 6.0, "against": 8.0}}, "league": "MX"}, "Monterrey": {"home": {"Shots": {"for": 14.747, "against": 10.713}, "Shots on Target": {"for": 4.827, "against": 3.554}, "Corners": {"for": 4.109, "against": 4.678}, "Fouls": {"for": 10.333, "against": 10.694}, "Yellow": {"for": 2.715, "against": 2.587}, "Red": {"for": 0.073, "against": 0.112}, "Offsides": {"for": 3.809, "against": 1.926}, "Goals": {"for": 1.567, "against": 1.501}, "Cards": {"for": 2.787, "against": 2.698}, "n": 62, "ThrowIns": {"for": 19.0, "against": 10.0}, "GoalKicks": {"for": 4.0, "against": 9.0}}, "away": {"Shots": {"for": 12.478, "against": 13.358}, "Shots on Target": {"for": 4.34, "against": 4.75}, "Corners": {"for": 4.021, "against": 4.95}, "Fouls": {"for": 11.734, "against": 13.021}, "Yellow": {"for": 2.11, "against": 2.189}, "Red": {"for": 0.207, "against": 0.201}, "Offsides": {"for": 1.343, "against": 2.4}, "Goals": {"for": 1.45, "against": 1.509}, "Cards": {"for": 2.317, "against": 2.391}, "n": 60, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MX"}, "Necaxa": {"home": {"Shots": {"for": 15.206, "against": 12.721}, "Shots on Target": {"for": 5.123, "against": 4.087}, "Corners": {"for": 5.319, "against": 4.815}, "Fouls": {"for": 13.117, "against": 11.214}, "Yellow": {"for": 2.171, "against": 1.951}, "Red": {"for": 0.115, "against": 0.176}, "Offsides": {"for": 1.286, "against": 1.36}, "Goals": {"for": 1.476, "against": 1.154}, "Cards": {"for": 2.286, "against": 2.126}, "n": 52, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 13.145, "against": 17.397}, "Shots on Target": {"for": 5.005, "against": 6.29}, "Corners": {"for": 3.927, "against": 5.985}, "Fouls": {"for": 11.843, "against": 11.925}, "Yellow": {"for": 2.51, "against": 1.236}, "Red": {"for": 0.185, "against": 0.08}, "Offsides": {"for": 0.904, "against": 1.456}, "Goals": {"for": 0.932, "against": 2.068}, "Cards": {"for": 2.694, "against": 1.317}, "n": 51, "ThrowIns": {"for": 17.12, "against": 18.17}, "GoalKicks": {"for": 6.773, "against": 7.123}}, "league": "MX"}, "Pachuca": {"home": {"Shots": {"for": 15.39, "against": 10.421}, "Shots on Target": {"for": 5.223, "against": 3.491}, "Corners": {"for": 6.036, "against": 3.965}, "Fouls": {"for": 13.255, "against": 11.826}, "Yellow": {"for": 2.219, "against": 2.514}, "Red": {"for": 0.284, "against": 0.239}, "Offsides": {"for": 1.747, "against": 1.749}, "Goals": {"for": 1.456, "against": 1.091}, "Cards": {"for": 2.503, "against": 2.754}, "n": 57, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 16.872, "against": 11.917}, "Shots on Target": {"for": 5.298, "against": 4.043}, "Corners": {"for": 5.147, "against": 4.412}, "Fouls": {"for": 12.101, "against": 10.568}, "Yellow": {"for": 2.214, "against": 2.536}, "Red": {"for": 0.207, "against": 0.135}, "Offsides": {"for": 1.572, "against": 1.722}, "Goals": {"for": 1.213, "against": 1.951}, "Cards": {"for": 2.421, "against": 2.671}, "n": 56, "ThrowIns": {"for": 20.0, "against": 12.0}, "GoalKicks": {"for": 6.0, "against": 10.0}}, "league": "MX"}, "Puebla": {"home": {"Shots": {"for": 13.794, "against": 14.916}, "Shots on Target": {"for": 4.369, "against": 4.837}, "Corners": {"for": 4.414, "against": 5.978}, "Fouls": {"for": 11.999, "against": 11.936}, "Yellow": {"for": 2.219, "against": 1.757}, "Red": {"for": 0.179, "against": 0.032}, "Offsides": {"for": 1.367, "against": 1.056}, "Goals": {"for": 1.15, "against": 1.756}, "Cards": {"for": 2.398, "against": 1.788}, "n": 53, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 10.085, "against": 15.21}, "Shots on Target": {"for": 4.143, "against": 6.011}, "Corners": {"for": 5.018, "against": 5.29}, "Fouls": {"for": 12.906, "against": 11.606}, "Yellow": {"for": 2.15, "against": 1.206}, "Red": {"for": 0.157, "against": 0.033}, "Offsides": {"for": 1.868, "against": 1.382}, "Goals": {"for": 1.229, "against": 3.012}, "Cards": {"for": 2.308, "against": 1.239}, "n": 52, "ThrowIns": {"for": 19.22, "against": 19.57}, "GoalKicks": {"for": 5.373, "against": 5.373}}, "league": "MX"}, "Pumas UNAM": {"home": {"Shots": {"for": 13.56, "against": 12.781}, "Shots on Target": {"for": 4.471, "against": 4.14}, "Corners": {"for": 5.171, "against": 4.718}, "Fouls": {"for": 12.143, "against": 10.092}, "Yellow": {"for": 2.17, "against": 1.917}, "Red": {"for": 0.14, "against": 0.132}, "Offsides": {"for": 1.744, "against": 1.5}, "Goals": {"for": 1.568, "against": 1.166}, "Cards": {"for": 2.31, "against": 2.049}, "n": 58, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 11.634, "against": 15.103}, "Shots on Target": {"for": 4.369, "against": 5.48}, "Corners": {"for": 3.948, "against": 5.856}, "Fouls": {"for": 12.688, "against": 10.84}, "Yellow": {"for": 2.398, "against": 1.586}, "Red": {"for": 0.094, "against": 0.13}, "Offsides": {"for": 1.362, "against": 2.433}, "Goals": {"for": 0.99, "against": 1.966}, "Cards": {"for": 2.493, "against": 1.715}, "n": 60, "ThrowIns": {"for": 26.0, "against": 16.0}, "GoalKicks": {"for": 7.0, "against": 9.0}}, "league": "MX"}, "Querétaro": {"home": {"Shots": {"for": 11.756, "against": 15.7}, "Shots on Target": {"for": 3.671, "against": 4.576}, "Corners": {"for": 4.18, "against": 6.396}, "Fouls": {"for": 13.597, "against": 11.665}, "Yellow": {"for": 2.873, "against": 2.24}, "Red": {"for": 0.181, "against": 0.391}, "Offsides": {"for": 2.129, "against": 1.255}, "Goals": {"for": 1.3, "against": 1.209}, "Cards": {"for": 3.054, "against": 2.631}, "n": 38, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 13.794, "against": 14.311}, "Shots on Target": {"for": 5.329, "against": 6.024}, "Corners": {"for": 5.443, "against": 6.081}, "Fouls": {"for": 11.052, "against": 12.699}, "Yellow": {"for": 2.369, "against": 2.204}, "Red": {"for": 0.159, "against": 0.079}, "Offsides": {"for": 2.066, "against": 1.146}, "Goals": {"for": 0.536, "against": 1.81}, "Cards": {"for": 2.527, "against": 2.283}, "n": 36, "ThrowIns": {"for": 22.0, "against": 21.0}, "GoalKicks": {"for": 4.0, "against": 10.0}}, "league": "MX"}, "Santos": {"home": {"Shots": {"for": 13.094, "against": 15.82}, "Shots on Target": {"for": 4.318, "against": 5.305}, "Corners": {"for": 4.884, "against": 5.591}, "Fouls": {"for": 13.297, "against": 14.513}, "Yellow": {"for": 2.649, "against": 2.355}, "Red": {"for": 0.205, "against": 0.074}, "Offsides": {"for": 1.687, "against": 1.971}, "Goals": {"for": 1.242, "against": 1.449}, "Cards": {"for": 2.854, "against": 2.429}, "n": 52, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 10.408, "against": 14.852}, "Shots on Target": {"for": 4.18, "against": 6.035}, "Corners": {"for": 4.546, "against": 5.071}, "Fouls": {"for": 11.817, "against": 12.723}, "Yellow": {"for": 2.076, "against": 1.381}, "Red": {"for": 0.173, "against": 0.057}, "Offsides": {"for": 2.571, "against": 2.492}, "Goals": {"for": 0.653, "against": 2.289}, "Cards": {"for": 2.249, "against": 1.438}, "n": 51, "ThrowIns": {"for": 15.72, "against": 15.37}, "GoalKicks": {"for": 6.073, "against": 4.673}}, "league": "MX"}, "Tigres UANL": {"home": {"Shots": {"for": 15.98, "against": 10.941}, "Shots on Target": {"for": 5.424, "against": 3.487}, "Corners": {"for": 5.836, "against": 3.362}, "Fouls": {"for": 12.549, "against": 13.949}, "Yellow": {"for": 2.028, "against": 2.423}, "Red": {"for": 0.149, "against": 0.203}, "Offsides": {"for": 1.997, "against": 1.38}, "Goals": {"for": 2.044, "against": 0.862}, "Cards": {"for": 2.177, "against": 2.625}, "n": 59, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 13.079, "against": 14.479}, "Shots on Target": {"for": 4.494, "against": 4.843}, "Corners": {"for": 5.34, "against": 4.731}, "Fouls": {"for": 12.189, "against": 13.165}, "Yellow": {"for": 2.545, "against": 2.53}, "Red": {"for": 0.253, "against": 0.235}, "Offsides": {"for": 1.239, "against": 1.371}, "Goals": {"for": 1.221, "against": 1.42}, "Cards": {"for": 2.797, "against": 2.765}, "n": 62, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MX"}, "Tijuana": {"home": {"Shots": {"for": 14.227, "against": 11.271}, "Shots on Target": {"for": 5.209, "against": 3.933}, "Corners": {"for": 4.534, "against": 4.457}, "Fouls": {"for": 13.067, "against": 13.844}, "Yellow": {"for": 2.142, "against": 2.356}, "Red": {"for": 0.105, "against": 0.259}, "Offsides": {"for": 1.802, "against": 1.1}, "Goals": {"for": 1.868, "against": 1.096}, "Cards": {"for": 2.247, "against": 2.614}, "n": 56, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 14.24, "against": 16.706}, "Shots on Target": {"for": 3.253, "against": 5.856}, "Corners": {"for": 5.018, "against": 5.844}, "Fouls": {"for": 10.143, "against": 9.699}, "Yellow": {"for": 2.237, "against": 2.37}, "Red": {"for": 0.407, "against": 0.087}, "Offsides": {"for": 1.55, "against": 2.655}, "Goals": {"for": 0.682, "against": 1.786}, "Cards": {"for": 2.643, "against": 2.457}, "n": 51, "ThrowIns": {"for": 18.52, "against": 17.12}, "GoalKicks": {"for": 8.172, "against": 8.172}}, "league": "MX"}, "Toluca": {"home": {"Shots": {"for": 25.306, "against": 8.183}, "Shots on Target": {"for": 10.659, "against": 2.914}, "Corners": {"for": 7.625, "against": 2.643}, "Fouls": {"for": 11.316, "against": 9.187}, "Yellow": {"for": 1.329, "against": 1.472}, "Red": {"for": 0.12, "against": 0.053}, "Offsides": {"for": 1.358, "against": 1.554}, "Goals": {"for": 2.491, "against": 0.649}, "Cards": {"for": 1.449, "against": 1.525}, "n": 56, "ThrowIns": {"for": 14.0, "against": 20.0}, "GoalKicks": {"for": 5.0, "against": 14.0}}, "away": {"Shots": {"for": 14.326, "against": 12.045}, "Shots on Target": {"for": 5.182, "against": 4.32}, "Corners": {"for": 5.331, "against": 4.65}, "Fouls": {"for": 12.164, "against": 12.217}, "Yellow": {"for": 2.144, "against": 2.274}, "Red": {"for": 0.201, "against": 0.146}, "Offsides": {"for": 1.911, "against": 1.934}, "Goals": {"for": 1.488, "against": 1.217}, "Cards": {"for": 2.345, "against": 2.421}, "n": 59, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MX"}, "Atlanta United FC": {"home": {"Shots": {"for": 13.786, "against": 11.187}, "Shots on Target": {"for": 4.874, "against": 4.494}, "Corners": {"for": 5.507, "against": 4.733}, "Fouls": {"for": 11.365, "against": 10.047}, "Yellow": {"for": 2.063, "against": 1.713}, "Red": {"for": 0.016, "against": 0.117}, "Offsides": {"for": 1.831, "against": 1.996}, "Goals": {"for": 1.485, "against": 1.576}, "Cards": {"for": 2.079, "against": 1.83}, "n": 41, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 11.588, "against": 14.879}, "Shots on Target": {"for": 3.462, "against": 5.506}, "Corners": {"for": 4.171, "against": 5.76}, "Fouls": {"for": 10.698, "against": 9.536}, "Yellow": {"for": 1.789, "against": 1.626}, "Red": {"for": 0.051, "against": 0.019}, "Offsides": {"for": 1.616, "against": 1.968}, "Goals": {"for": 0.79, "against": 1.807}, "Cards": {"for": 1.84, "against": 1.645}, "n": 48, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Austin FC": {"home": {"Shots": {"for": 14.136, "against": 15.573}, "Shots on Target": {"for": 4.778, "against": 4.082}, "Corners": {"for": 5.536, "against": 6.222}, "Fouls": {"for": 9.921, "against": 10.264}, "Yellow": {"for": 2.581, "against": 2.168}, "Red": {"for": 0.025, "against": 0.375}, "Offsides": {"for": 2.763, "against": 1.435}, "Goals": {"for": 1.571, "against": 0.76}, "Cards": {"for": 2.605, "against": 2.543}, "n": 43, "ThrowIns": {"for": 17.12, "against": 18.52}, "GoalKicks": {"for": 8.172, "against": 8.172}}, "away": {"Shots": {"for": 9.318, "against": 17.781}, "Shots on Target": {"for": 3.138, "against": 6.679}, "Corners": {"for": 3.287, "against": 6.066}, "Fouls": {"for": 12.533, "against": 12.784}, "Yellow": {"for": 2.24, "against": 2.411}, "Red": {"for": 0.063, "against": 0.038}, "Offsides": {"for": 1.634, "against": 1.245}, "Goals": {"for": 0.984, "against": 2.052}, "Cards": {"for": 2.303, "against": 2.449}, "n": 45, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "CF Montréal": {"home": {"Shots": {"for": 12.794, "against": 12.734}, "Shots on Target": {"for": 4.67, "against": 4.201}, "Corners": {"for": 5.228, "against": 4.195}, "Fouls": {"for": 12.537, "against": 11.552}, "Yellow": {"for": 2.246, "against": 1.913}, "Red": {"for": 0.045, "against": 0.082}, "Offsides": {"for": 1.747, "against": 1.285}, "Goals": {"for": 1.208, "against": 1.517}, "Cards": {"for": 2.291, "against": 1.995}, "n": 44, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 10.857, "against": 14.349}, "Shots on Target": {"for": 3.961, "against": 5.884}, "Corners": {"for": 4.379, "against": 5.187}, "Fouls": {"for": 12.551, "against": 13.406}, "Yellow": {"for": 2.155, "against": 2.166}, "Red": {"for": 0.112, "against": 0.13}, "Offsides": {"for": 1.942, "against": 1.086}, "Goals": {"for": 1.26, "against": 2.179}, "Cards": {"for": 2.266, "against": 2.296}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Charlotte FC": {"home": {"Shots": {"for": 13.368, "against": 13.147}, "Shots on Target": {"for": 5.667, "against": 4.987}, "Corners": {"for": 5.143, "against": 4.746}, "Fouls": {"for": 9.908, "against": 12.308}, "Yellow": {"for": 1.517, "against": 2.359}, "Red": {"for": 0.088, "against": 0.104}, "Offsides": {"for": 2.049, "against": 1.488}, "Goals": {"for": 2.176, "against": 0.673}, "Cards": {"for": 1.605, "against": 2.463}, "n": 47, "ThrowIns": {"for": 16.0, "against": 26.0}, "GoalKicks": {"for": 9.0, "against": 7.0}}, "away": {"Shots": {"for": 9.508, "against": 15.329}, "Shots on Target": {"for": 3.41, "against": 5.884}, "Corners": {"for": 3.912, "against": 5.554}, "Fouls": {"for": 10.915, "against": 11.222}, "Yellow": {"for": 2.194, "against": 2.415}, "Red": {"for": 0.018, "against": 0.161}, "Offsides": {"for": 1.136, "against": 1.921}, "Goals": {"for": 1.184, "against": 1.623}, "Cards": {"for": 2.213, "against": 2.576}, "n": 44, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Chicago Fire FC": {"home": {"Shots": {"for": 16.861, "against": 12.32}, "Shots on Target": {"for": 6.216, "against": 4.622}, "Corners": {"for": 5.589, "against": 3.829}, "Fouls": {"for": 12.516, "against": 10.358}, "Yellow": {"for": 1.33, "against": 2.459}, "Red": {"for": 0.034, "against": 0.031}, "Offsides": {"for": 1.693, "against": 0.949}, "Goals": {"for": 1.733, "against": 0.968}, "Cards": {"for": 1.363, "against": 2.49}, "n": 44, "ThrowIns": {"for": 18.17, "against": 17.12}, "GoalKicks": {"for": 7.123, "against": 6.773}}, "away": {"Shots": {"for": 12.143, "against": 14.955}, "Shots on Target": {"for": 5.189, "against": 5.416}, "Corners": {"for": 3.711, "against": 6.072}, "Fouls": {"for": 12.37, "against": 10.526}, "Yellow": {"for": 2.268, "against": 1.981}, "Red": {"for": 0.095, "against": 0.032}, "Offsides": {"for": 1.58, "against": 2.207}, "Goals": {"for": 1.947, "against": 1.872}, "Cards": {"for": 2.363, "against": 2.012}, "n": 42, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Colorado Rapids": {"home": {"Shots": {"for": 14.43, "against": 11.024}, "Shots on Target": {"for": 4.983, "against": 3.752}, "Corners": {"for": 5.792, "against": 3.606}, "Fouls": {"for": 10.488, "against": 11.532}, "Yellow": {"for": 1.721, "against": 1.969}, "Red": {"for": 0.091, "against": 0.194}, "Offsides": {"for": 1.731, "against": 1.362}, "Goals": {"for": 1.76, "against": 1.254}, "Cards": {"for": 1.812, "against": 2.163}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 9.235, "against": 16.652}, "Shots on Target": {"for": 3.605, "against": 6.228}, "Corners": {"for": 4.286, "against": 6.274}, "Fouls": {"for": 11.624, "against": 13.928}, "Yellow": {"for": 2.253, "against": 2.163}, "Red": {"for": 0.186, "against": 0.044}, "Offsides": {"for": 1.527, "against": 2.312}, "Goals": {"for": 1.175, "against": 2.036}, "Cards": {"for": 2.439, "against": 2.207}, "n": 45, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Columbus Crew": {"home": {"Shots": {"for": 11.089, "against": 11.007}, "Shots on Target": {"for": 5.246, "against": 2.78}, "Corners": {"for": 4.548, "against": 3.657}, "Fouls": {"for": 9.714, "against": 11.541}, "Yellow": {"for": 1.438, "against": 1.813}, "Red": {"for": 0.029, "against": 0.101}, "Offsides": {"for": 1.76, "against": 2.034}, "Goals": {"for": 2.213, "against": 1.086}, "Cards": {"for": 1.468, "against": 1.915}, "n": 45, "ThrowIns": {"for": 20.0, "against": 25.0}, "GoalKicks": {"for": 7.0, "against": 2.0}}, "away": {"Shots": {"for": 11.777, "against": 11.563}, "Shots on Target": {"for": 4.19, "against": 5.047}, "Corners": {"for": 4.612, "against": 4.565}, "Fouls": {"for": 9.733, "against": 11.544}, "Yellow": {"for": 1.649, "against": 1.766}, "Red": {"for": 0.046, "against": 0.067}, "Offsides": {"for": 2.241, "against": 2.385}, "Goals": {"for": 1.512, "against": 1.682}, "Cards": {"for": 1.695, "against": 1.833}, "n": 45, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "D.C. United": {"home": {"Shots": {"for": 13.158, "against": 12.255}, "Shots on Target": {"for": 4.767, "against": 5.096}, "Corners": {"for": 5.612, "against": 4.713}, "Fouls": {"for": 13.93, "against": 11.396}, "Yellow": {"for": 2.524, "against": 2.483}, "Red": {"for": 0.157, "against": 0.127}, "Offsides": {"for": 1.586, "against": 2.082}, "Goals": {"for": 1.28, "against": 1.912}, "Cards": {"for": 2.681, "against": 2.61}, "n": 42, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 11.136, "against": 14.086}, "Shots on Target": {"for": 3.721, "against": 4.989}, "Corners": {"for": 4.146, "against": 5.737}, "Fouls": {"for": 14.164, "against": 10.921}, "Yellow": {"for": 2.329, "against": 1.775}, "Red": {"for": 0.114, "against": 0.014}, "Offsides": {"for": 1.267, "against": 2.051}, "Goals": {"for": 1.227, "against": 1.745}, "Cards": {"for": 2.443, "against": 1.789}, "n": 42, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "FC Cincinnati": {"home": {"Shots": {"for": 13.497, "against": 16.276}, "Shots on Target": {"for": 4.955, "against": 5.285}, "Corners": {"for": 4.276, "against": 5.172}, "Fouls": {"for": 10.419, "against": 11.515}, "Yellow": {"for": 2.322, "against": 2.144}, "Red": {"for": 0.062, "against": 0.036}, "Offsides": {"for": 1.791, "against": 1.372}, "Goals": {"for": 2.336, "against": 1.316}, "Cards": {"for": 2.384, "against": 2.18}, "n": 47, "ThrowIns": {"for": 12.0, "against": 20.0}, "GoalKicks": {"for": 10.0, "against": 6.0}}, "away": {"Shots": {"for": 11.752, "against": 15.525}, "Shots on Target": {"for": 5.001, "against": 5.353}, "Corners": {"for": 3.856, "against": 5.474}, "Fouls": {"for": 11.683, "against": 11.328}, "Yellow": {"for": 2.222, "against": 1.805}, "Red": {"for": 0.237, "against": 0.059}, "Offsides": {"for": 1.797, "against": 1.873}, "Goals": {"for": 1.665, "against": 1.827}, "Cards": {"for": 2.459, "against": 1.864}, "n": 44, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "FC Dallas": {"home": {"Shots": {"for": 12.064, "against": 14.787}, "Shots on Target": {"for": 5.675, "against": 5.92}, "Corners": {"for": 4.595, "against": 6.115}, "Fouls": {"for": 14.087, "against": 11.403}, "Yellow": {"for": 2.485, "against": 2.304}, "Red": {"for": 0.045, "against": 0.077}, "Offsides": {"for": 1.882, "against": 1.951}, "Goals": {"for": 1.855, "against": 0.998}, "Cards": {"for": 2.529, "against": 2.381}, "n": 43, "ThrowIns": {"for": 21.0, "against": 22.0}, "GoalKicks": {"for": 10.0, "against": 4.0}}, "away": {"Shots": {"for": 10.773, "against": 15.947}, "Shots on Target": {"for": 4.173, "against": 5.993}, "Corners": {"for": 3.946, "against": 6.593}, "Fouls": {"for": 12.413, "against": 11.882}, "Yellow": {"for": 2.419, "against": 2.005}, "Red": {"for": 0.07, "against": 0.141}, "Offsides": {"for": 1.977, "against": 1.569}, "Goals": {"for": 1.421, "against": 1.576}, "Cards": {"for": 2.489, "against": 2.146}, "n": 44, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Houston Dynamo FC": {"home": {"Shots": {"for": 14.404, "against": 10.539}, "Shots on Target": {"for": 4.758, "against": 3.678}, "Corners": {"for": 5.513, "against": 4.333}, "Fouls": {"for": 12.79, "against": 12.554}, "Yellow": {"for": 2.309, "against": 2.652}, "Red": {"for": 0.173, "against": 0.166}, "Offsides": {"for": 1.503, "against": 1.311}, "Goals": {"for": 1.264, "against": 1.203}, "Cards": {"for": 2.482, "against": 2.817}, "n": 44, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 11.817, "against": 14.001}, "Shots on Target": {"for": 4.038, "against": 4.764}, "Corners": {"for": 4.16, "against": 6.078}, "Fouls": {"for": 12.948, "against": 12.853}, "Yellow": {"for": 2.102, "against": 2.149}, "Red": {"for": 0.195, "against": 0.093}, "Offsides": {"for": 1.698, "against": 1.134}, "Goals": {"for": 1.439, "against": 1.633}, "Cards": {"for": 2.297, "against": 2.241}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Inter Miami CF": {"home": {"Shots": {"for": 13.156, "against": 14.076}, "Shots on Target": {"for": 6.217, "against": 5.454}, "Corners": {"for": 3.968, "against": 4.745}, "Fouls": {"for": 12.503, "against": 8.49}, "Yellow": {"for": 1.983, "against": 1.067}, "Red": {"for": 0.032, "against": 0.0}, "Offsides": {"for": 1.935, "against": 1.697}, "Goals": {"for": 3.198, "against": 1.721}, "Cards": {"for": 2.015, "against": 1.067}, "n": 48, "ThrowIns": {"for": 9.0, "against": 23.0}, "GoalKicks": {"for": 7.0, "against": 3.0}}, "away": {"Shots": {"for": 11.901, "against": 12.556}, "Shots on Target": {"for": 4.949, "against": 4.651}, "Corners": {"for": 4.444, "against": 4.639}, "Fouls": {"for": 11.808, "against": 12.225}, "Yellow": {"for": 2.275, "against": 2.003}, "Red": {"for": 0.116, "against": 0.081}, "Offsides": {"for": 1.559, "against": 1.485}, "Goals": {"for": 2.234, "against": 1.573}, "Cards": {"for": 2.391, "against": 2.084}, "n": 47, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "LA Galaxy": {"home": {"Shots": {"for": 14.241, "against": 13.128}, "Shots on Target": {"for": 6.013, "against": 4.639}, "Corners": {"for": 5.591, "against": 4.212}, "Fouls": {"for": 10.213, "against": 12.853}, "Yellow": {"for": 1.906, "against": 2.446}, "Red": {"for": 0.17, "against": 0.136}, "Offsides": {"for": 1.527, "against": 1.348}, "Goals": {"for": 1.785, "against": 1.456}, "Cards": {"for": 2.077, "against": 2.582}, "n": 48, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 12.099, "against": 14.077}, "Shots on Target": {"for": 4.594, "against": 5.153}, "Corners": {"for": 4.941, "against": 5.316}, "Fouls": {"for": 9.994, "against": 11.141}, "Yellow": {"for": 2.007, "against": 1.755}, "Red": {"for": 0.031, "against": 0.081}, "Offsides": {"for": 1.419, "against": 1.572}, "Goals": {"for": 1.388, "against": 1.836}, "Cards": {"for": 2.038, "against": 1.835}, "n": 44, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "LAFC": {"home": {"Shots": {"for": 15.465, "against": 11.427}, "Shots on Target": {"for": 5.741, "against": 3.435}, "Corners": {"for": 6.035, "against": 4.29}, "Fouls": {"for": 12.107, "against": 11.305}, "Yellow": {"for": 1.34, "against": 1.904}, "Red": {"for": 0.051, "against": 0.139}, "Offsides": {"for": 1.43, "against": 1.098}, "Goals": {"for": 1.993, "against": 0.909}, "Cards": {"for": 1.392, "against": 2.044}, "n": 48, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 13.645, "against": 12.358}, "Shots on Target": {"for": 5.113, "against": 4.024}, "Corners": {"for": 4.958, "against": 5.41}, "Fouls": {"for": 12.261, "against": 12.11}, "Yellow": {"for": 2.226, "against": 2.601}, "Red": {"for": 0.06, "against": 0.167}, "Offsides": {"for": 1.627, "against": 0.929}, "Goals": {"for": 1.778, "against": 1.409}, "Cards": {"for": 2.287, "against": 2.768}, "n": 45, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Minnesota United FC": {"home": {"Shots": {"for": 12.796, "against": 10.874}, "Shots on Target": {"for": 4.596, "against": 3.564}, "Corners": {"for": 6.32, "against": 3.803}, "Fouls": {"for": 12.424, "against": 12.673}, "Yellow": {"for": 2.058, "against": 1.771}, "Red": {"for": 0.044, "against": 0.0}, "Offsides": {"for": 2.062, "against": 1.375}, "Goals": {"for": 1.271, "against": 1.412}, "Cards": {"for": 2.102, "against": 1.771}, "n": 46, "ThrowIns": {"for": 14.0, "against": 18.0}, "GoalKicks": {"for": 7.0, "against": 7.0}}, "away": {"Shots": {"for": 11.358, "against": 14.843}, "Shots on Target": {"for": 4.743, "against": 5.47}, "Corners": {"for": 4.591, "against": 5.862}, "Fouls": {"for": 13.255, "against": 10.938}, "Yellow": {"for": 2.001, "against": 1.346}, "Red": {"for": 0.041, "against": 0.113}, "Offsides": {"for": 1.413, "against": 1.498}, "Goals": {"for": 1.51, "against": 1.637}, "Cards": {"for": 2.042, "against": 1.459}, "n": 47, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Nashville SC": {"home": {"Shots": {"for": 10.746, "against": 9.872}, "Shots on Target": {"for": 4.33, "against": 3.238}, "Corners": {"for": 4.853, "against": 4.192}, "Fouls": {"for": 11.965, "against": 12.563}, "Yellow": {"for": 2.23, "against": 1.924}, "Red": {"for": 0.016, "against": 0.058}, "Offsides": {"for": 1.193, "against": 0.628}, "Goals": {"for": 1.379, "against": 1.099}, "Cards": {"for": 2.247, "against": 1.982}, "n": 44, "ThrowIns": {"for": 19.0, "against": 30.0}, "GoalKicks": {"for": 8.0, "against": 6.0}}, "away": {"Shots": {"for": 11.037, "against": 12.021}, "Shots on Target": {"for": 3.892, "against": 4.522}, "Corners": {"for": 4.539, "against": 4.169}, "Fouls": {"for": 12.622, "against": 11.092}, "Yellow": {"for": 1.862, "against": 1.93}, "Red": {"for": 0.057, "against": 0.019}, "Offsides": {"for": 1.703, "against": 1.488}, "Goals": {"for": 1.091, "against": 1.443}, "Cards": {"for": 1.919, "against": 1.949}, "n": 45, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "New England Revolution": {"home": {"Shots": {"for": 12.151, "against": 12.502}, "Shots on Target": {"for": 4.358, "against": 4.491}, "Corners": {"for": 5.181, "against": 4.794}, "Fouls": {"for": 11.764, "against": 13.776}, "Yellow": {"for": 1.914, "against": 2.26}, "Red": {"for": 0.014, "against": 0.031}, "Offsides": {"for": 1.973, "against": 0.849}, "Goals": {"for": 1.464, "against": 1.309}, "Cards": {"for": 1.928, "against": 2.291}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 11.444, "against": 17.162}, "Shots on Target": {"for": 4.22, "against": 6.137}, "Corners": {"for": 4.091, "against": 5.343}, "Fouls": {"for": 11.096, "against": 11.45}, "Yellow": {"for": 1.879, "against": 1.595}, "Red": {"for": 0.065, "against": 0.083}, "Offsides": {"for": 1.677, "against": 1.269}, "Goals": {"for": 1.218, "against": 1.974}, "Cards": {"for": 1.944, "against": 1.678}, "n": 41, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "New York City FC": {"home": {"Shots": {"for": 12.139, "against": 11.683}, "Shots on Target": {"for": 5.217, "against": 4.859}, "Corners": {"for": 4.575, "against": 4.535}, "Fouls": {"for": 11.554, "against": 12.229}, "Yellow": {"for": 1.113, "against": 2.218}, "Red": {"for": 0.028, "against": 0.056}, "Offsides": {"for": 2.674, "against": 2.763}, "Goals": {"for": 1.934, "against": 0.902}, "Cards": {"for": 1.141, "against": 2.274}, "n": 46, "ThrowIns": {"for": 15.37, "against": 15.72}, "GoalKicks": {"for": 4.673, "against": 6.073}}, "away": {"Shots": {"for": 9.995, "against": 12.837}, "Shots on Target": {"for": 3.894, "against": 4.891}, "Corners": {"for": 3.647, "against": 5.74}, "Fouls": {"for": 12.14, "against": 12.45}, "Yellow": {"for": 2.244, "against": 2.121}, "Red": {"for": 0.086, "against": 0.102}, "Offsides": {"for": 1.666, "against": 1.473}, "Goals": {"for": 1.192, "against": 1.301}, "Cards": {"for": 2.329, "against": 2.223}, "n": 48, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Orlando City SC": {"home": {"Shots": {"for": 14.838, "against": 12.493}, "Shots on Target": {"for": 5.295, "against": 4.363}, "Corners": {"for": 4.71, "against": 4.779}, "Fouls": {"for": 10.297, "against": 12.366}, "Yellow": {"for": 2.07, "against": 1.783}, "Red": {"for": 0.077, "against": 0.056}, "Offsides": {"for": 1.733, "against": 1.662}, "Goals": {"for": 1.859, "against": 1.351}, "Cards": {"for": 2.148, "against": 1.838}, "n": 46, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 12.405, "against": 14.884}, "Shots on Target": {"for": 4.398, "against": 5.06}, "Corners": {"for": 4.706, "against": 4.426}, "Fouls": {"for": 9.464, "against": 11.408}, "Yellow": {"for": 2.459, "against": 3.32}, "Red": {"for": 0.063, "against": 0.061}, "Offsides": {"for": 1.774, "against": 4.316}, "Goals": {"for": 1.754, "against": 1.8}, "Cards": {"for": 2.522, "against": 3.381}, "n": 46, "ThrowIns": {"for": 10.0, "against": 19.0}, "GoalKicks": {"for": 9.0, "against": 4.0}}, "league": "MLS"}, "Philadelphia Union": {"home": {"Shots": {"for": 17.421, "against": 9.0}, "Shots on Target": {"for": 5.626, "against": 3.112}, "Corners": {"for": 7.201, "against": 3.772}, "Fouls": {"for": 12.607, "against": 11.397}, "Yellow": {"for": 1.775, "against": 2.324}, "Red": {"for": 0.083, "against": 0.156}, "Offsides": {"for": 1.718, "against": 1.538}, "Goals": {"for": 1.625, "against": 1.039}, "Cards": {"for": 1.859, "against": 2.48}, "n": 45, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 14.016, "against": 11.266}, "Shots on Target": {"for": 3.842, "against": 3.964}, "Corners": {"for": 5.529, "against": 3.319}, "Fouls": {"for": 11.762, "against": 10.968}, "Yellow": {"for": 2.104, "against": 2.113}, "Red": {"for": 0.079, "against": 0.061}, "Offsides": {"for": 1.179, "against": 1.462}, "Goals": {"for": 0.985, "against": 1.579}, "Cards": {"for": 2.184, "against": 2.174}, "n": 43, "ThrowIns": {"for": 23.42, "against": 18.87}, "GoalKicks": {"for": 6.423, "against": 8.873}}, "league": "MLS"}, "Portland Timbers": {"home": {"Shots": {"for": 13.771, "against": 11.82}, "Shots on Target": {"for": 5.972, "against": 4.75}, "Corners": {"for": 5.187, "against": 5.638}, "Fouls": {"for": 11.302, "against": 12.41}, "Yellow": {"for": 1.252, "against": 2.207}, "Red": {"for": 0.051, "against": 0.081}, "Offsides": {"for": 1.508, "against": 2.792}, "Goals": {"for": 3.016, "against": 1.708}, "Cards": {"for": 1.303, "against": 2.288}, "n": 45, "ThrowIns": {"for": 19.57, "against": 19.22}, "GoalKicks": {"for": 5.373, "against": 5.373}}, "away": {"Shots": {"for": 11.699, "against": 15.766}, "Shots on Target": {"for": 4.31, "against": 5.976}, "Corners": {"for": 4.661, "against": 5.607}, "Fouls": {"for": 10.591, "against": 12.571}, "Yellow": {"for": 1.84, "against": 2.18}, "Red": {"for": 0.104, "against": 0.109}, "Offsides": {"for": 1.837, "against": 2.147}, "Goals": {"for": 1.193, "against": 1.732}, "Cards": {"for": 1.945, "against": 2.289}, "n": 44, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Real Salt Lake": {"home": {"Shots": {"for": 15.777, "against": 11.375}, "Shots on Target": {"for": 5.986, "against": 3.916}, "Corners": {"for": 5.343, "against": 4.34}, "Fouls": {"for": 13.433, "against": 11.281}, "Yellow": {"for": 2.085, "against": 2.004}, "Red": {"for": 0.104, "against": 0.027}, "Offsides": {"for": 2.218, "against": 1.636}, "Goals": {"for": 1.823, "against": 1.144}, "Cards": {"for": 2.19, "against": 2.031}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 14.042, "against": 15.025}, "Shots on Target": {"for": 4.428, "against": 4.966}, "Corners": {"for": 4.516, "against": 6.137}, "Fouls": {"for": 12.233, "against": 12.262}, "Yellow": {"for": 2.392, "against": 1.894}, "Red": {"for": 0.106, "against": 0.095}, "Offsides": {"for": 1.668, "against": 1.965}, "Goals": {"for": 1.156, "against": 1.757}, "Cards": {"for": 2.498, "against": 1.989}, "n": 45, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Red Bull New York": {"home": {"Shots": {"for": 14.338, "against": 10.728}, "Shots on Target": {"for": 5.304, "against": 4.115}, "Corners": {"for": 5.142, "against": 3.591}, "Fouls": {"for": 12.242, "against": 10.511}, "Yellow": {"for": 1.974, "against": 2.02}, "Red": {"for": 0.126, "against": 0.092}, "Offsides": {"for": 1.662, "against": 2.253}, "Goals": {"for": 1.901, "against": 1.611}, "Cards": {"for": 2.1, "against": 2.112}, "n": 44, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 11.684, "against": 13.741}, "Shots on Target": {"for": 4.059, "against": 5.415}, "Corners": {"for": 4.943, "against": 5.079}, "Fouls": {"for": 12.424, "against": 9.97}, "Yellow": {"for": 2.232, "against": 1.352}, "Red": {"for": 0.098, "against": 0.062}, "Offsides": {"for": 1.76, "against": 2.287}, "Goals": {"for": 1.132, "against": 1.677}, "Cards": {"for": 2.331, "against": 1.414}, "n": 46, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "San Diego FC": {"home": {"Shots": {"for": 14.136, "against": 9.676}, "Shots on Target": {"for": 5.354, "against": 4.152}, "Corners": {"for": 5.916, "against": 2.987}, "Fouls": {"for": 12.467, "against": 13.377}, "Yellow": {"for": 1.78, "against": 2.373}, "Red": {"for": 0.165, "against": 0.176}, "Offsides": {"for": 1.915, "against": 1.799}, "Goals": {"for": 1.917, "against": 1.243}, "Cards": {"for": 1.944, "against": 2.548}, "n": 30, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 10.481, "against": 14.837}, "Shots on Target": {"for": 4.181, "against": 5.472}, "Corners": {"for": 4.052, "against": 4.437}, "Fouls": {"for": 11.372, "against": 13.146}, "Yellow": {"for": 1.854, "against": 2.071}, "Red": {"for": 0.125, "against": 0.049}, "Offsides": {"for": 2.13, "against": 2.727}, "Goals": {"for": 1.803, "against": 1.539}, "Cards": {"for": 1.979, "against": 2.12}, "n": 26, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "San Jose Earthquakes": {"home": {"Shots": {"for": 16.539, "against": 11.383}, "Shots on Target": {"for": 5.823, "against": 4.59}, "Corners": {"for": 7.521, "against": 4.349}, "Fouls": {"for": 12.063, "against": 13.736}, "Yellow": {"for": 2.325, "against": 1.937}, "Red": {"for": 0.026, "against": 0.087}, "Offsides": {"for": 1.801, "against": 2.419}, "Goals": {"for": 1.757, "against": 1.703}, "Cards": {"for": 2.351, "against": 2.025}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 11.446, "against": 15.232}, "Shots on Target": {"for": 4.222, "against": 5.731}, "Corners": {"for": 4.668, "against": 6.335}, "Fouls": {"for": 11.311, "against": 12.623}, "Yellow": {"for": 2.268, "against": 1.683}, "Red": {"for": 0.112, "against": 0.108}, "Offsides": {"for": 1.291, "against": 2.048}, "Goals": {"for": 1.621, "against": 1.97}, "Cards": {"for": 2.38, "against": 1.791}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Seattle Sounders FC": {"home": {"Shots": {"for": 15.092, "against": 11.004}, "Shots on Target": {"for": 5.735, "against": 4.186}, "Corners": {"for": 5.686, "against": 4.197}, "Fouls": {"for": 10.033, "against": 12.648}, "Yellow": {"for": 1.464, "against": 2.29}, "Red": {"for": 0.154, "against": 0.047}, "Offsides": {"for": 1.629, "against": 1.259}, "Goals": {"for": 1.932, "against": 1.25}, "Cards": {"for": 1.618, "against": 2.337}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 9.57, "against": 22.797}, "Shots on Target": {"for": 3.441, "against": 9.669}, "Corners": {"for": 3.756, "against": 7.819}, "Fouls": {"for": 8.978, "against": 11.008}, "Yellow": {"for": 1.061, "against": 1.106}, "Red": {"for": 0.081, "against": 0.069}, "Offsides": {"for": 1.428, "against": 0.953}, "Goals": {"for": 0.738, "against": 1.903}, "Cards": {"for": 1.141, "against": 1.175}, "n": 49, "ThrowIns": {"for": 20.0, "against": 14.0}, "GoalKicks": {"for": 14.0, "against": 5.0}}, "league": "MLS"}, "Sporting Kansas City": {"home": {"Shots": {"for": 12.92, "against": 12.658}, "Shots on Target": {"for": 5.036, "against": 5.354}, "Corners": {"for": 5.506, "against": 4.053}, "Fouls": {"for": 11.961, "against": 12.641}, "Yellow": {"for": 1.862, "against": 2.05}, "Red": {"for": 0.122, "against": 0.061}, "Offsides": {"for": 1.341, "against": 1.705}, "Goals": {"for": 1.492, "against": 1.856}, "Cards": {"for": 1.985, "against": 2.111}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 10.329, "against": 15.574}, "Shots on Target": {"for": 3.266, "against": 5.622}, "Corners": {"for": 3.787, "against": 5.883}, "Fouls": {"for": 12.947, "against": 12.175}, "Yellow": {"for": 1.717, "against": 1.542}, "Red": {"for": 0.047, "against": 0.0}, "Offsides": {"for": 1.584, "against": 2.048}, "Goals": {"for": 1.032, "against": 2.542}, "Cards": {"for": 1.765, "against": 1.542}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "St. Louis CITY SC": {"home": {"Shots": {"for": 16.526, "against": 11.043}, "Shots on Target": {"for": 5.36, "against": 3.751}, "Corners": {"for": 6.109, "against": 4.205}, "Fouls": {"for": 12.988, "against": 11.353}, "Yellow": {"for": 2.192, "against": 2.185}, "Red": {"for": 0.065, "against": 0.099}, "Offsides": {"for": 1.664, "against": 1.576}, "Goals": {"for": 1.523, "against": 1.405}, "Cards": {"for": 2.257, "against": 2.284}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 12.893, "against": 15.85}, "Shots on Target": {"for": 4.105, "against": 5.871}, "Corners": {"for": 4.731, "against": 6.059}, "Fouls": {"for": 12.858, "against": 11.616}, "Yellow": {"for": 1.907, "against": 1.683}, "Red": {"for": 0.118, "against": 0.106}, "Offsides": {"for": 1.695, "against": 1.562}, "Goals": {"for": 1.259, "against": 1.881}, "Cards": {"for": 2.025, "against": 1.789}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Toronto FC": {"home": {"Shots": {"for": 12.007, "against": 11.834}, "Shots on Target": {"for": 4.321, "against": 5.091}, "Corners": {"for": 4.754, "against": 5.571}, "Fouls": {"for": 12.052, "against": 12.736}, "Yellow": {"for": 2.026, "against": 1.8}, "Red": {"for": 0.082, "against": 0.117}, "Offsides": {"for": 1.674, "against": 1.824}, "Goals": {"for": 1.407, "against": 1.676}, "Cards": {"for": 2.108, "against": 1.917}, "n": 42, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "away": {"Shots": {"for": 9.709, "against": 13.208}, "Shots on Target": {"for": 3.308, "against": 4.647}, "Corners": {"for": 4.052, "against": 5.409}, "Fouls": {"for": 11.788, "against": 13.104}, "Yellow": {"for": 2.272, "against": 1.998}, "Red": {"for": 0.075, "against": 0.08}, "Offsides": {"for": 1.472, "against": 1.785}, "Goals": {"for": 0.919, "against": 1.529}, "Cards": {"for": 2.347, "against": 2.078}, "n": 43, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}, "Vancouver Whitecaps": {"home": {"Shots": {"for": 15.538, "against": 9.558}, "Shots on Target": {"for": 5.377, "against": 3.978}, "Corners": {"for": 7.073, "against": 3.58}, "Fouls": {"for": 13.695, "against": 13.601}, "Yellow": {"for": 1.033, "against": 1.756}, "Red": {"for": 0.048, "against": 0.045}, "Offsides": {"for": 2.686, "against": 1.895}, "Goals": {"for": 1.508, "against": 1.011}, "Cards": {"for": 1.081, "against": 1.801}, "n": 46, "ThrowIns": {"for": 21.0, "against": 17.0}, "GoalKicks": {"for": 4.0, "against": 4.0}}, "away": {"Shots": {"for": 12.731, "against": 10.824}, "Shots on Target": {"for": 4.764, "against": 3.764}, "Corners": {"for": 4.498, "against": 4.477}, "Fouls": {"for": 13.57, "against": 12.22}, "Yellow": {"for": 2.507, "against": 2.322}, "Red": {"for": 0.111, "against": 0.132}, "Offsides": {"for": 1.507, "against": 1.718}, "Goals": {"for": 1.598, "against": 1.354}, "Cards": {"for": 2.618, "against": 2.453}, "n": 46, "ThrowIns": {"for": 18.8, "against": 18.8}, "GoalKicks": {"for": 6.65, "against": 6.65}}, "league": "MLS"}}, "shrinkage": {"Shots": 0.6, "Shots on Target": 0.6, "Corners": 0.6, "Fouls": 0.25, "Yellow": 0.2, "Red": 0.0, "Offsides": 0.4, "Goals": 0.5, "Cards": 0.4, "ThrowIns": 0.3, "GoalKicks": 0.3}, "referees": {}, "halves": {"share": {"h1": 0.46, "h2": 0.54}, "n": 216}, "season_adj": {}, "cross_league": true}};
+let CUR_LEAGUE = localStorage.getItem('lmxLeague') || 'ligamx';
+const EMBEDDED = MODELS[CUR_LEAGUE];
+
+let M;
+try { M = JSON.parse(localStorage.getItem('lmxModel_'+CUR_LEAGUE)) || EMBEDDED; }
+catch(e){ M = EMBEDDED; }
+
+const STATS = M.meta.stats;
+const H2H_STATS = ['Shots','Shots on Target','Corners','Fouls','Cards'];
+let mode = 'total';
+const lines = {};   // market -> chosen line
+
+// ---------- math ----------
+function lgamma(x){ // Lanczos
+  const g=[76.18009172947146,-86.50532032941677,24.01409824083091,
+           -1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+  let y=x, t=x+5.5; t-=(x+0.5)*Math.log(t);
+  let s=1.000000000190015;
+  for(let j=0;j<6;j++) s+=g[j]/++y;
+  return -t+Math.log(2.5066282746310005*s/x);
+}
+function pmf(k, mean, r){
+  if(mean<=0) return k===0?1:0;
+  if(r==null){ // Poisson
+    return Math.exp(k*Math.log(mean)-mean-lgamma(k+1));
+  }
+  const p=r/(r+mean);
+  return Math.exp(lgamma(k+r)-lgamma(r)-lgamma(k+1)+r*Math.log(p)+k*Math.log(1-p));
+}
+function dist(mean, r){
+  const sd=Math.sqrt(r==null?mean:mean+mean*mean/r);
+  const max=Math.max(10, Math.ceil(mean+8*sd));
+  const d=new Array(max+1); let tot=0;
+  for(let k=0;k<=max;k++){ d[k]=pmf(k,mean,r); tot+=d[k]; }
+  for(let k=0;k<=max;k++) d[k]/=tot;
+  return d;
+}
+function conv(a,b){
+  const c=new Array(a.length+b.length-1).fill(0);
+  for(let i=0;i<a.length;i++) for(let j=0;j<b.length;j++) c[i+j]+=a[i]*b[j];
+  return c;
+}
+function pOver(d, line){ let s=0; for(let k=Math.ceil(line);k<d.length;k++) s+=d[k]; return s; }
+function fair(p){ return p>0.0005 ? (1/p) : null; }
+function fmtO(o){ return o==null ? '—' : (o>=100 ? '99+' : o.toFixed(2)); }
+
+// ---------- model ----------
+function T_for_neutral(stat, home, away, side){
+  const lg=M.league[stat], Th=M.teams[home], Ta=M.teams[away];
+  const avg=(t,ven,key)=>{
+    const a=t.home[stat], b=t.away[stat];
+    if(!a||!b) return (a||b)[key];
+    return (a[key]+b[key])/2;
+  };
+  const hFor=avg(Th,null,'for'), hAg=avg(Th,null,'against');
+  const aFor=avg(Ta,null,'for'), aAg=avg(Ta,null,'against');
+  const base=lg.neutral!=null?lg.neutral:(lg.home+lg.away)/2;
+  return side==='h' ? hFor*(aAg/base) : aFor*(hAg/base);
+}
+function lambdas(stat, home, away){
+  const w=M.shrinkage[stat] ?? 0.5;
+  const lg=M.league[stat];
+  const Th=M.teams[home], Ta=M.teams[away];
+  let mh=Th.home[stat]['for']*(Ta.away[stat]['against']/lg.home);
+  let ma=Ta.away[stat]['for']*(Th.home[stat]['against']/lg.away);
+  // Leagues Cup: sede neutral (EE.UU./Canadá) salvo los partidos en México
+  let baseH=lg.home, baseA=lg.away;
+  if(M.meta && M.meta.neutral_venue && lg.neutral!=null){
+    // sede mexicana solo para partidos concretos (fecha|local); resto neutral
+    const fx=(M.meta.mx_venue_fixtures||{});
+    const key=(window.__matchDate||'')+'|'+home;
+    const isMexHome = Object.prototype.hasOwnProperty.call(fx,key);
+    if(!isMexHome){ baseH=lg.neutral; baseA=lg.neutral;
+      mh=T_for_neutral(stat,home,away,'h'); ma=T_for_neutral(stat,home,away,'a'); }
+  }
+  let out={ h: w*mh+(1-w)*baseH, a: w*ma+(1-w)*baseA, r: lg.r };
+  if(M.season_adj && M.season_adj[stat]){ out.h*=M.season_adj[stat]; out.a*=M.season_adj[stat]; }
+  if(M.factors){
+    if(stat==='Goals') { out.h*=M.factors.goals_mult; out.a*=M.factors.goals_mult; }
+    if(stat==='Corners') { out.h*=M.factors.corners_mult; out.a*=M.factors.corners_mult; }
+    if(stat==='Yellow') { out.h*=M.factors.yellow_mult; out.a*=M.factors.yellow_mult; }
+    if(stat==='Goals' && M.mx_hosts_2026 && M.mx_hosts_2026[home]) out.h+=M.mx_hosts_2026[home];
+  }
+  if(stat==='Fouls' && M.referees){
+    const ref=document.getElementById('refSel').value;
+    const rm=M.referees[ref];
+    if(rm && rm.mult){ out.h*=rm.mult; out.a*=rm.mult; }
+  }
+  return out;
+}
+function defLine(x){ return Math.max(0.5, Math.round(x-0.5)+0.5); }
+
+// ---------- UI ----------
+const homeSel=document.getElementById('homeSel'), awaySel=document.getElementById('awaySel');
+function fillTeams(){
+  const names=Object.keys(M.teams).sort((a,b)=>a.localeCompare(b));
+  for(const sel of [homeSel,awaySel]){
+    sel.innerHTML=names.map(n=>`<option>${n}</option>`).join('');
+  }
+  homeSel.value=names[0]; awaySel.value=names[1];
+  const rw=document.getElementById('refWrap'), rs=document.getElementById('refSel');
+  if(M.referees && Object.keys(M.referees).length){
+    const refs=Object.entries(M.referees).sort((a,b)=>b[1].n-a[1].n);
+    rs.innerHTML='<option value="">Árbitro: promedio de liga</option>'+
+      refs.map(([n,d])=>`<option value="${n}">${n} · ${d.mult>1?'+':''}${((d.mult-1)*100).toFixed(0)}% faltas</option>`).join('');
+    rw.style.display='block';
+  } else { rw.style.display='none'; }
+  const _mm = M.meta.matches || M.meta.matches_lc_hist || '?';
+  const _dr = (M.meta.date_range && M.meta.date_range[1]) || M.meta.built || '';
+  document.getElementById('dataDate').textContent = `${_mm} partidos · datos al ${_dr}`;
+}
+function ticket(name, lamTxt, key, d, dflt){
+  if(!(key in lines)) lines[key]=dflt;
+  const L=lines[key];
+  const po=pOver(d,L), pu=1-po;
+  const oo=fair(po), ou=fair(pu);
+  const favO=oo!=null&&ou!=null&&oo<ou;
+  return `<div class="ticket">
+    <div class="tHead"><div class="tName">${name}</div><div class="tLam">${lamTxt}</div></div>
+    <div class="lineRow">
+      <div class="stepper">
+        <button onclick="bump('${key}',-1)">−</button>
+        <div class="val cond">${L}</div>
+        <button onclick="bump('${key}',1)">+</button>
+      </div>
+      <div class="odd ${favO?'fav':''}"><div class="lab">Más de</div><div class="px cond">${fmtO(oo)}</div><div class="pc">${(po*100).toFixed(1)}%</div></div>
+      <div class="odd ${!favO?'fav':''}"><div class="lab">Menos de</div><div class="px cond">${fmtO(ou)}</div><div class="pc">${(pu*100).toFixed(1)}%</div></div>
+    </div>
+  </div>`;
+}
+function h2hTicket(stat, dh, da){
+  let pH=0,pT=0,pA=0;
+  for(let i=0;i<dh.length;i++) for(let j=0;j<da.length;j++){
+    const pr=dh[i]*da[j];
+    if(i>j) pH+=pr; else if(i===j) pT+=pr; else pA+=pr;
+  }
+  const best=Math.max(pH,pT,pA);
+  const cell=(lab,p)=>`<div class="odd ${p===best?'fav':''}"><div class="lab">${lab}</div><div class="px cond">${fmtO(fair(p))}</div><div class="pc">${(p*100).toFixed(1)}%</div></div>`;
+  return `<div class="ticket">
+    <div class="tHead"><div class="tName">H2H · ${stat}</div><div class="tLam"></div></div>
+    <div class="h3col">${cell(short(homeSel.value),pH)}${cell('Empate',pT)}${cell(short(awaySel.value),pA)}</div>
+  </div>`;
+}
+function short(n){ return n.length>10 ? n.slice(0,9)+'…' : n; }
+
+function multiTicket(name, note, outcomes){
+  // outcomes: [[label, prob], ...]
+  const best=Math.max(...outcomes.map(o=>o[1]));
+  const cells=outcomes.map(([lab,p])=>
+    `<div class="odd ${p===best?'fav':''}"><div class="lab">${lab}</div>`+
+    `<div class="px cond">${fmtO(fair(p))}</div><div class="pc">${(p*100).toFixed(1)}%</div></div>`).join('');
+  const grid = outcomes.length===3 ? 'h3col' : 'h4col';
+  return `<div class="ticket">
+    <div class="tHead"><div class="tName">${name}</div><div class="tLam">${note||''}</div></div>
+    <div class="${grid}">${cells}</div>
+  </div>`;
+}
+function golesMarkets(home, away){
+  let html='';
+  if(!STATS.includes('Goals')){
+    return '<div class="ticket"><div class="tName">Faltan datos de goles</div>'+
+           '<div class="tLam">Corre el builder actualizado para activar estos mercados.</div></div>';
+  }
+  const {h,a,r}=lambdas('Goals',home,away);
+  const dt=conv(dist(h,r), dist(a,r));
+  const tot=h+a;
+
+  // Escala de goles
+  const band=(lo,hi)=>{ let s=0; for(let k=lo;k<=Math.min(hi,dt.length-1);k++) s+=dt[k]; return s; };
+  html+=multiTicket('Escala de goles', `esp: <b>${tot.toFixed(2)}</b>`,
+    [['0-1',band(0,1)],['2-3',band(2,3)],['4-5',band(4,5)],['6+',band(6,dt.length-1)]]);
+
+  // Total goles O/U
+  const key=`G|${home}|${away}`;
+  html+=ticket('Total de goles', `esp: <b>${tot.toFixed(2)}</b>`, key, dt, defLine(tot));
+
+  // Markets that need half-goal data
+  if(M.halves && M.halves.share){
+    const s1=M.halves.share.h1, s2=M.halves.share.h2;
+    const l1=tot*s1, l2=tot*s2;
+    const d1=dist(l1,null), d2=dist(l2,null);
+    let p1=0,pE=0,p2=0;
+    for(let i=0;i<d1.length;i++) for(let j=0;j<d2.length;j++){
+      const pr=d1[i]*d2[j];
+      if(i>j) p1+=pr; else if(i===j) pE+=pr; else p2+=pr;
+    }
+    html+=multiTicket('Intervalo con más goles',
+      `1ra ${l1.toFixed(2)} · 2da ${l2.toFixed(2)}`,
+      [['1ra mitad',p1],['Igual',pE],['2da mitad',p2]]);
+
+    const pBoth=(1-d1[0])*(1-d2[0]);
+    html+=multiTicket('Ambas mitades +0.5 goles', '', [['Sí',pBoth],['No',1-pBoth]]);
+  } else {
+    html+='<div class="ticket"><div class="tName">Mercados por mitad</div>'+
+          '<div class="tLam">Requieren minutos de gol — corre el backfill de mitades.</div></div>';
+  }
+  return html;
+}
+
+let FIX=[], CUR_EVENT=null;
+const SLUGS={ligamx:'mex.1', leaguescup:'concacaf.leagues.cup'};
+function espnBase(){ return 'https://site.api.espn.com/apis/site/v2/sports/soccer/'+(SLUGS[CUR_LEAGUE]||'mex.1'); }
+function amToDec(x){ x=parseFloat(x); if(!x) return null; return x>0 ? 1+x/100 : 1+100/(-x); }
+async function loadFixtures(){
+  try{
+    const now=new Date(), end=new Date(now.getTime()+7*864e5);
+    const f=d=>d.toISOString().slice(0,10).replace(/-/g,'');
+    const r=await fetch(`${espnBase()}/scoreboard?dates=${f(now)}-${f(end)}&limit=60`);
+    const j=await r.json();
+    FIX=(j.events||[]).filter(e=>!e.competitions[0].status.type.completed).map(e=>{
+      const c=e.competitions[0]; let ht,at;
+      for(const t of c.competitors){ if(t.homeAway==='home') ht=t.team.displayName; else at=t.team.displayName; }
+      return {id:e.id, date:e.date.slice(5,10), home:ht, away:at};
+    });
+    const sel=document.getElementById('fixSel');
+    if(FIX.length){
+      sel.innerHTML='<option value="">Próximos partidos…</option>'+
+        FIX.map((x,i)=>`<option value="${i}">${x.date} · ${short(x.home)} vs ${short(x.away)}</option>`).join('');
+      sel.style.display='block';
+      sel.onchange=()=>{ const x=FIX[sel.value]; if(!x) { CUR_EVENT=null; return; }
+        const names=Object.keys(M.teams);
+        const match=n=>names.find(t=>t===n)||names.find(t=>n.includes(t)||t.includes(n));
+        const h=match(x.home), a=match(x.away);
+        if(h) homeSel.value=h; if(a) awaySel.value=a;
+        CUR_EVENT=x.id; window.__matchDate='2026-'+x.date; render(); };
+    }
+  }catch(e){}
+}
+async function valueSection(home,away){
+  if(!CUR_EVENT) return '<div class="ticket"><div class="tName">Valor vs casa</div><div class="tLam">Elige el partido en "Próximos partidos…" arriba para jalar los momios reales (DraftKings vía ESPN).</div></div>';
+  let odds=null, provider='';
+  try{
+    const j=await (await fetch(`${espnBase()}/summary?event=${CUR_EVENT}`)).json();
+    odds=(j.pickcenter||j.odds||[])[0]||null;
+    provider=odds&&odds.provider?odds.provider.name:'';
+  }catch(e){}
+  if(!odds) return '<div class="ticket"><div class="tName">Valor vs casa</div><div class="tLam">Sin momios disponibles todavía para este partido.</div></div>';
+  const {h,a,r}=lambdas('Goals',home,away);
+  const dh=dist(h,r), da=dist(a,r), dt=conv(dh,da);
+  let pH=0,pD=0;
+  for(let i=0;i<dh.length;i++){ let c=0; for(let j=0;j<i;j++) c+=da[j]; pH+=dh[i]*c; pD+=dh[i]*da[i]; }
+  const pA=1-pH-pD;
+  const rows=[];
+  const add=(name,p,dec)=>{ if(!dec||!p) return; const edge=dec*p-1;
+    rows.push({name:`${name} — casa ${dec.toFixed(2)}`, p, fair:1/p, fam: edge>0.02?`+${(edge*100).toFixed(1)}% valor`:`${(edge*100).toFixed(1)}%`, _v:edge>0.02}); };
+  const ho=odds.homeTeamOdds||{}, ao=odds.awayTeamOdds||{};
+  add(`Gana ${short(home)}`, pH, amToDec(ho.moneyLine));
+  add(`Gana ${short(away)}`, pA, amToDec(ao.moneyLine));
+  if(odds.drawOdds&&odds.drawOdds.moneyLine) add('Empate', pD, amToDec(odds.drawOdds.moneyLine));
+  if(odds.overUnder){
+    const L=parseFloat(odds.overUnder), po=pOver(dt,L);
+    add(`Más de ${L} goles`, po, amToDec(odds.overOdds));
+    add(`Menos de ${L} goles`, 1-po, amToDec(odds.underOdds));
+  }
+  if(odds.spread){
+    const sp=Math.abs(parseFloat(odds.spread)); // home favored negative
+    let pCov=0; for(let i=0;i<dh.length;i++) for(let j=0;j<da.length;j++) if(i-j>sp) pCov+=dh[i]*da[j];
+    add(`${short(home)} ${odds.spread}`, pCov, amToDec(ho.spreadOdds));
+    add(`${short(away)} +${sp}`, 1-pCov, amToDec(ao.spreadOdds));
+  }
+  const items=rows.map(x=>({name:x.name+(x._v?' 🟢':''), p:x.p, fair:x.fair, fam:x.fam}));
+  return pickCard(`Valor vs ${provider||'casa'}`, 'modelo vs momios reales', items,
+    '🟢 = la casa paga más que la justa del modelo (edge >2%). Momios de partido solamente; props de stats se capturan manual con ＋.');
+}
+const FAM={'Goals':'goles','Yellow':'tarjetas','Red':'tarjetas','Cards':'tarjetas',
+  'Corners':'corners','Shots':'tiros','Shots on Target':'tiros','Fouls':'faltas','Offsides':'offsides'};
+function collectPicks(home,away){
+  const C=[];
+  const push=(name,p,fam)=>{ if(p>0.02&&p<0.98) C.push({name,p,fair:1/p,fam}); };
+  for(const s of STATS){
+    const {h,a,r}=lambdas(s,home,away);
+    const dh=dist(h,r), da=dist(a,r), dt=conv(dh,da), tot=h+a, fam=FAM[s]||s;
+    for(const off of [-1,0,1]){
+      const L=defLine(tot)+off; if(L<0.5) continue;
+      const po=pOver(dt,L);
+      push(`Más de ${L} ${s.toLowerCase()} (total)`,po,fam);
+      push(`Menos de ${L} ${s.toLowerCase()} (total)`,1-po,fam);
+    }
+    for(const [team,lm,d] of [[home,h,dh],[away,a,da]]){
+      const L=defLine(lm), po=pOver(d,L);
+      push(`${short(team)}: más de ${L} ${s.toLowerCase()}`,po,fam);
+      push(`${short(team)}: menos de ${L} ${s.toLowerCase()}`,1-po,fam);
+    }
+    if(H2H_STATS.includes(s)){
+      let pH=0,pT=0;
+      for(let i=0;i<dh.length;i++){ let c=0; for(let j=0;j<i;j++) c+=da[j]; pH+=dh[i]*c; pT+=dh[i]*da[i]; }
+      push(`H2H ${s.toLowerCase()}: ${short(home)}`,pH,fam);
+      push(`H2H ${s.toLowerCase()}: ${short(away)}`,1-pH-pT,fam);
+    }
+  }
+  if(STATS.includes('Goals')){
+    const {h,a,r}=lambdas('Goals',home,away);
+    const dt=conv(dist(h,r),dist(a,r));
+    const band=(lo,hi)=>{let s2=0;for(let k=lo;k<=Math.min(hi,dt.length-1);k++)s2+=dt[k];return s2;};
+    push('Escala de goles 2-3',band(2,3),'goles');
+    push('Escala de goles 0-1',band(0,1),'goles');
+    push('Escala de goles 4-5',band(4,5),'goles');
+  }
+  return C;
+}
+function pickCard(title,sub,items,note){
+  const rows=items.length?items.map(it=>
+    `<div class="lineRow" style="grid-template-columns:auto 1fr auto;margin-top:6px">
+       <button onclick='savePick(${JSON.stringify(it.name)},${it.fair},${it.p})' style="background:var(--surface2);border:1px solid var(--line);color:var(--amber);border-radius:8px;width:34px;font-size:1.1rem;font-weight:700">＋</button>
+       <div style="font-size:.85rem;align-self:center">${it.name}${it.fam?` <span style="color:var(--muted);font-size:.68rem">· ${it.fam}</span>`:''}</div>
+       <div class="odd fav" style="min-width:86px"><div class="px cond">${it.fair.toFixed(2)}</div><div class="pc">${(it.p*100).toFixed(0)}%</div></div>
+     </div>`).join('')
+    :'<div class="tLam" style="margin-top:6px">Sin candidatos en este rango para este partido.</div>';
+  return `<div class="ticket"><div class="tHead"><div class="tName">${title}</div><div class="tLam">${sub}</div></div>${rows}
+    ${note?`<div class="tLam" style="margin-top:8px">${note}</div>`:''}</div>`;
+}
+function marginDist(dh,da){
+  // P(home - away = k), k from -(len-1) .. +(len-1)
+  const n=dh.length, off=n-1, dm=new Array(2*n-1).fill(0);
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++) dm[i-j+off]+=dh[i]*da[j];
+  return {dm,off};
+}
+function ahEval(dm,off,L){
+  // home side with handicap L (margin + L): win>0, push=0, loss<0; quarter lines split
+  const one=(l)=>{ let w=0,p=0;
+    for(let k=0;k<dm.length;k++){ const m=k-off+l;
+      if(m>1e-9) w+=dm[k]; else if(Math.abs(m)<1e-9) p+=dm[k]; }
+    return {w,p}; };
+  const frac=Math.abs(L*4)%2===1; // .25 or .75
+  let w,p;
+  if(frac){ const a=one(L-0.25), b=one(L+0.25); w=(a.w+b.w)/2; p=(a.p+b.p)/2; }
+  else ({w,p}=one(L));
+  const fair = w>1e-6 ? (1-p)/w : null;
+  return {w,p,fair};
+}
+function ahMarkets(home,away){
+  let html='';
+  const AH_STATS=['Goals','Corners','Shots','Cards'].filter(s=>STATS.includes(s));
+  const LBL={'Goals':'Goles','Corners':'Córners','Shots':'Tiros','Cards':'Tarjetas'};
+  for(const s of AH_STATS){
+    const {h,a,r}=lambdas(s,home,away);
+    const {dm,off}=marginDist(dist(h,r),dist(a,r));
+    const diff=h-a;
+    const center=Math.round(diff*2)/2;
+    const lines=[]; for(const d of [-1.5,-1,-0.5,0,0.5,1,1.5]) lines.push(-(center)+d);
+    let rows='';
+    const seen=new Set();
+    for(const L of lines){
+      const Lr=Math.round(L*4)/4; if(seen.has(Lr)) continue; seen.add(Lr);
+      const hSide=ahEval(dm,off,Lr), aSide=ahEval(dm,off,-Lr);
+      if(!hSide.fair||!aSide.fair) continue;
+      if(hSide.fair>6&&aSide.fair>6) continue;
+      const fmt=x=>x>0?`+${x}`:`${x}`;
+      const fav=hSide.fair<aSide.fair;
+      rows+=`<div class="lineRow" style="grid-template-columns:auto 1fr 1fr;margin-top:6px">
+        <div class="stepper" style="min-width:64px;justify-content:center"><div class="val cond" style="font-size:1rem">${fmt(Lr)}</div></div>
+        <div class="odd ${fav?'fav':''}"><div class="lab">${short(home)} ${fmt(Lr)}</div><div class="px cond">${hSide.fair.toFixed(2)}</div><div class="pc">${(hSide.w*100).toFixed(0)}%${hSide.p>0.005?` · push ${(hSide.p*100).toFixed(0)}%`:''}</div></div>
+        <div class="odd ${!fav?'fav':''}"><div class="lab">${short(away)} ${fmt(-Lr)}</div><div class="px cond">${aSide.fair.toFixed(2)}</div><div class="pc">${(aSide.w*100).toFixed(0)}%${aSide.p>0.005?` · push ${(aSide.p*100).toFixed(0)}%`:''}</div></div>
+      </div>`;
+    }
+    html+=`<div class="ticket"><div class="tHead"><div class="tName">AH · ${LBL[s]||s}</div>
+      <div class="tLam">esp: <b>${h.toFixed(1)}</b> vs <b>${a.toFixed(1)}</b> (dif ${diff>0?'+':''}${diff.toFixed(1)})</div></div>${rows}</div>`;
+  }
+  html+='<div class="ticket"><div class="tLam">Cuota justa con push descontado (líneas enteras pueden empatar: se devuelve la apuesta). Líneas .25/.75 = mitad y mitad. Como siempre: solo hay valor si la casa paga MÁS que la justa.</div></div>';
+  return html;
+}
+function picksMarkets(home,away){
+  const C=collectPicks(home,away);
+  let html='<div id="valueBox"></div>';
+  valueSection(home,away).then(v=>{ const b=document.getElementById('valueBox'); if(b) b.innerHTML=v; });
+  const inBand=(lo,hi)=>C.filter(c=>c.fair>=lo&&c.fair<=hi).sort((x,y)=>y.p-x.p);
+  const safe=inBand(1.50,1.65).slice(0,1);
+  html+=pickCard('Safe pick','cuota justa 1.50–1.65',safe,
+    'Apuesta solo si Playdoit paga MÁS que la justa mostrada.');
+  const val=inBand(1.75,2.05).slice(0,3);
+  html+=pickCard('Alto valor','cuota justa 1.75–2.05',val,
+    'Probabilidad ~50-57%: pagan bien pero fallan casi la mitad de las veces.');
+  // combo: greedy over distinct families, legs with p>=0.55, product fair 3.50-5.00
+  const legs=C.filter(c=>c.p>=0.55&&['goles','tarjetas','corners'].includes(c.fam))
+              .sort((x,y)=>y.p-x.p);
+  let best=null;
+  for(let i=0;i<legs.length;i++) for(let j=i+1;j<legs.length;j++){
+    if(legs[i].fam===legs[j].fam) continue;
+    const f2=legs[i].fair*legs[j].fair;
+    if(f2>=3.5&&f2<=5.0){ const p2=legs[i].p*legs[j].p; if(!best||p2>best.p){best={items:[legs[i],legs[j]],fair:f2,p:p2};} }
+    else if(f2<3.5){
+      for(let k=j+1;k<legs.length;k++){
+        if([legs[i].fam,legs[j].fam].includes(legs[k].fam)) continue;
+        const f3=f2*legs[k].fair;
+        if(f3>=3.5&&f3<=5.0){ const p3=legs[i].p*legs[j].p*legs[k].p;
+          if(!best||p3>best.p){best={items:[legs[i],legs[j],legs[k]],fair:f3,p:p3};} }
+      }
+    }
+  }
+  html+=pickCard('Crea apuesta (combo)', best?`cuota justa combinada ${best.fair.toFixed(2)} · ${(best.p*100).toFixed(0)}%`:'cuota justa 3.50–5.00',
+    best?best.items:[],
+    'Mercados de familias distintas (goles/tarjetas/córners) para que Playdoit los deje combinar y la correlación sea baja. La justa combinada asume independencia: es aproximada.');
+  html+='<div class="ticket"><div class="tLam">⚠ Estas son cuotas JUSTAS del modelo, no picks garantizados. El valor existe solo cuando la casa paga por encima de la justa. Ningún pick supera ~70% — todos pierden con frecuencia.</div></div>';
+  const lows=[lowNote(home),lowNote(away)].filter(Boolean);
+  if(lows.length) html=`<div class="warn">⚠ Datos limitados: ${lows.join(' · ')}. Picks de este partido = baja confianza.</div>`+html;
+  return html;
+}
+function lowNote(team){
+  if(team!=='Atlante') return null;
+  const rg=(M.meta&&M.meta.atlante_real!=null)?M.meta.atlante_real:null;
+  return (rg!=null && rg<6) ? `${team} (${rg} ${rg===1?'partido propio':'partidos propios'})` : null;
+}
+function render(){
+  const home=homeSel.value, away=awaySel.value;
+  const box=document.getElementById('markets');
+  const warn=document.getElementById('lowWarn');
+  if(home===away){ box.innerHTML='<div class="ticket"><div class="tName">Elige dos equipos distintos</div></div>'; warn.style.display='none'; return; }
+  const lows=[lowNote(home),lowNote(away)].filter(Boolean);
+  if(lows.length){ warn.style.display='block';
+    warn.innerHTML='⚠ Datos limitados: '+lows.join(' · ')+'. Las líneas son aproximadas (proxy) y se afinan cada semana.'; }
+  else warn.style.display='none';
+  let html='';
+  if(mode==='goles'){ box.innerHTML=golesMarkets(home,away); return; }
+  if(mode==='ah'){ box.innerHTML=ahMarkets(home,away); return; }
+  if(mode==='picks'){ box.innerHTML=picksMarkets(home,away); return; }
+  for(const s of STATS){
+    const {h,a,r}=lambdas(s,home,away);
+    const dh=dist(h,r), da=dist(a,r);
+    if(mode==='total'){
+      const dt=conv(dh,da);
+      const key=`T|${s}|${home}|${away}`;
+      html+=ticket(s, `esp: <b>${(h+a).toFixed(1)}</b> (${h.toFixed(1)}+${a.toFixed(1)})`, key, dt, defLine(h+a));
+    }else if(mode==='team'){
+      const kh=`H|${s}|${home}|${away}`, ka=`A|${s}|${home}|${away}`;
+      html+=ticket(`${short(home)} · ${s}`, `esp: <b>${h.toFixed(1)}</b>`, kh, dh, defLine(h));
+      html+=ticket(`${short(away)} · ${s}`, `esp: <b>${a.toFixed(1)}</b>`, ka, da, defLine(a));
+    }else if(mode==='h2h' && H2H_STATS.includes(s)){
+      html+=h2hTicket(s, dh, da);
+    }
+  }
+  box.innerHTML=html;
+}
+function bump(key,dir){ lines[key]=Math.max(0.5, lines[key]+dir*(1)); render(); }
+// half-step: cards/reds want 0.5 steps too; use 1.0 step keeps .5 lines aligned
+
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on'); mode=t.dataset.mode; render();
+});
+homeSel.onchange=render; awaySel.onchange=render;
+document.getElementById('refSel').onchange=render;
+
+// ---------- data view ----------
+function showView(v){
+  document.getElementById('mainView').style.display = v==='main'?'block':'none';
+  document.getElementById('dataView').style.display = v==='data'?'flex':'none';
+  document.getElementById('regView').style.display = v==='reg'?'flex':'none';
+  document.getElementById('navMain').classList.toggle('on',v==='main');
+  document.getElementById('navData').classList.toggle('on',v==='data');
+  document.getElementById('navReg').classList.toggle('on',v==='reg');
+  if(v==='reg') renderReg();
+}
+function loadPicks(){ try{ return JSON.parse(localStorage.getItem('lmxPicks'))||[]; }catch(e){ return []; } }
+function storePicks(P){ localStorage.setItem('lmxPicks', JSON.stringify(P)); }
+function savePick(name, fair, p){
+  const match = short(homeSel.value)+' vs '+short(awaySel.value);
+  let book = prompt('Cuota de la casa (Playdoit/Novibet) para:\n'+name+'\n\nJusta del modelo: '+fair.toFixed(2), fair.toFixed(2));
+  if(book===null) return;
+  book = parseFloat(String(book).replace(',','.'))||parseFloat(fair.toFixed(2));
+  const P = loadPicks();
+  P.unshift({d:new Date().toISOString().slice(0,10), match, name, fair:+fair.toFixed(2), p:+p.toFixed(3), book, st:'open'});
+  storePicks(P);
+  alert('Pick guardado ✓'+(book<fair?'\n⚠ La casa paga MENOS que la justa: sin valor.':''));
+}
+function markPick(i, st){ const P=loadPicks(); if(P[i]){ P[i].st=st; storePicks(P); renderReg(); } }
+function delPick(i){ const P=loadPicks(); P.splice(i,1); storePicks(P); renderReg(); }
+function renderReg(){
+  const P = loadPicks();
+  const box = document.getElementById('regView');
+  const closed = P.filter(x=>x.st==='win'||x.st==='loss');
+  const wins = closed.filter(x=>x.st==='win');
+  let profit=0; for(const x of closed) profit += x.st==='win' ? (x.book-1) : -1;
+  const expHit = closed.length ? closed.reduce((s,x)=>s+x.p,0)/closed.length : 0;
+  let html = `<div class="ticket"><div class="tHead"><div class="tName">Récord</div>
+    <div class="tLam">${closed.length} cerrados · ${P.length-closed.length} abiertos</div></div>
+    <div class="h3col">
+      <div class="odd"><div class="lab">Aciertos</div><div class="px cond">${wins.length}/${closed.length}</div>
+        <div class="pc">${closed.length?(100*wins.length/closed.length).toFixed(0):0}% (esp. ${(expHit*100).toFixed(0)}%)</div></div>
+      <div class="odd ${profit>=0?'fav':''}"><div class="lab">Unidades</div><div class="px cond">${profit>=0?'+':''}${profit.toFixed(2)}</div>
+        <div class="pc">1u por pick</div></div>
+      <div class="odd"><div class="lab">ROI</div><div class="px cond">${closed.length?(100*profit/closed.length).toFixed(1):0}%</div>
+        <div class="pc">sobre cerrados</div></div>
+    </div></div>`;
+  if(!P.length) html += '<div class="ticket"><div class="tLam">Sin picks guardados. En la pestaña Picks, toca ＋ junto a un mercado para registrarlo.</div></div>';
+  P.forEach((x,i)=>{
+    const badge = x.st==='win'?'✅':x.st==='loss'?'❌':x.st==='void'?'⚪':'🕐';
+    const valTag = x.book>x.fair ? `<span style="color:var(--home)">+valor</span>` : `<span style="color:#e88">sin valor</span>`;
+    html += `<div class="ticket">
+      <div class="tHead"><div style="font-size:.85rem">${badge} ${x.name}</div><div class="tLam">${x.d}</div></div>
+      <div class="tLam">${x.match} · justa ${x.fair.toFixed(2)} · casa ${x.book.toFixed(2)} ${valTag} · ${(x.p*100).toFixed(0)}%</div>
+      ${x.st==='open'?`<div class="h3col" style="margin-top:8px">
+        <button class="btn" style="padding:8px" onclick="markPick(${i},'win')">Ganó</button>
+        <button class="btn ghost" style="padding:8px" onclick="markPick(${i},'loss')">Perdió</button>
+        <button class="btn ghost" style="padding:8px" onclick="markPick(${i},'void')">Nula</button>
+      </div>`:`<div style="margin-top:6px"><button class="btn ghost" style="padding:6px 10px;font-size:.75rem" onclick="delPick(${i})">Borrar</button></div>`}
+    </div>`;
+  });
+  html += '<div class="ticket"><div class="tLam">El % esperado junto a Aciertos es el promedio de probabilidades del modelo en tus picks cerrados. Si tu % real queda muy por debajo tras 30+ picks, el modelo está sobreconfiado; si lo iguala, está calibrado.</div></div>';
+  box.innerHTML = html;
+}
+function saveModel(){
+  const msg=document.getElementById('msg');
+  try{
+    const j=JSON.parse(document.getElementById('jsonBox').value);
+    if(!j.teams||!j.league||!j.meta) throw new Error('estructura inválida');
+    if(!j.shrinkage) j.shrinkage=M.shrinkage;
+    localStorage.setItem('lmxModel_'+CUR_LEAGUE, JSON.stringify(j));
+    M=j; fillTeams(); render();
+    msg.textContent='Datos actualizados ✓ ('+j.meta.matches+' partidos)';
+  }catch(e){ msg.textContent='Error: JSON inválido — '+e.message; msg.style.color='#e88'; }
+}
+function resetModel(){
+  localStorage.removeItem('lmxModel_'+CUR_LEAGUE); M=EMBEDDED; fillTeams(); render();
+  document.getElementById('msg').textContent='Datos originales restaurados ✓';
+}
+
+function switchLeague(lg){
+  CUR_LEAGUE=lg; localStorage.setItem('lmxLeague',lg);
+  try{ M = JSON.parse(localStorage.getItem('lmxModel_'+lg)) || MODELS[lg]; }
+  catch(e){ M = MODELS[lg]; }
+  CUR_EVENT=null; fillTeams(); render(); loadFixtures();
+}
+document.getElementById('leagueSel').value=CUR_LEAGUE;
+document.getElementById('leagueSel').onchange=e=>switchLeague(e.target.value);
+// per-league saved model
+try{ const s=localStorage.getItem('lmxModel_'+CUR_LEAGUE); if(s) M=JSON.parse(s); }catch(e){}
+fillTeams(); render(); loadFixtures();
+// Service worker: cachea la app para que abra siempre, con o sin señal
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
