@@ -48,6 +48,14 @@ def _is_1x2(name: Any) -> bool:
     }
 
 
+def no_vig_probabilities(odds: dict[str, float]) -> dict[str, float]:
+    raw = {outcome: 1.0 / price for outcome, price in odds.items() if price > 1.0}
+    total = sum(raw.values())
+    if total <= 0:
+        return {}
+    return {outcome: value / total for outcome, value in raw.items()}
+
+
 def parse_1x2(rows: list[dict[str, Any]]) -> OneXTwoMarket | None:
     prices: dict[str, list[Price]] = {"home": [], "draw": [], "away": []}
 
