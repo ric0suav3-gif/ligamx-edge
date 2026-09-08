@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import time
 from dataclasses import dataclass
 from typing import Any, Mapping
 
@@ -27,7 +28,13 @@ class APIFootballClient:
 
     The key is read from API_FOOTBALL_KEY by default and is sent only in the
     x-apisports-key header. It is never written to disk by this client.
+
+    The client deliberately throttles requests and retries HTTP 429 / transient
+    5xx responses so historical backfills can run safely against per-minute
+    provider limits.
     """
+
+    RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 
     def __init__(
         self,
@@ -35,6 +42,8 @@ class APIFootballClient:
         base_url: str | None = None,
         timeout: float = 30.0,
         session: requests.Session | None = None,
+        min_interval: float | None = None,
+        max_retries: int | None = None,
     ) -> None:
         load_dotenv()
         self.api_key = api_key or os.getenv("API_FOOTBALL_KEY")
@@ -46,20 +55,77 @@ class APIFootballClient:
         self.timeout = timeout
         self.session = session or requests.Session()
 
+        configured_interval = os.getenv("API_FOOTBALL_MIN_INTERVAL", "0.40")
+        configured_retries = os.getenv("API_FOOTBALL_MAX_RETRIES", "6")
+        self.min_interval = (
+            float(configured_interval) if min_interval is None else float(min_interval)
+        )
+        self.max_retries = (
+            int(configured_retries) if max_retries is None else int(max_retries)
+        )
+        self._last_request_started = 0.0
+
         if not self.api_key:
             raise APIFootballError(
                 "Missing API_FOOTBALL_KEY. Copy .env.example to .env and add the key locally."
             )
 
+    def _throttle(self) -> None:
+        if self.min_interval <= 0:
+            return
+        elapsed = time.monotonic() - self._last_request_started
+        remaining = self.min_interval - elapsed
+        if remaining > 0:
+            time.sleep(remaining)
+
+    @staticmethod
+    def _retry_delay(response: requests.Response, attempt: int) -> float:
+        retry_after = response.headers.get("Retry-After")
+        if retry_after:
+            try:
+                return max(1.0, float(retry_after))
+            except ValueError:
+                pass
+
+        # 429s often mean a minute bucket is full, so use a meaningful pause
+        # rather than hammering the endpoint every second.
+        if response.status_code == 429:
+            return min(60.0, 8.0 * (attempt + 1))
+
+        return min(30.0, 2.0 ** attempt)
+
     def get(self, endpoint: str, **params: Any) -> APIResponse:
         clean = {k: v for k, v in params.items() if v is not None and v != ""}
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
-        response = self.session.get(
-            url,
-            params=clean,
-            headers={"x-apisports-key": self.api_key},
-            timeout=self.timeout,
-        )
+
+        response: requests.Response | None = None
+        for attempt in range(self.max_retries + 1):
+            self._throttle()
+            self._last_request_started = time.monotonic()
+
+            response = self.session.get(
+                url,
+                params=clean,
+                headers={"x-apisports-key": self.api_key},
+                timeout=self.timeout,
+            )
+
+            if response.status_code not in self.RETRYABLE_STATUS:
+                break
+
+            if attempt >= self.max_retries:
+                break
+
+            delay = self._retry_delay(response, attempt)
+            print(
+                f"API-Football HTTP {response.status_code} on {endpoint}; "
+                f"waiting {delay:.0f}s then retrying "
+                f"({attempt + 1}/{self.max_retries})..."
+            )
+            time.sleep(delay)
+
+        if response is None:
+            raise APIFootballError(f"No response received from {endpoint}")
 
         try:
             response.raise_for_status()
