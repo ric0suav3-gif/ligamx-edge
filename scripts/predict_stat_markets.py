@@ -48,6 +48,13 @@ def safe_float(value: Any, label: str) -> float:
     return float(value)
 
 
+def effective_n(split: dict[str, Any], stat: str) -> int:
+    row = split[stat]
+    n_for = int(row.get("n_for") or 0)
+    n_against = int(row.get("n_against") or 0)
+    return min(n_for, n_against)
+
+
 def build_team_profile(
     team_id: int,
     stat: str,
@@ -63,12 +70,12 @@ def build_team_profile(
         home=SplitStatProfile(
             for_rate=safe_float(team["home"][stat]["for"], f"{team_id} home {stat} for"),
             against_rate=safe_float(team["home"][stat]["against"], f"{team_id} home {stat} against"),
-            n=int(team["home"]["n"]),
+            n=effective_n(team["home"], stat),
         ),
         away=SplitStatProfile(
             for_rate=safe_float(team["away"][stat]["for"], f"{team_id} away {stat} for"),
             against_rate=safe_float(team["away"][stat]["against"], f"{team_id} away {stat} against"),
-            n=int(team["away"]["n"]),
+            n=effective_n(team["away"], stat),
         ),
         league_home_mean=safe_float(env["home"]["mean"], f"{league_id} {stat} home mean"),
         league_away_mean=safe_float(env["away"]["mean"], f"{league_id} {stat} away mean"),
@@ -79,30 +86,82 @@ def fmt_fair(value: float | None) -> str:
     return "—" if value is None else f"{value:.2f}"
 
 
+def transfer_pair(
+    transfers: dict[str, Any] | None,
+    home_id: int,
+    away_id: int,
+    stat: str,
+) -> tuple[float, float, dict[str, Any]]:
+    if not transfers:
+        return 1.0, 1.0, {"source": "neutral"}
+
+    home_row = (
+        transfers.get("teams", {})
+        .get(str(home_id), {})
+        .get("stats", {})
+        .get(stat, {})
+    )
+    away_row = (
+        transfers.get("teams", {})
+        .get(str(away_id), {})
+        .get("stats", {})
+        .get(stat, {})
+    )
+
+    h_attack = float(home_row.get("attack_transfer", 1.0))
+    h_conc = float(home_row.get("concession_transfer", 1.0))
+    a_attack = float(away_row.get("attack_transfer", 1.0))
+    a_conc = float(away_row.get("concession_transfer", 1.0))
+
+    # Expected home count depends on home attack adapting to UCL plus away
+    # concession adapting to UCL. Geometric mean prevents double-counting.
+    home_transfer = math.sqrt(max(1e-9, h_attack * a_conc))
+    away_transfer = math.sqrt(max(1e-9, a_attack * h_conc))
+
+    return home_transfer, away_transfer, {
+        "source": "proper-stage UCL team transfer",
+        "home_attack": h_attack,
+        "home_concession": h_conc,
+        "away_attack": a_attack,
+        "away_concession": a_conc,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Price first UCL Edge stat markets for Shots/SOT/Corners."
+        description="Price UCL Edge stat markets for Shots/SOT/Corners."
     )
     parser.add_argument("--split-prior", type=float, default=12.0)
     parser.add_argument("--matchup-shrinkage", type=float, default=0.55)
+    parser.add_argument(
+        "--neutral-transfers",
+        action="store_true",
+        help="Ignore learned UCL transfer factors for diagnostics.",
+    )
     args = parser.parse_args()
 
     profiles = required("team_profiles", "ucl_2026")
     baselines = required("stat_baselines", "ucl_2026")
+    transfers = None if args.neutral_transfers else load_json("stat_transfers", "ucl_2026")
 
+    version = "ucl-stat-edge-v0.2" if transfers else "ucl-stat-edge-v0.1"
     output: dict[str, Any] = {
         "date": MATCH_DATE,
-        "version": "ucl-stat-edge-v0.1",
+        "version": version,
         "split_prior": args.split_prior,
         "matchup_shrinkage": args.matchup_shrinkage,
+        "transfers_loaded": transfers is not None,
         "fixtures": {},
     }
 
-    print(f"UCL STAT EDGE v0.1 — {MATCH_DATE}")
+    print(f"UCL STAT EDGE {version.split('-v')[-1]} — {MATCH_DATE}")
     print(
-        "Primary markets: Shots, Shots on Target, Corners. "
-        "No moneyline ranking. Cross-league stat transfer is intentionally neutral "
-        "until it is learned from European stat history.\n"
+        "Primary markets: Shots, Shots on Target, Corners. No moneyline ranking. "
+        + (
+            "Using shrunk, stat-specific proper-stage UCL transfer factors.\n"
+            if transfers
+            else "Using neutral cross-league transfers; build stat_transfers for v0.2.\n"
+        )
     )
 
     for fixture_id, fixture in FIXTURES.items():
@@ -123,6 +182,9 @@ def main() -> None:
             ucl_env = baselines["ucl"]["stats"][stat]
             home = build_team_profile(home_id, stat, profiles, baselines)
             away = build_team_profile(away_id, stat, profiles, baselines)
+            home_transfer, away_transfer, transfer_meta = transfer_pair(
+                transfers, home_id, away_id, stat
+            )
             projection = project_stat(
                 home=home,
                 away=away,
@@ -130,6 +192,8 @@ def main() -> None:
                 ucl_away_mean=safe_float(ucl_env["away"]["mean"], f"UCL {stat} away"),
                 split_prior_matches=args.split_prior,
                 matchup_shrinkage=args.matchup_shrinkage,
+                home_transfer=home_transfer,
+                away_transfer=away_transfer,
             )
 
             r = ucl_env["combined"].get("r")
@@ -143,7 +207,8 @@ def main() -> None:
 
             print(
                 f"\n{stat.upper():16s} exp {home_name} {projection.home_mean:.2f} "
-                f"| {away_name} {projection.away_mean:.2f}"
+                f"| {away_name} {projection.away_mean:.2f} "
+                f"| transfer {home_transfer:.3f}/{away_transfer:.3f}"
             )
             print(
                 f"  H2H fair: {home_name} {fmt_fair(h2h_market.fair_first)} "
@@ -215,6 +280,9 @@ def main() -> None:
                 "home_mean": projection.home_mean,
                 "away_mean": projection.away_mean,
                 "dispersion_r": dispersion_r,
+                "home_transfer": home_transfer,
+                "away_transfer": away_transfer,
+                "transfer_meta": transfer_meta,
                 "h2h": {
                     "home_win": h2h_market.first_win,
                     "tie": h2h_market.tie,
@@ -229,13 +297,13 @@ def main() -> None:
 
         output["fixtures"][str(fixture_id)] = fixture_out
 
-    path = save_json("predictions", "ucl_stat_2026_09_08_v01", output)
+    key = "ucl_stat_2026_09_08_v02" if transfers else "ucl_stat_2026_09_08_v01"
+    path = save_json("predictions", key, output)
     print("\n" + "=" * 90)
     print(f"Saved stat-market diagnostics to {path}")
     print(
-        "IMPORTANT: v0.1 prices are diagnostics, not validated bets. "
-        "The next calibration step is learning stat-specific European transfer "
-        "factors and backtesting fair prices."
+        "IMPORTANT: these are diagnostic fair prices, not validated bets. "
+        "Next comes walk-forward calibration and bookmaker line ingestion."
     )
 
 
