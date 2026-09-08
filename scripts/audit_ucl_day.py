@@ -1,7 +1,15 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from datetime import date
+from pathlib import Path
+
+# Allow "python scripts/audit_ucl_day.py" from the repository root without
+# requiring the project to be installed as a package first.
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from ingest.api_football import APIFootballClient
 from ingest.fixtures import ucl_fixtures_for_date
