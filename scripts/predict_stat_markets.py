@@ -86,6 +86,64 @@ def fmt_fair(value: float | None) -> str:
     return "—" if value is None else f"{value:.2f}"
 
 
+def transfer_reliability(
+    transfers: dict[str, Any] | None,
+    home_id: int,
+    away_id: int,
+    stat: str,
+) -> dict[str, Any]:
+    if not transfers:
+        return {"level": "LOW", "reason": "no learned UCL transfer file"}
+
+    clamp_bounds = transfers.get("meta", {}).get("clamp", [0.75, 1.25])
+    low, high = float(clamp_bounds[0]), float(clamp_bounds[1])
+
+    rows = []
+    for team_id in (home_id, away_id):
+        row = (
+            transfers.get("teams", {})
+            .get(str(team_id), {})
+            .get("stats", {})
+            .get(stat, {})
+        )
+        n = min(
+            int(row.get("n_attack") or 0),
+            int(row.get("n_concession") or 0),
+        )
+        factors = [
+            float(row.get("attack_transfer", 1.0)),
+            float(row.get("concession_transfer", 1.0)),
+        ]
+        clamped = any(
+            abs(factor - low) <= 0.005 or abs(factor - high) <= 0.005
+            for factor in factors
+        )
+        rows.append({"team_id": team_id, "n": n, "clamped": clamped})
+
+    min_n = min(row["n"] for row in rows)
+    any_clamped = any(row["clamped"] for row in rows)
+
+    if min_n >= 15:
+        level = "HIGH"
+    elif min_n >= 8:
+        level = "MEDIUM"
+    else:
+        level = "LOW"
+
+    if any_clamped:
+        level = {"HIGH": "MEDIUM", "MEDIUM": "LOW", "LOW": "LOW"}[level]
+
+    reasons = [f"min proper-stage UCL sample n={min_n}"]
+    if any_clamped:
+        reasons.append("one or more transfer factors hit the clamp")
+
+    return {
+        "level": level,
+        "reason": "; ".join(reasons),
+        "teams": rows,
+    }
+
+
 def transfer_pair(
     transfers: dict[str, Any] | None,
     home_id: int,
@@ -185,6 +243,9 @@ def main() -> None:
             home_transfer, away_transfer, transfer_meta = transfer_pair(
                 transfers, home_id, away_id, stat
             )
+            reliability = transfer_reliability(
+                transfers, home_id, away_id, stat
+            )
             projection = project_stat(
                 home=home,
                 away=away,
@@ -209,6 +270,10 @@ def main() -> None:
                 f"\n{stat.upper():16s} exp {home_name} {projection.home_mean:.2f} "
                 f"| {away_name} {projection.away_mean:.2f} "
                 f"| transfer {home_transfer:.3f}/{away_transfer:.3f}"
+            )
+            print(
+                f"  TRANSFER RELIABILITY: {reliability['level']} "
+                f"({reliability['reason']})"
             )
             print(
                 f"  H2H fair: {home_name} {fmt_fair(h2h_market.fair_first)} "
@@ -283,6 +348,7 @@ def main() -> None:
                 "home_transfer": home_transfer,
                 "away_transfer": away_transfer,
                 "transfer_meta": transfer_meta,
+                "transfer_reliability": reliability,
                 "h2h": {
                     "home_win": h2h_market.first_win,
                     "tie": h2h_market.tie,
@@ -303,6 +369,8 @@ def main() -> None:
     print(f"Saved stat-market diagnostics to {path}")
     print(
         "IMPORTANT: these are diagnostic fair prices, not validated bets. "
+        "Team totals use univariate count distributions; H2H/AH currently assume "
+        "independent team counts and still need covariance calibration. "
         "Next comes walk-forward calibration and bookmaker line ingestion."
     )
 
