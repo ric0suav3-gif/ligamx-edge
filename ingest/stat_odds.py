@@ -5,16 +5,40 @@ from dataclasses import dataclass
 from typing import Any
 
 BET_MAP = {
+    # Corners
     45: ("corners", "match_total"),
     55: ("corners", "h2h"),
     56: ("corners", "handicap"),
     57: ("corners", "home_total"),
     58: ("corners", "away_total"),
+
+    # Shots / shots on target
     87: ("shots_on_target", "match_total"),
     176: ("shots_on_target", "h2h"),
     177: ("shots_on_target", "handicap"),
     211: ("shots", "match_total"),
     340: ("shots", "h2h"),
+
+    # Yellow cards. These are preferred over generic "cards" markets because
+    # bookmaker red-card settlement rules can differ from a simple card count.
+    150: ("yellow", "home_total"),
+    151: ("yellow", "away_total"),
+    152: ("yellow", "handicap"),
+    158: ("yellow", "h2h"),
+
+    # Offsides
+    164: ("offsides", "match_total"),
+    165: ("offsides", "h2h"),
+    166: ("offsides", "handicap"),
+    167: ("offsides", "home_total"),
+    168: ("offsides", "away_total"),
+
+    # Fouls
+    170: ("fouls", "away_total"),
+    171: ("fouls", "home_total"),
+    173: ("fouls", "match_total"),
+    174: ("fouls", "handicap"),
+    175: ("fouls", "h2h"),
 }
 
 TOTAL_RE = re.compile(r"^(Over|Under)\s+(-?\d+(?:\.\d+)?)$", re.I)
