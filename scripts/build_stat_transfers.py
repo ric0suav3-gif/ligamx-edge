@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import math
 import sys
 from pathlib import Path
 from typing import Any
@@ -41,6 +40,18 @@ def shrunk_transfer(raw: float, n: int, prior: float, low: float, high: float) -
     weight = n / (n + prior) if n > 0 else 0.0
     value = 1.0 + weight * (raw - 1.0)
     return clamp(value, low, high)
+
+
+def neutral(reason: str) -> dict[str, Any]:
+    return {
+        "attack_transfer": 1.0,
+        "concession_transfer": 1.0,
+        "raw_attack_transfer": None,
+        "raw_concession_transfer": None,
+        "n_attack": 0,
+        "n_concession": 0,
+        "reason": reason,
+    }
 
 
 def main() -> None:
@@ -103,12 +114,14 @@ def main() -> None:
             a_against = away_stat.get("against")
 
             if None in (h_for, a_for, h_against, a_against):
-                team_out["stats"][stat] = {
-                    "attack_transfer": 1.0,
-                    "concession_transfer": 1.0,
-                    "n": 0,
-                    "reason": "missing domestic profile",
-                }
+                team_out["stats"][stat] = neutral("missing domestic profile")
+                continue
+
+            if min(
+                h_for_n + a_for_n,
+                h_against_n + a_against_n,
+            ) <= 0:
+                team_out["stats"][stat] = neutral("no populated domestic sample")
                 continue
 
             d_home_mean = domestic_env[stat]["home"]["mean"]
@@ -117,12 +130,7 @@ def main() -> None:
             u_away_mean = ucl_env[stat]["away"]["mean"]
 
             if None in (d_home_mean, d_away_mean, u_home_mean, u_away_mean):
-                team_out["stats"][stat] = {
-                    "attack_transfer": 1.0,
-                    "concession_transfer": 1.0,
-                    "n": 0,
-                    "reason": "missing environment baseline",
-                }
+                team_out["stats"][stat] = neutral("missing environment baseline")
                 continue
 
             domestic_for = weighted_rate(
@@ -138,8 +146,16 @@ def main() -> None:
                 float(d_away_mean), float(d_home_mean), h_against_n, a_against_n
             )
 
+            if domestic_for_base <= 0 or domestic_against_base <= 0:
+                team_out["stats"][stat] = neutral("non-positive domestic baseline")
+                continue
+
             domestic_attack_index = domestic_for / domestic_for_base
             domestic_concession_index = domestic_against / domestic_against_base
+
+            if domestic_attack_index <= 0 or domestic_concession_index <= 0:
+                team_out["stats"][stat] = neutral("non-positive domestic index")
+                continue
 
             euro_attack_indices: list[float | None] = []
             euro_concession_indices: list[float | None] = []
@@ -167,17 +183,20 @@ def main() -> None:
             n = min(n_attack, n_concession)
 
             if euro_attack_index is None or euro_concession_index is None or n == 0:
-                attack_transfer = concession_transfer = 1.0
-                raw_attack = raw_concession = None
-            else:
-                raw_attack = euro_attack_index / domestic_attack_index
-                raw_concession = euro_concession_index / domestic_concession_index
-                attack_transfer = shrunk_transfer(
-                    raw_attack, n_attack, args.prior, args.low, args.high
-                )
-                concession_transfer = shrunk_transfer(
-                    raw_concession, n_concession, args.prior, args.low, args.high
-                )
+                row_out = neutral("no proper-stage UCL stat sample")
+                row_out["n_attack"] = n_attack
+                row_out["n_concession"] = n_concession
+                team_out["stats"][stat] = row_out
+                continue
+
+            raw_attack = euro_attack_index / domestic_attack_index
+            raw_concession = euro_concession_index / domestic_concession_index
+            attack_transfer = shrunk_transfer(
+                raw_attack, n_attack, args.prior, args.low, args.high
+            )
+            concession_transfer = shrunk_transfer(
+                raw_concession, n_concession, args.prior, args.low, args.high
+            )
 
             team_out["stats"][stat] = {
                 "attack_transfer": attack_transfer,
