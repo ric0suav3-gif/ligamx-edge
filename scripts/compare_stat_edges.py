@@ -78,6 +78,9 @@ def label_quote(q: StatQuote) -> str:
         "shots": "Shots",
         "shots_on_target": "SOT",
         "corners": "Corners",
+        "fouls": "Fouls",
+        "offsides": "Offsides",
+        "yellow": "Yellow Cards",
     }[q.stat]
     market = q.market_type.replace("_", " ")
     line = "" if q.line is None else f" {q.line:g}"
