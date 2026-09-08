@@ -36,3 +36,19 @@ TEAMS = {
     for fixture in FIXTURES.values()
     for team in (fixture["home"], fixture["away"])
 }
+
+# Verified from API-Football for season 2026.
+DOMESTIC_LEAGUES = {
+    575: {"league_id": 197, "league_name": "Super League 1", "country": "Greece"},
+    66: {"league_id": 39, "league_name": "Premier League", "country": "England"},
+    165: {"league_id": 78, "league_name": "Bundesliga", "country": "Germany"},
+    569: {"league_id": 144, "league_name": "Jupiler Pro League", "country": "Belgium"},
+    212: {"league_id": 94, "league_name": "Primeira Liga", "country": "Portugal"},
+    505: {"league_id": 135, "league_name": "Serie A", "country": "Italy"},
+    1026: {"league_id": 218, "league_name": "Bundesliga", "country": "Austria"},
+    79: {"league_id": 61, "league_name": "Ligue 1", "country": "France"},
+    50: {"league_id": 39, "league_name": "Premier League", "country": "England"},
+    543: {"league_id": 140, "league_name": "La Liga", "country": "Spain"},
+    541: {"league_id": 140, "league_name": "La Liga", "country": "Spain"},
+    533: {"league_id": 140, "league_name": "La Liga", "country": "Spain"},
+}
