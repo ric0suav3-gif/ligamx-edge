@@ -27,6 +27,24 @@ The API layer currently supports league coverage, fixtures, fixture statistics,
 lineups, injuries, and odds. Missing statistics are preserved as `None` rather
 than being silently converted to zero.
 
+### Historical backfill
+
+```bash
+python scripts/backfill_domestic_history.py --matches 30
+python scripts/build_team_profiles.py
+```
+
+Raw API responses are cached under `data/cache/` (ignored by Git). If a
+backfill is interrupted, rerunning it reuses the successful cached calls.
+
+The client also throttles requests and automatically retries HTTP 429 and
+transient 5xx responses. The defaults can be adjusted in `.env`:
+
+```text
+API_FOOTBALL_MIN_INTERVAL=0.40
+API_FOOTBALL_MAX_RETRIES=6
+```
+
 ### Model components
 
 - Exponentially weighted form (`model/ewma.py`)
