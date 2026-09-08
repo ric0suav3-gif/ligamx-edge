@@ -15,7 +15,14 @@ from ingest.cache import load_json, save_json
 from model.stat_markets import asian_handicap, asian_team_total, h2h
 from model.stat_projection import SplitStatProfile, TeamStatProfile, project_stat
 
-PRIMARY_STATS = ("shots", "shots_on_target", "corners")
+PRIMARY_STATS = (
+    "shots",
+    "shots_on_target",
+    "corners",
+    "fouls",
+    "offsides",
+    "yellow",
+)
 
 
 def required(kind: str, key: str) -> Any:
@@ -187,7 +194,7 @@ def transfer_pair(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Price UCL Edge stat markets for Shots/SOT/Corners."
+        description="Price UCL Edge stat markets for shots/SOT/corners/fouls/offsides/yellows."
     )
     parser.add_argument("--split-prior", type=float, default=12.0)
     parser.add_argument("--matchup-shrinkage", type=float, default=0.55)
@@ -214,7 +221,7 @@ def main() -> None:
 
     print(f"UCL STAT EDGE {version.split('-v')[-1]} — {MATCH_DATE}")
     print(
-        "Primary markets: Shots, Shots on Target, Corners. No moneyline ranking. "
+        "Stat markets: Shots, Shots on Target, Corners, Fouls, Offsides, Yellow Cards. No moneyline ranking. "
         + (
             "Using shrunk, stat-specific proper-stage UCL transfer factors.\n"
             if transfers
