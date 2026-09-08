@@ -38,6 +38,13 @@ def cached_competition_fixtures(
     return rows
 
 
+def is_ucl_proper_stage(row: dict[str, Any]) -> bool:
+    """Exclude qualifying/preliminary/play-off rounds from UCL scoring baseline."""
+    round_name = str(row.get("league", {}).get("round") or "").lower()
+    excluded = ("qualif", "prelim", "play-off", "playoff")
+    return not any(token in round_name for token in excluded)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Build a cross-league club Elo from UEFA competition results."
@@ -86,10 +93,13 @@ def main() -> None:
             away_goals=int(row["goals"]["away"]),
         )
 
-    # UCL scoring environment used to transfer domestic rates onto a UCL baseline.
+    # UCL scoring environment: use only the proper competition, not qualifying.
+    # The v0 baseline accidentally mixed in qualifier mismatches and inflated
+    # expected scoring for league-phase matches.
     ucl_rows = [
         row for row in ordered
         if int(row.get("league", {}).get("id") or 0) == UCL
+        and is_ucl_proper_stage(row)
     ][-args.ucl_window:]
     ucl_home = ewma(
         [float(row["goals"]["home"]) for row in ucl_rows],
@@ -107,6 +117,7 @@ def main() -> None:
             "matches": len(ordered),
             "k": args.k,
             "home_advantage": args.home_advantage,
+            "ucl_baseline_excludes_qualifying": True,
         },
         "ucl_baseline": {
             "n": len(ucl_rows),
@@ -119,7 +130,10 @@ def main() -> None:
     path = save_json("european_strength", "ucl_2026", payload)
 
     print(f"\nEuropean Elo matches: {len(ordered)}")
-    print(f"UCL baseline: H {ucl_home:.3f} | A {ucl_away:.3f} | n={len(ucl_rows)}")
+    print(
+        f"UCL proper-stage baseline: H {ucl_home:.3f} | "
+        f"A {ucl_away:.3f} | n={len(ucl_rows)}"
+    )
     print("\nToday's clubs:")
     for team_id, team_name in sorted(TEAMS.items(), key=lambda x: x[1]):
         print(f"  {team_name:20s} {ratings.get(team_id):.1f}")
