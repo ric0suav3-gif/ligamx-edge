@@ -150,6 +150,16 @@ def main() -> None:
     parser.add_argument("--start-week", type=int, default=None)
     parser.add_argument("--end-week", type=int, default=None)
     parser.add_argument("--max-games", type=int, default=None)
+    parser.add_argument(
+        "--warmup-seasons",
+        nargs="*",
+        type=int,
+        default=None,
+        help=(
+            "Prior seasons used only to seed pre-game history. "
+            "Defaults to season-1. Pass no values to disable warmup."
+        ),
+    )
     args = parser.parse_args()
 
     client = APINFLClient()
@@ -163,6 +173,49 @@ def main() -> None:
     histories: dict[int, list[dict[str, Any]]] = defaultdict(list)
     records: list[dict[str, Any]] = []
     tested_games = 0
+
+    # Seed each team's history with prior-season games so Week 1 can be
+    # evaluated without a cold-start gap. These fixtures all occur strictly
+    # before the target season, so the leakage barrier is preserved.
+    warmup_seasons = (
+        [args.season - 1]
+        if args.warmup_seasons is None
+        else list(args.warmup_seasons)
+    )
+    warmup_rows = 0
+    for warmup_season in warmup_seasons:
+        prior = client.games(
+            league=NFL_LEAGUE_ID,
+            season=warmup_season,
+        ).response
+        prior = [
+            row for row in prior
+            if status(row) in COMPLETED and stage_allowed(row)
+        ]
+        prior.sort(key=parse_dt)
+
+        print(
+            f"warming history from {warmup_season}: "
+            f"{len(prior)} completed non-preseason fixtures"
+        )
+        for fixture in prior:
+            gid = game_id(fixture)
+            parsed = parse_team_statistics(cached_team_stats(client, gid))
+            if len(parsed) != 2:
+                continue
+            home, away = teams(fixture)
+            for tid in (int(away["id"]), int(home["id"])):
+                row = historical_row(fixture, tid, parsed)
+                if row is not None:
+                    histories[tid].append(row)
+                    warmup_rows += 1
+
+    if warmup_seasons:
+        covered = sum(1 for rows in histories.values() if len(rows) >= args.min_history)
+        print(
+            f"warmup complete: team_rows={warmup_rows} | "
+            f"teams_with_{args.min_history}+_games={covered}\n"
+        )
 
     for idx, fixture in enumerate(fixtures, start=1):
         if args.max_games is not None and tested_games >= args.max_games:
@@ -292,6 +345,7 @@ def main() -> None:
         "half_life": args.half_life,
         "start_week": args.start_week,
         "end_week": args.end_week,
+        "warmup_seasons": warmup_seasons,
         "tested_games": tested_games,
         "team_rows": len(records),
         "metrics": metrics,
@@ -299,7 +353,8 @@ def main() -> None:
     }
     key = (
         f"team_stats_{args.season}_h{args.history}_"
-        f"hl{str(args.half_life).replace('.', 'p')}"
+        f"hl{str(args.half_life).replace('.', 'p')}_"
+        f"warm{'-'.join(str(x) for x in warmup_seasons) or 'none'}"
     )
     path = save_json("backtests", key, payload)
     print(f"\nSaved backtest to {path}")
