@@ -132,7 +132,8 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    predictions = required("predictions", "ucl_stat_2026_09_08_v02")
+    date_key = MATCH_DATE.replace("-", "_")
+    predictions = required("predictions", f"ucl_stat_{date_key}_v02")
     ranked: list[dict[str, Any]] = []
     all_rows: list[dict[str, Any]] = []
 
@@ -245,7 +246,7 @@ def main() -> None:
         "ranked": ranked,
         "all_quotes": all_rows,
     }
-    path = save_json("book_comparisons", "ucl_2026_09_08_v02_safe", payload)
+    path = save_json("book_comparisons", f"ucl_{date_key}_v02_safe", payload)
     print(f"Saved comparison to {path}")
 
 
