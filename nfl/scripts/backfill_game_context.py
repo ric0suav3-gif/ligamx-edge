@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -24,7 +24,7 @@ def parse_dt(row: dict[str, Any]) -> datetime:
     if isinstance(date_obj, dict):
         stamp = date_obj.get("timestamp")
         if stamp is not None:
-            return datetime.fromtimestamp(int(stamp))
+            return datetime.fromtimestamp(int(stamp), tz=timezone.utc)
         value = f"{date_obj.get('date')}T{date_obj.get('time') or '00:00'}"
         return datetime.fromisoformat(value)
     return datetime.fromisoformat(str(date_obj).replace("Z", "+00:00"))
@@ -136,6 +136,10 @@ def main() -> None:
                 (x for x in team_rows if int(x["team_id"]) == team_id),
                 None,
             )
+            opponent_team = next(
+                (x for x in team_rows if int(x["team_id"]) != team_id),
+                None,
+            )
             own_players = [
                 x for x in player_rows if int(x["team_id"]) == team_id
             ]
@@ -147,6 +151,7 @@ def main() -> None:
                     "week": game.get("week"),
                     "stage": game.get("stage"),
                     "team": own_team,
+                    "opponent_team": opponent_team,
                     "players": own_players,
                 }
             )
