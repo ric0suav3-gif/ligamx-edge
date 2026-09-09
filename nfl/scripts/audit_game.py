@@ -60,9 +60,10 @@ def main() -> None:
         print("=" * 100)
         print(compact(odds, 12000))
 
+    suffix = f"_{args.group.lower()}" if args.group else ""
     path = save_json(
         "audits",
-        f"game_{args.game}",
+        f"game_{args.game}{suffix}",
         {
             "game": game,
             "team_stats": team_stats,
