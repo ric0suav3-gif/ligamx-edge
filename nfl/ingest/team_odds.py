@@ -14,6 +14,11 @@ class TeamMarketSpec:
 # Confirmed from the API-NFL catalogue audit. Settlement semantics for passing
 # yards should still be audited against a live sportsbook payload before release.
 TEAM_BET_MAP = {
+    # Generic NFL scoreboard totals. The live 2026-09-09 audit confirmed
+    # these are actively posted across Marathon/Pinnacle/1xBet.
+    3: TeamMarketSpec("points", "match_total"),
+    8: TeamMarketSpec("points", "home_total"),
+    9: TeamMarketSpec("points", "away_total"),
     216: TeamMarketSpec("pass_attempts", "match_total"),
     217: TeamMarketSpec("pass_completions", "match_total"),
     219: TeamMarketSpec("passing_yards", "match_total"),
