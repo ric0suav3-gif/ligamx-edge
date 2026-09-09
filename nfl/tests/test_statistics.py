@@ -74,10 +74,12 @@ def test_parse_team_statistics() -> None:
                     "total": 326,
                     "comp_att": "29/42",
                     "interceptions_thrown": 1,
+                    "sacks_yards_lost": "3-19",
                 },
                 "rushings": {"total": 186, "attempts": 38},
                 "turnovers": {"total": 1},
                 "sacks": {"total": 3},
+                "points_against": {"total": 17},
                 "posession": {"total": "37:58"},
             },
         }
@@ -87,3 +89,6 @@ def test_parse_team_statistics() -> None:
     assert row["pass_attempts"] == 42
     assert row["rush_attempts"] == 38
     assert row["team_net_passing_yards"] == 326
+    assert row["sacks_taken"] == 3
+    assert row["sack_yards_lost"] == 19
+    assert row["points_against"] == 17
