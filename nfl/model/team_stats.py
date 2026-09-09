@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from statistics import stdev
 from typing import Any
 
 from nfl.model.ewma import ewma
@@ -19,6 +20,14 @@ class TeamStatProjection:
     expected_sacks_made: float
     expected_turnovers: float
     expected_points: float
+    pass_attempts_sd: float
+    completions_sd: float
+    passing_yards_sd: float
+    rush_attempts_sd: float
+    rushing_yards_sd: float
+    sacks_sd: float
+    turnovers_sd: float
+    points_sd: float
     pass_rate: float
     completion_rate: float
     yards_per_pass_attempt: float
@@ -269,6 +278,35 @@ def project_team_stats(
     if expected_plays is None:
         expected_plays = expected_scrimmage + sacks
 
+    def empirical_sd(values: list[float | None], floor: float) -> float:
+        clean = [float(v) for v in values if v is not None]
+        return max(floor, stdev(clean) if len(clean) >= 2 else 0.0)
+
+    pass_attempts_sd = empirical_sd(
+        _series(own_matches, "team", "pass_attempts"), 4.0
+    )
+    completions_sd = empirical_sd(
+        _series(own_matches, "team", "pass_completions"), 3.0
+    )
+    passing_yards_sd = empirical_sd(
+        _series(own_matches, "team", "team_net_passing_yards"), 35.0
+    )
+    rush_attempts_sd = empirical_sd(
+        _series(own_matches, "team", "rush_attempts"), 4.0
+    )
+    rushing_yards_sd = empirical_sd(
+        _series(own_matches, "team", "rushing_yards"), 25.0
+    )
+    sacks_sd = empirical_sd(
+        _series(own_matches, "team", "sacks_made"), 1.0
+    )
+    turnovers_sd = empirical_sd(
+        _series(own_matches, "team", "turnovers"), 0.8
+    )
+    points_sd = empirical_sd(
+        _series(own_matches, "opponent_team", "points_against"), 6.5
+    )
+
     n = len(own_matches)
     reliability = "HIGH" if n >= 16 else "MEDIUM" if n >= 8 else "LOW"
 
@@ -284,6 +322,14 @@ def project_team_stats(
         expected_sacks_made=sacks,
         expected_turnovers=turnovers,
         expected_points=points,
+        pass_attempts_sd=pass_attempts_sd,
+        completions_sd=completions_sd,
+        passing_yards_sd=passing_yards_sd,
+        rush_attempts_sd=rush_attempts_sd,
+        rushing_yards_sd=rushing_yards_sd,
+        sacks_sd=sacks_sd,
+        turnovers_sd=turnovers_sd,
+        points_sd=points_sd,
         pass_rate=pass_rate,
         completion_rate=completion_rate,
         yards_per_pass_attempt=ypa,
