@@ -142,9 +142,14 @@ def parse_team_statistics(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         yards = stats.get("yards") or {}
         turnovers = stats.get("turnovers") or {}
         sacks = stats.get("sacks") or {}
+        points_against = stats.get("points_against") or {}
         possession = stats.get("posession") or stats.get("possession") or {}
 
         completions, attempts = _pair(passing.get("comp_att"))
+        sacks_taken, sack_yards_lost = _pair(
+            passing.get("sacks_yards_lost"),
+            sep="-",
+        )
         out.append(
             {
                 "team_id": int(team["id"]),
@@ -162,6 +167,9 @@ def parse_team_statistics(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "rush_attempts": _num(rushing.get("attempts")),
                 "turnovers": _num(turnovers.get("total")),
                 "sacks_made": _num(sacks.get("total")),
+                "sacks_taken": sacks_taken,
+                "sack_yards_lost": sack_yards_lost,
+                "points_against": _num(points_against.get("total")),
                 "possession": possession.get("total"),
             }
         )
