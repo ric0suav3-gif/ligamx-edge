@@ -370,7 +370,8 @@ def main() -> None:
 
         output["fixtures"][str(fixture_id)] = fixture_out
 
-    key = "ucl_stat_2026_09_08_v02" if transfers else "ucl_stat_2026_09_08_v01"
+    date_key = MATCH_DATE.replace("-", "_")
+    key = f"ucl_stat_{date_key}_v02" if transfers else f"ucl_stat_{date_key}_v01"
     path = save_json("predictions", key, output)
     print("\n" + "=" * 90)
     print(f"Saved stat-market diagnostics to {path}")
