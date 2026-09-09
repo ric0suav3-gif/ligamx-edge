@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from config.ucl_2026 import FIXTURES
+from config.ucl_2026 import FIXTURES, MATCH_DATE
 from ingest.api_football import APIFootballClient
 from ingest.cache import load_json, save_json
 
@@ -129,7 +129,8 @@ def main() -> None:
         if not selected:
             print("  No stat-relevant market names returned by API-Football.")
 
-    path = save_json("odds_market_audit", "ucl_2026_09_08", output)
+    date_key = MATCH_DATE.replace("-", "_")
+    path = save_json("odds_market_audit", f"ucl_{date_key}", output)
     print("\n" + "=" * 100)
     print(f"Saved market audit to {path}")
 
