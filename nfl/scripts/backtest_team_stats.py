@@ -172,6 +172,7 @@ def main() -> None:
 
     histories: dict[int, list[dict[str, Any]]] = defaultdict(list)
     records: list[dict[str, Any]] = []
+    match_records: list[dict[str, Any]] = []
     tested_games = 0
 
     # Seed each team's history with prior-season games so Week 1 can be
@@ -241,6 +242,7 @@ def main() -> None:
         if should_test:
             enough = all(len(histories[tid]) >= args.min_history for tid in team_ids)
             if enough:
+                fixture_records: list[dict[str, Any]] = []
                 for tid in team_ids:
                     own_hist = histories[tid][-args.history:]
                     opp_tid = next(x for x in team_ids if x != tid)
@@ -282,6 +284,48 @@ def main() -> None:
                         record["predicted"][stat] = projection_value(stat, p)
                         record["actual"][stat] = actual_value(stat, own_stats, opp_stats)
                     records.append(record)
+                    fixture_records.append(record)
+
+                if len(fixture_records) == 2:
+                    match_record = {
+                        "game_id": gid,
+                        "date": parse_dt(fixture).isoformat(),
+                        "week": wk,
+                        "stage": stage(fixture),
+                        "predicted": {},
+                        "actual": {},
+                    }
+                    for stat in (
+                        "plays",
+                        "pass_attempts",
+                        "completions",
+                        "passing_yards",
+                        "rush_attempts",
+                        "rushing_yards",
+                        "sacks",
+                        "turnovers",
+                        "points",
+                    ):
+                        pred_values = [
+                            r["predicted"].get(stat)
+                            for r in fixture_records
+                        ]
+                        actual_values = [
+                            r["actual"].get(stat)
+                            for r in fixture_records
+                        ]
+                        match_record["predicted"][stat] = (
+                            sum(float(v) for v in pred_values)
+                            if all(v is not None for v in pred_values)
+                            else None
+                        )
+                        match_record["actual"][stat] = (
+                            sum(float(v) for v in actual_values)
+                            if all(v is not None for v in actual_values)
+                            else None
+                        )
+                    match_records.append(match_record)
+
                 tested_games += 1
 
         # Only after pricing the target game do we append it to each team's history.
@@ -325,6 +369,33 @@ def main() -> None:
         )
         metrics[stat] = m.to_dict()
 
+    match_metrics = {}
+    for stat in (
+        "plays",
+        "pass_attempts",
+        "completions",
+        "passing_yards",
+        "rush_attempts",
+        "rushing_yards",
+        "sacks",
+        "turnovers",
+        "points",
+    ):
+        pred = [r["predicted"][stat] for r in match_records]
+        actual = [r["actual"][stat] for r in match_records]
+        pairs = [
+            (p, a)
+            for p, a in zip(pred, actual)
+            if p is not None and a is not None
+        ]
+        if not pairs:
+            continue
+        m = regression_metrics(
+            [p for p, _ in pairs],
+            [a for _, a in pairs],
+        )
+        match_metrics[stat] = m.to_dict()
+
     print(
         f"\nNFL EDGE TEAM STATS WALK-FORWARD | season {args.season} | "
         f"games={tested_games} | team_rows={len(records)}"
@@ -338,6 +409,16 @@ def main() -> None:
             f"{m['mae']:9.2f} {m['rmse']:9.2f} {m['bias']:9.2f}"
         )
 
+    if match_metrics:
+        print("\nMATCH TOTAL METRICS")
+        print(f"{'STAT':20s} {'N':>5s} {'MAE':>9s} {'RMSE':>9s} {'BIAS':>9s}")
+        print("-" * 56)
+        for stat, m in match_metrics.items():
+            print(
+                f"{stat:20s} {m['n']:5d} "
+                f"{m['mae']:9.2f} {m['rmse']:9.2f} {m['bias']:9.2f}"
+            )
+
     payload = {
         "season": args.season,
         "history": args.history,
@@ -348,8 +429,11 @@ def main() -> None:
         "warmup_seasons": warmup_seasons,
         "tested_games": tested_games,
         "team_rows": len(records),
+        "match_rows": len(match_records),
         "metrics": metrics,
+        "match_metrics": match_metrics,
         "records": records,
+        "match_records": match_records,
     }
     key = (
         f"team_stats_{args.season}_h{args.history}_"
