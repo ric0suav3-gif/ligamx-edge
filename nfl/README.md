@@ -133,3 +133,21 @@ The next implementation step is driven by these real responses:
 ### Important provider limitations
 
 API-Sports documents injuries as current-state data without historical injury archives and pre-match odds with only short history. From day one, NFL Edge should snapshot current injuries and odds locally so future backtests can use information that actually existed before kickoff.
+
+
+## Product priority: team statistical markets first
+
+NFL Edge is now **team-stat-first**, with player props as a secondary layer.
+
+Primary markets:
+- team pass attempts / completions
+- team passing yards
+- team rush attempts
+- team rushing yards
+- team sacks
+- team turnovers
+- team points
+- match totals for the same statistics
+- home/away team totals and H2H stat markets when sportsbook settlement is explicit
+
+Player props remain supported, but they are not the sole focus. The team layer should be validated first because it is more stable, has clearer opponent-adjustment mechanics, and better matches the project's UCL-style statistical-market strategy.
