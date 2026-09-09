@@ -22,6 +22,7 @@ class APIResponse:
     results: int | None
     paging: dict[str, Any]
     parameters: dict[str, Any]
+    rate_limits: dict[str, int | None]
     raw: dict[str, Any]
 
 
@@ -156,15 +157,31 @@ class APINFLClient:
             if not isinstance(response, list):
                 response = [response]
 
+            def header_int(name: str) -> int | None:
+                value = resp.headers.get(name)
+                try:
+                    return None if value is None else int(value)
+                except ValueError:
+                    return None
+
             return APIResponse(
                 response=response,
                 results=payload.get("results"),
                 paging=payload.get("paging") or {},
                 parameters=payload.get("parameters") or {},
+                rate_limits={
+                    "daily_limit": header_int("x-ratelimit-requests-limit"),
+                    "daily_remaining": header_int("x-ratelimit-requests-remaining"),
+                    "minute_limit": header_int("X-RateLimit-Limit"),
+                    "minute_remaining": header_int("X-RateLimit-Remaining"),
+                },
                 raw=payload,
             )
 
         raise APINFLError(f"Request failed: {last_error or 'unknown error'}")
+
+    def status(self) -> APIResponse:
+        return self.get("status")
 
     def leagues(self, **params: Any) -> APIResponse:
         return self.get("leagues", **params)
