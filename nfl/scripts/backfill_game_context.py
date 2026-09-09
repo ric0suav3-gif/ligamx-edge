@@ -100,6 +100,7 @@ def main() -> None:
     teams = target.get("teams") or {}
 
     target_info = {
+        "schema_version": 2,
         "game_id": args.game,
         "cutoff": cutoff.isoformat(),
         "teams": teams,
