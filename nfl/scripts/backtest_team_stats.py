@@ -165,6 +165,9 @@ def main() -> None:
     tested_games = 0
 
     for idx, fixture in enumerate(fixtures, start=1):
+        if args.max_games is not None and tested_games >= args.max_games:
+            break
+
         gid = game_id(fixture)
         wk = week_number(fixture)
 
@@ -180,8 +183,6 @@ def main() -> None:
         if args.start_week is not None and (wk is None or wk < args.start_week):
             should_test = False
         if args.end_week is not None and (wk is None or wk > args.end_week):
-            should_test = False
-        if args.max_games is not None and tested_games >= args.max_games:
             should_test = False
 
         if should_test:
