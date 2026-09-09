@@ -22,6 +22,8 @@ KEYWORDS = (
     "rushing",
     "receiv",
     "reception",
+    "catch",
+    "catch",
     "target",
     "yard",
     "touchdown",
