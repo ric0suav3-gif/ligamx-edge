@@ -16,6 +16,7 @@ from nfl.ingest.cache import load_json, save_json
 from nfl.ingest.statistics import parse_player_groups, parse_team_statistics
 
 COMPLETED = {"FT", "AET"}
+DEFAULT_ALLOWED_STAGES = {"regular season", "post season", "postseason", "playoffs"}
 
 
 def parse_dt(row: dict[str, Any]) -> datetime:
@@ -28,6 +29,21 @@ def parse_dt(row: dict[str, Any]) -> datetime:
         value = f"{date_obj.get('date')}T{date_obj.get('time') or '00:00'}"
         return datetime.fromisoformat(value)
     return datetime.fromisoformat(str(date_obj).replace("Z", "+00:00"))
+
+
+def game_stage(row: dict[str, Any]) -> str:
+    game = row.get("game") or row
+    return str(game.get("stage") or "").strip()
+
+
+def stage_allowed(row: dict[str, Any], include_preseason: bool = False) -> bool:
+    stage = game_stage(row)
+    normalized = stage.casefold().replace("-", " ")
+    if include_preseason:
+        return True
+    if "pre" in normalized and "season" in normalized:
+        return False
+    return normalized in DEFAULT_ALLOWED_STAGES or "regular" in normalized or "playoff" in normalized or "post" in normalized
 
 
 def game_status(row: dict[str, Any]) -> str:
@@ -88,6 +104,11 @@ def main() -> None:
         type=int,
         default=[2026, 2025, 2024],
     )
+    parser.add_argument(
+        "--include-preseason",
+        action="store_true",
+        help="Include preseason games. Off by default for regular-season modeling.",
+    )
     args = parser.parse_args()
 
     client = APINFLClient()
@@ -120,13 +141,22 @@ def main() -> None:
                     continue
                 if parse_dt(row) >= cutoff:
                     continue
+                if not stage_allowed(row, include_preseason=args.include_preseason):
+                    continue
                 candidates[gid] = row
 
         ordered = sorted(candidates.values(), key=parse_dt)
         selected = ordered[-args.matches:]
 
         history = []
-        print(f"{team_name}: {len(selected)} prior completed games")
+        stage_counts: dict[str, int] = {}
+        for row in selected:
+            stage = game_stage(row) or "UNKNOWN"
+            stage_counts[stage] = stage_counts.get(stage, 0) + 1
+        print(
+            f"{team_name}: {len(selected)} prior completed games | "
+            f"stages={stage_counts}"
+        )
         for idx, row in enumerate(selected, start=1):
             game = row.get("game") or row
             gid = int(game.get("id") or row.get("id"))
