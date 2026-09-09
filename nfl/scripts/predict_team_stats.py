@@ -26,6 +26,14 @@ def main() -> None:
             "Missing context. Run backfill_game_context.py first."
         )
 
+    schema_version = int(context.get("schema_version") or 0)
+    if schema_version < 2:
+        raise SystemExit(
+            "Stale game context detected (schema < 2). "
+            "Re-run: python nfl/scripts/backfill_game_context.py "
+            f"--game {args.game} --matches 20"
+        )
+
     histories = context.get("histories") or {}
     teams = context.get("teams") or {}
     if len(histories) != 2:
