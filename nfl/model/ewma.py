@@ -14,11 +14,17 @@ def recency_weights(n: int, half_life: float) -> list[float]:
 
 
 def ewma(values: Iterable[float | int | None], half_life: float = 8.0) -> float | None:
-    clean = [(idx, float(v)) for idx, v in enumerate(values) if v is not None]
+    seq = list(values)
+    if not seq:
+        return None
+    weights = recency_weights(len(seq), half_life)
+    clean = [
+        (idx, float(value))
+        for idx, value in enumerate(seq)
+        if value is not None
+    ]
     if not clean:
         return None
-    n = len(list(values)) if not isinstance(values, list) else len(values)
-    weights = recency_weights(n, half_life)
-    num = sum(weights[idx] * value for idx, value in clean)
-    den = sum(weights[idx] for idx, _ in clean)
-    return None if den <= 0 else num / den
+    numerator = sum(weights[idx] * value for idx, value in clean)
+    denominator = sum(weights[idx] for idx, _ in clean)
+    return None if denominator <= 0 else numerator / denominator
