@@ -46,8 +46,17 @@ def main() -> None:
         home = teams.get("home") or row.get("home") or {}
         away = teams.get("away") or row.get("away") or {}
 
-        game_date = game.get("date") or row.get("date")
-        status = game.get("status") or row.get("status")
+        date_obj = game.get("date") or row.get("date") or {}
+        if isinstance(date_obj, dict):
+            game_date = f"{date_obj.get('date')} {date_obj.get('time')} {date_obj.get('timezone')}"
+        else:
+            game_date = str(date_obj)
+
+        status_obj = game.get("status") or row.get("status") or {}
+        if isinstance(status_obj, dict):
+            status = status_obj.get("short") or status_obj.get("long")
+        else:
+            status = str(status_obj)
 
         print(
             f"{game_id} | {team_name(away)} @ {team_name(home)} | "
