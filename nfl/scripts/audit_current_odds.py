@@ -12,24 +12,9 @@ if str(ROOT) not in sys.path:
 
 from nfl.ingest.api_sports import APINFLClient
 from nfl.ingest.cache import save_json
+from nfl.ingest.odds import BET_STAT
 
-FOCUS_BET_IDS = {
-    95,   # Player Interceptions
-    207,  # Player Passing Touchdowns
-    210,  # Player Passing Yards
-    216,  # Total Passing Attempts
-    217,  # Total Passing Completions
-    228,  # Player Passing Completions
-    236,  # Player Rushing Yards
-    259,  # Player Rushing Attempts
-    266,  # Player Receiving Yards
-    271,  # Player Rushing and Receiving Yards
-    319,  # Total Sacks
-    326,  # Player Passing Completions (duplicate provider catalogue family)
-    328,  # Player Rushing Yards (duplicate provider catalogue family)
-    332,  # Player Rushing Attempts (duplicate provider catalogue family)
-    336,  # Player Passing Yards (duplicate provider catalogue family)
-}
+FOCUS_BET_IDS = set(BET_STAT)
 
 
 def compact(value: object, limit: int = 30000) -> str:
