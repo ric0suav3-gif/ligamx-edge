@@ -178,8 +178,6 @@ def transfer_pair(
     a_attack = float(away_row.get("attack_transfer", 1.0))
     a_conc = float(away_row.get("concession_transfer", 1.0))
 
-    # Expected home count depends on home attack adapting to UCL plus away
-    # concession adapting to UCL. Geometric mean prevents double-counting.
     home_transfer = math.sqrt(max(1e-9, h_attack * a_conc))
     away_transfer = math.sqrt(max(1e-9, a_attack * h_conc))
 
@@ -190,6 +188,44 @@ def transfer_pair(
         "away_attack": a_attack,
         "away_concession": a_conc,
     }
+
+
+def unavailable_reason(
+    home_id: int,
+    away_id: int,
+    stat: str,
+    profiles: dict[str, Any],
+    baselines: dict[str, Any],
+) -> str | None:
+    """Return why a stat cannot be modeled without inventing missing API data."""
+    for team_id in (home_id, away_id):
+        team = profiles.get("teams", {}).get(str(team_id))
+        if not team:
+            return f"team {team_id}: no domestic profile"
+
+        league_id = int(DOMESTIC_LEAGUES[team_id]["league_id"])
+        env = (
+            baselines.get("domestic", {})
+            .get(str(league_id), {})
+            .get("stats", {})
+            .get(stat, {})
+        )
+        if not env:
+            return f"league {league_id}: no {stat} baseline"
+        if env.get("home", {}).get("mean") is None or env.get("away", {}).get("mean") is None:
+            return f"league {league_id}: API has no usable {stat} coverage"
+
+        for venue in ("home", "away"):
+            stat_row = team.get(venue, {}).get(stat, {})
+            if stat_row.get("for") is None or stat_row.get("against") is None:
+                return f"team {team_id}: API has no usable domestic {stat} profile"
+            if effective_n(team[venue], stat) <= 0:
+                return f"team {team_id}: zero populated domestic {stat} sample"
+
+    ucl_env = baselines.get("ucl", {}).get("stats", {}).get(stat, {})
+    if ucl_env.get("home", {}).get("mean") is None or ucl_env.get("away", {}).get("mean") is None:
+        return f"UCL environment: no usable {stat} baseline"
+    return None
 
 
 def main() -> None:
@@ -241,28 +277,43 @@ def main() -> None:
             "home": home_name,
             "away": away_name,
             "stats": {},
+            "unavailable_stats": {},
         }
 
         for stat in PRIMARY_STATS:
-            ucl_env = baselines["ucl"]["stats"][stat]
-            home = build_team_profile(home_id, stat, profiles, baselines)
-            away = build_team_profile(away_id, stat, profiles, baselines)
-            home_transfer, away_transfer, transfer_meta = transfer_pair(
-                transfers, home_id, away_id, stat
+            reason = unavailable_reason(
+                home_id, away_id, stat, profiles, baselines
             )
-            reliability = transfer_reliability(
-                transfers, home_id, away_id, stat
-            )
-            projection = project_stat(
-                home=home,
-                away=away,
-                ucl_home_mean=safe_float(ucl_env["home"]["mean"], f"UCL {stat} home"),
-                ucl_away_mean=safe_float(ucl_env["away"]["mean"], f"UCL {stat} away"),
-                split_prior_matches=args.split_prior,
-                matchup_shrinkage=args.matchup_shrinkage,
-                home_transfer=home_transfer,
-                away_transfer=away_transfer,
-            )
+            if reason:
+                fixture_out["unavailable_stats"][stat] = reason
+                print(f"\n{stat.upper():16s} SKIP | {reason}")
+                continue
+
+            try:
+                ucl_env = baselines["ucl"]["stats"][stat]
+                home = build_team_profile(home_id, stat, profiles, baselines)
+                away = build_team_profile(away_id, stat, profiles, baselines)
+                home_transfer, away_transfer, transfer_meta = transfer_pair(
+                    transfers, home_id, away_id, stat
+                )
+                reliability = transfer_reliability(
+                    transfers, home_id, away_id, stat
+                )
+                projection = project_stat(
+                    home=home,
+                    away=away,
+                    ucl_home_mean=safe_float(ucl_env["home"]["mean"], f"UCL {stat} home"),
+                    ucl_away_mean=safe_float(ucl_env["away"]["mean"], f"UCL {stat} away"),
+                    split_prior_matches=args.split_prior,
+                    matchup_shrinkage=args.matchup_shrinkage,
+                    home_transfer=home_transfer,
+                    away_transfer=away_transfer,
+                )
+            except (KeyError, TypeError, ValueError) as exc:
+                reason = f"model inputs unavailable: {exc}"
+                fixture_out["unavailable_stats"][stat] = reason
+                print(f"\n{stat.upper():16s} SKIP | {reason}")
+                continue
 
             r = ucl_env["combined"].get("r")
             dispersion_r = None if r is None else float(r)
@@ -290,25 +341,18 @@ def main() -> None:
 
             home_totals = {}
             for line in team_total_lines(projection.home_mean):
-                over = asian_team_total(
-                    projection.home_mean, line, "over", dispersion_r
-                )
-                under = asian_team_total(
-                    projection.home_mean, line, "under", dispersion_r
-                )
+                over = asian_team_total(projection.home_mean, line, "over", dispersion_r)
+                under = asian_team_total(projection.home_mean, line, "under", dispersion_r)
                 home_totals[str(line)] = {
                     "over_fair": over.fair_odds,
                     "under_fair": under.fair_odds,
                     "push": over.push,
                 }
+
             away_totals = {}
             for line in team_total_lines(projection.away_mean):
-                over = asian_team_total(
-                    projection.away_mean, line, "over", dispersion_r
-                )
-                under = asian_team_total(
-                    projection.away_mean, line, "under", dispersion_r
-                )
+                over = asian_team_total(projection.away_mean, line, "over", dispersion_r)
+                under = asian_team_total(projection.away_mean, line, "under", dispersion_r)
                 away_totals[str(line)] = {
                     "over_fair": over.fair_odds,
                     "under_fair": under.fair_odds,
@@ -379,7 +423,7 @@ def main() -> None:
         "IMPORTANT: these are diagnostic fair prices, not validated bets. "
         "Team totals use univariate count distributions; H2H/AH currently assume "
         "independent team counts and still need covariance calibration. "
-        "Next comes walk-forward calibration and bookmaker line ingestion."
+        "Markets with missing API coverage are skipped rather than imputed."
     )
 
 
