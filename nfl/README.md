@@ -151,3 +151,19 @@ Primary markets:
 - home/away team totals and H2H stat markets when sportsbook settlement is explicit
 
 Player props remain supported, but they are not the sole focus. The team layer should be validated first because it is more stable, has clearer opponent-adjustment mechanics, and better matches the project's UCL-style statistical-market strategy.
+
+## iPhone interface
+
+After backfilling a game and generating team, market and core-prop JSON, build the standalone mobile page:
+
+```bash
+python nfl/scripts/build_mobile_ui.py \
+  --game 21514 \
+  --date 2026-09-10 \
+  --kickoff "18:35 CDMX · 20:35 ET" \
+  --venue "Melbourne Cricket Ground" \
+  --home-odds 1.49 \
+  --away-odds 2.70
+```
+
+The result is `NFL_Edge_iPhone.html`. It embeds the current snapshot, works as a standalone static file, and keeps the user's saved picks and results in iPhone `localStorage`. The displayed moneyline is explicitly labeled as a rough normal approximation; team totals and props remain the primary model product.
