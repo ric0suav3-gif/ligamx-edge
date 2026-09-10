@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from nfl.scripts.build_mobile_ui import approximate_moneyline, build_payload
 
 
@@ -52,3 +54,14 @@ def test_payload_orders_markets_by_consensus_ev():
     assert payload["game"]["total"] == 52.0
     assert payload["team_markets"][0]["consensus_ev"] == 0.20
     assert len(payload["stats"]) == 9
+
+
+def test_mobile_template_has_ranked_picks_view():
+    template = (
+        Path(__file__).resolve().parents[1] / "web" / "nfl_mobile_template.html"
+    ).read_text(encoding="utf-8")
+
+    assert 'id="picksView"' in template
+    assert 'id="navPicks"' in template
+    assert "function rankedPicks()" in template
+    assert "Ladder 1.60–1.80" in template
