@@ -1,301 +1,54 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#070b13">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>EDGE Picks · UCL + NFL</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#101010" />
+<title>UCL EDGE · Mobile Board</title>
 <style>
-:root{
-  --bg:#070b13;--panel:#0e1622;--panel2:#131e2d;--line:#26364b;
-  --text:#f5f7fb;--muted:#93a4ba;--green:#15d982;--green2:#0ca867;
-  --blue:#67a8ff;--gold:#f4c95d;--red:#ff5f6d;--orange:#ffad42;
-  --ucl:#4e7cff;--nfl:#e24343;--r:18px
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-body{min-height:100vh;padding-bottom:86px}
-button{font:inherit}
-.hero{
-  padding:calc(env(safe-area-inset-top,0px) + 18px) 16px 14px;
-  background:
-    radial-gradient(circle at 80% -20%,rgba(78,124,255,.28),transparent 36%),
-    radial-gradient(circle at 10% 0%,rgba(226,67,67,.19),transparent 32%),
-    linear-gradient(180deg,#0b1320 0,#070b13 100%);
-  border-bottom:1px solid #1d2b3e
-}
-.brand{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.logo{font-weight:1000;letter-spacing:-.04em;font-size:2rem;line-height:1}
-.logo span{color:var(--green)}
-.date{text-align:right;font-size:.65rem;color:var(--muted);line-height:1.25}
-.date b{display:block;color:var(--text);font-size:.78rem}
-.tagline{margin-top:8px;color:var(--muted);font-size:.72rem;letter-spacing:.03em}
-.statusbar{display:flex;gap:7px;overflow:auto;margin-top:12px;scrollbar-width:none}
-.pill{flex:0 0 auto;border:1px solid var(--line);background:#101926;border-radius:999px;padding:6px 9px;font-size:.62rem;font-weight:850;color:#c8d3e2}
-.pill.safe{border-color:rgba(21,217,130,.38);color:#9af0c6;background:rgba(21,217,130,.08)}
-.pill.warn{border-color:rgba(244,201,93,.35);color:#f6d987;background:rgba(244,201,93,.08)}
-.shell{max-width:860px;margin:0 auto;padding:14px 12px 0}
-.navtabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;position:sticky;top:0;z-index:20;padding:8px 0;background:linear-gradient(180deg,var(--bg) 76%,rgba(7,11,19,0))}
-.tab{border:1px solid var(--line);background:#0d1521;color:var(--muted);border-radius:12px;padding:10px 5px;font-size:.68rem;font-weight:900;text-transform:uppercase}
-.tab.on{color:#07120d;border-color:transparent;background:linear-gradient(135deg,#27e493,#70f0ba)}
-.view{display:none}.view.on{display:block}
-.section{margin-top:10px}
-.sectionhead{display:flex;justify-content:space-between;gap:10px;align-items:end;margin:0 2px 8px}
-.sectionhead h2{font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;margin:0}
-.sectionhead span{font-size:.59rem;color:var(--muted)}
-.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:10px}
-.cardhead{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-bottom:1px solid var(--line)}
-.cardhead .title{font-weight:950;font-size:.86rem}
-.chip{font-size:.55rem;font-weight:950;border-radius:999px;padding:4px 7px;background:#182438;color:#b9c9dc}
-.chip.high{background:rgba(21,217,130,.12);color:#7ff0ba}
-.chip.med{background:rgba(103,168,255,.12);color:#9fc6ff}
-.chip.exp{background:rgba(244,201,93,.12);color:#f4d783}
-.pickrow{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;padding:11px 12px;border-top:1px solid rgba(38,54,75,.65);align-items:center}
-.pickrow:first-child{border-top:0}
-.rank{width:28px;height:28px;border-radius:9px;background:#172334;display:grid;place-items:center;font-size:.67rem;font-weight:950;color:#b9c6d8}
-.pickmain{min-width:0}.pickname{font-size:.81rem;font-weight:900;line-height:1.18}.pickmeta{font-size:.6rem;color:var(--muted);margin-top:4px;line-height:1.35}
-.odd{text-align:right}.odd .px{font-weight:1000;font-size:1.05rem}.odd .lab{font-size:.49rem;color:var(--muted);text-transform:uppercase;margin-top:2px}
-.green{color:var(--green)}.gold{color:var(--gold)}
-.game{font-size:.58rem;color:#8496ad;margin-bottom:3px;text-transform:uppercase;letter-spacing:.035em}
-.note{border:1px solid var(--line);background:#0c1420;border-radius:14px;padding:10px 11px;color:#adbbce;font-size:.68rem;line-height:1.48;margin-bottom:10px}
-.note strong{color:var(--text)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.metric{background:#0c1420;border:1px solid var(--line);border-radius:13px;padding:10px}
-.metric .k{font-size:.56rem;color:var(--muted);text-transform:uppercase}.metric .v{font-size:1.15rem;font-weight:1000;margin-top:3px}.metric .s{font-size:.54rem;color:var(--muted);margin-top:2px}
-.projtable{width:100%;border-collapse:collapse;font-size:.7rem}
-.projtable th{color:var(--muted);font-size:.55rem;text-transform:uppercase;padding:8px;text-align:right}
-.projtable th:first-child,.projtable td:first-child{text-align:left}
-.projtable td{padding:8px;border-top:1px solid rgba(38,54,75,.55);text-align:right}
-.projtable td:not(:first-child){font-weight:850}
-.badge{display:inline-flex;align-items:center;gap:5px;font-size:.56rem;font-weight:900;color:#9df1c7}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
-.parlay{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;padding:12px;border-top:1px solid rgba(38,54,75,.6)}
-.parlay:first-child{border-top:0}.letter{width:38px;height:38px;border-radius:10px;background:#1c293a;display:grid;place-items:center;font-size:1rem;font-weight:1000}
-.legs{font-size:.73rem;line-height:1.38;font-weight:800}.legs span{color:var(--muted);font-weight:650}
-.combo{font-size:1.02rem;font-weight:1000;color:var(--green)}
-.footerline{padding:12px;font-size:.6rem;color:var(--muted);line-height:1.45;border-top:1px solid var(--line)}
-nav{position:fixed;bottom:0;left:0;right:0;z-index:40;display:grid;grid-template-columns:1fr 1fr;background:rgba(7,11,19,.95);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px))}
-nav button{border:0;background:none;color:var(--muted);font-size:.68rem;font-weight:900;text-transform:uppercase;padding:8px}
-nav button.on{color:var(--green)}
-@media(min-width:680px){.grid2{grid-template-columns:repeat(4,1fr)}}
-</style>
+:root{--red:#e10613;--green:#118d45;--green2:#09c866;--dark:#171717;--card:#3d3d3f;--card2:#292929;--line:rgba(255,255,255,.14);--txt:#fff;--muted:#c7c7c9;--soft:#8e8e92;--warn:#ffd34d}*{box-sizing:border-box}html,body{margin:0;background:var(--red);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}body{padding:env(safe-area-inset-top) 12px calc(84px + env(safe-area-inset-bottom));}.wrap{max-width:520px;margin:0 auto}.hero{padding:22px 4px 10px;display:flex;align-items:flex-end;justify-content:space-between;gap:10px}.logo{font-size:42px;font-weight:1000;letter-spacing:-3px;line-height:.9}.logo em{font-style:normal;border:4px solid #fff;padding:0 4px;margin-left:4px}.sub{font-size:13px;font-weight:900;letter-spacing:.02em;margin-top:8px}.stamp{text-align:right;font-size:11px;font-weight:900;line-height:1.3}.stamp .big{display:block;font-size:15px}.panel{background:var(--card2);border-radius:14px;margin:10px 0 12px;overflow:hidden;box-shadow:0 10px 22px rgba(0,0,0,.18)}.head{background:linear-gradient(90deg,#078540,#0aa857);padding:11px 14px;display:flex;justify-content:space-between;align-items:center;font-weight:1000;text-transform:uppercase;letter-spacing:.02em}.head span{font-size:11px;opacity:.9}.row{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:11px 12px;background:var(--card);border-top:1px solid var(--line)}.row:first-of-type{border-top:0}.num{color:#d7d7d7;font-weight:800}.match{font-size:12px;color:var(--muted);font-weight:800;margin-bottom:3px}.pick{font-size:16px;font-weight:1000;line-height:1.15}.meta{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.3}.odds{font-size:21px;font-weight:1000;text-align:right}.badge{display:inline-block;font-size:10px;font-weight:1000;border-radius:999px;padding:3px 6px;background:#202020;color:#d9d9d9}.badge.good{background:rgba(9,200,102,.16);color:#72ffb4}.badge.pass{background:rgba(255,211,77,.16);color:var(--warn)}.passrow .pick{color:#f2f2f2}.passrow .odds{font-size:14px;color:var(--warn)}.parlay{display:grid;grid-template-columns:38px 1fr auto;gap:10px;padding:13px 12px;background:var(--card);border-top:1px solid var(--line);align-items:center}.letter{width:34px;height:34px;border-radius:8px;background:#545456;display:grid;place-items:center;font-weight:1000}.legs{font-size:14px;font-weight:900;line-height:1.35}.legs span{color:var(--muted);font-weight:800}.total{background:#08b95f;border-radius:8px;padding:8px 10px;font-size:21px;font-weight:1000}.note{background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.18);border-radius:13px;padding:12px 13px;font-size:12px;line-height:1.45;margin:10px 0;color:#f2f2f2}.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(20,20,20,.95);backdrop-filter:blur(12px);display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.15)}button{border:0;border-radius:10px;background:#303033;color:#d4d4d4;font-weight:1000;font-size:11px;padding:10px 3px;text-transform:uppercase}button.on{background:#08b95f;color:white}.view{display:none}.view.on{display:block}.small{font-size:11px;color:var(--muted);font-weight:800}.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.kpi{background:rgba(0,0,0,.24);border-radius:12px;padding:10px;text-align:center}.kpi b{display:block;font-size:20px}.kpi span{font-size:10px;color:#ddd;font-weight:900;text-transform:uppercase}.footer{font-weight:900;text-align:center;padding:10px;color:#fff;font-size:12px;opacity:.9}</style>
 </head>
-<body>
-<header class="hero">
-  <div class="brand">
-    <div>
-      <div class="logo">EDGE <span>PICKS</span></div>
-      <div class="tagline">UCL + NFL · statistical markets first</div>
-    </div>
-    <div class="date"><b>09 SEP 2026</b>Safe-mode board</div>
+<body><div class="wrap">
+<header class="hero"><div><div class="logo">UCL<em>EDGE</em></div><div class="sub">PICKS 10/09 · Modelo estadístico · Safe Mode</div></div><div class="stamp">MÁS DATOS<br>MÁS VALOR<span class="big">API ONLY</span></div></header>
+
+<section id="board" class="view on">
+  <div class="panel"><div class="head">Best straight picks <span>valor real</span></div>
+    <div class="row"><div class="num">01</div><div><div class="match">Bayern München vs Bodø/Glimt</div><div class="pick">Bayern München · Más de 9.5 faltas</div><div class="meta">Fair 1.76 · mediana 1.94 · EV +10.4%</div></div><div class="odds">2.07</div></div>
+    <div class="row"><div class="num">02</div><div><div class="match">Bayern München vs Bodø/Glimt</div><div class="pick">Bodø/Glimt · Menos de 10.5 faltas</div><div class="meta">Fair 1.60 · mediana 1.72 · EV +7.4%</div></div><div class="odds">1.72</div></div>
   </div>
-  <div class="statusbar">
-    <div class="pill safe">✓ Team stats first</div>
-    <div class="pill safe">✓ Multi-book when available</div>
-    <div class="pill warn">NFL player props = experimental</div>
-    <div class="pill warn">AH / joint markets = experimental</div>
+  <div class="panel"><div class="head">Match-by-match card <span>disciplina</span></div>
+    <div class="row passrow"><div class="num">01</div><div><div class="match">Fenerbahçe vs Roma</div><div class="pick">PASS</div><div class="meta">Sin edge multi-book suficiente en Safe Mode.</div></div><div class="odds">NO BET</div></div>
+    <div class="row passrow"><div class="num">02</div><div><div class="match">PSV vs Shakhtar</div><div class="pick">PASS</div><div class="meta">Shakhtar con cobertura estadística parcial; no forzar.</div></div><div class="odds">NO BET</div></div>
+    <div class="row"><div class="num">03</div><div><div class="match">Bayern München vs Bodø/Glimt</div><div class="pick">Bayern O9.5 faltas / Bodø U10.5 faltas</div><div class="meta">Único partido con edge oficial hoy.</div></div><div class="odds">2.07 / 1.72</div></div>
+    <div class="row passrow"><div class="num">04</div><div><div class="match">Como vs RB Leipzig</div><div class="pick">PASS</div><div class="meta">Mercados disponibles, pero no pasa consenso + EV.</div></div><div class="odds">NO BET</div></div>
+    <div class="row passrow"><div class="num">05</div><div><div class="match">Manchester Utd vs Sabah</div><div class="pick">PASS</div><div class="meta">Sabah sin cobertura API suficiente para stats.</div></div><div class="odds">NO BET</div></div>
+    <div class="row passrow"><div class="num">06</div><div><div class="match">Slavia Praha vs Lens</div><div class="pick">PASS</div><div class="meta">No cumple filtro de official edge.</div></div><div class="odds">NO BET</div></div>
   </div>
-</header>
+  <div class="note"><b>Regla de hoy:</b> no fabricar picks por partido. El modelo Safe Mode solo aprobó 2 mercados, ambos de faltas. Parlays/Cuotones quedan como “NO OFICIAL” si no hay piernas independientes suficientes.</div>
+</section>
 
-<main class="shell">
-  <div class="navtabs">
-    <button class="tab on" data-view="picks">Picks</button>
-    <button class="tab" data-view="ucl">UCL</button>
-    <button class="tab" data-view="nfl">NFL</button>
-    <button class="tab" data-view="model">Model</button>
+<section id="parlays" class="view">
+  <div class="panel"><div class="head">2-leg parlays <span>solo combinables</span></div>
+    <div class="parlay"><div class="letter">A</div><div class="legs">Bayern O9.5 faltas <span>(2.07)</span><br>+ NO second official independent leg</div><div class="total">PASS</div></div>
+    <div class="parlay"><div class="letter">B</div><div class="legs">Bodø/Glimt U10.5 faltas <span>(1.72)</span><br>+ NO second official independent leg</div><div class="total">PASS</div></div>
+    <div class="parlay"><div class="letter">C</div><div class="legs">Same-match Bayern/Bodø foul combo<br><span>Correlated referee/game-state risk</span></div><div class="total">PASS</div></div>
   </div>
+  <div class="note">No official 2-leg parlays today. Combining the only two official edges would put both legs in the same match and same stat family, so it violates the combinable-market rule.</div>
+</section>
 
-  <section id="picks" class="view on">
-    <div class="section">
-      <div class="sectionhead"><h2>Best straight picks</h2><span>current working card</span></div>
-      <div class="card">
-        <div class="pickrow">
-          <div class="rank">01</div>
-          <div class="pickmain"><div class="game">Barcelona vs Feyenoord · UCL</div><div class="pickname">Feyenoord +5.5 corners handicap</div><div class="pickmeta">Large cushion vs model corner gap · joint-market layer still experimental</div></div>
-          <div class="odd"><div class="px green">1.81</div><div class="lab">user price</div></div>
-        </div>
-        <div class="pickrow">
-          <div class="rank">02</div>
-          <div class="pickmain"><div class="game">Napoli vs Arsenal · UCL</div><div class="pickname">Napoli over 4.5 corners</div><div class="pickmeta">Model fair 1.73 · HIGH reliability</div></div>
-          <div class="odd"><div class="px">2.57</div><div class="lab">best snapshot</div></div>
-        </div>
-        <div class="pickrow">
-          <div class="rank">03</div>
-          <div class="pickmain"><div class="game">Napoli vs Arsenal · UCL</div><div class="pickname">Arsenal under 4.5 corners</div><div class="pickmeta">Model fair 1.55 · HIGH reliability</div></div>
-          <div class="odd"><div class="px">2.15</div><div class="lab">best snapshot</div></div>
-        </div>
-        <div class="pickrow">
-          <div class="rank">04</div>
-          <div class="pickmain"><div class="game">Liverpool vs Atlético · UCL</div><div class="pickname">Liverpool under 2.5 offsides</div><div class="pickmeta">Model fair 1.30 · HIGH reliability</div></div>
-          <div class="odd"><div class="px">1.80</div><div class="lab">best snapshot</div></div>
-        </div>
-        <div class="pickrow">
-          <div class="rank">05</div>
-          <div class="pickmain"><div class="game">Sporting CP vs Galatasaray · UCL</div><div class="pickname">Galatasaray under 13.5 fouls</div><div class="pickmeta">Model fair 1.37 · HIGH reliability</div></div>
-          <div class="odd"><div class="px">1.72</div><div class="lab">best snapshot</div></div>
-        </div>
-        <div class="pickrow">
-          <div class="rank">06</div>
-          <div class="pickmain"><div class="game">Patriots @ Seahawks · NFL</div><div class="pickname">Sam Darnold over 6.5 rushing yards</div><div class="pickmeta">Projection 11.77 · experimental player layer · 0.5u</div></div>
-          <div class="odd"><div class="px">1.95</div><div class="lab">Bet365</div></div>
-        </div>
-        <div class="pickrow">
-          <div class="rank">07</div>
-          <div class="pickmain"><div class="game">Patriots @ Seahawks · NFL</div><div class="pickname">George Holani under 22.5 rushing yards</div><div class="pickmeta">Projection 13.28 · experimental player layer · 0.5u</div></div>
-          <div class="odd"><div class="px">1.90</div><div class="lab">Bet365</div></div>
-        </div>
-      </div>
-    </div>
+<section id="cuoton" class="view">
+  <div class="panel"><div class="head">Cuotones <span>control de riesgo</span></div>
+    <div class="parlay"><div class="letter">1</div><div class="legs">Most matches ticket<br><span>NO OFFICIAL PLAY — not enough independent approved legs</span></div><div class="total">PASS</div></div>
+    <div class="parlay"><div class="letter">2</div><div class="legs">All matches ticket<br><span>NO OFFICIAL PLAY — would require forcing 5 no-edge matches</span></div><div class="total">PASS</div></div>
+  </div>
+</section>
 
-    <div class="section">
-      <div class="sectionhead"><h2>2-leg parlays</h2><span>derived from strongest angles</span></div>
-      <div class="card">
-        <div class="parlay"><div class="letter">A</div><div class="legs">Napoli O4.5 corners <span>(2.57)</span><br>+ Liverpool U2.5 offsides <span>(1.80)</span></div><div class="combo">4.63</div></div>
-        <div class="parlay"><div class="letter">B</div><div class="legs">Galatasaray U13.5 fouls <span>(1.72)</span><br>+ Sam Darnold O6.5 rush yds <span>(1.95)</span></div><div class="combo">3.35</div></div>
-        <div class="parlay"><div class="letter">C</div><div class="legs">Arsenal U4.5 corners <span>(2.15)</span><br>+ George Holani U22.5 rush yds <span>(1.90)</span></div><div class="combo">4.09</div></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="sectionhead"><h2>Cuotones 2.50–3.50</h2><span>higher payout, still model-backed</span></div>
-      <div class="card">
-        <div class="parlay"><div class="letter">A</div><div class="legs">Liverpool U2.5 offsides <span>(1.80)</span><br>+ Galatasaray U13.5 fouls <span>(1.72)</span></div><div class="combo">3.10</div></div>
-        <div class="parlay"><div class="letter">B</div><div class="legs">Galatasaray U13.5 fouls <span>(1.72)</span><br>+ Sam Darnold O6.5 rush yds <span>(1.95)</span></div><div class="combo">3.35</div></div>
-        <div class="parlay"><div class="letter">C</div><div class="legs">George Holani U22.5 rush yds <span>(1.90)</span><br>+ Feyenoord +5.5 corners AH <span>(1.81)</span></div><div class="combo">3.44</div></div>
-      </div>
-    </div>
-
-    <div class="note"><strong>Price discipline:</strong> UCL prices are the latest model-market snapshot from the work session; NFL prices are from the live API audit. Re-check the book before betting. No pick is labeled validated edge unless it has survived leakage-free walk-forward calibration.</div>
-  </section>
-
-  <section id="ucl" class="view">
-    <div class="section">
-      <div class="sectionhead"><h2>UCL stat-market board</h2><span>team totals preferred</span></div>
-      <div class="card">
-        <div class="cardhead"><div class="title">Barcelona vs Feyenoord</div><span class="chip med">MEDIUM/HIGH</span></div>
-        <div class="pickrow"><div class="rank">1</div><div class="pickmain"><div class="pickname">Feyenoord +5.5 corners AH</div><div class="pickmeta">Experimental joint market · expected corners BAR 5.45 / FEY 4.17</div></div><div class="odd"><div class="px green">1.81</div><div class="lab">current</div></div></div>
-        <div class="pickrow"><div class="rank">2</div><div class="pickmain"><div class="pickname">Feyenoord over 3.5 corners</div><div class="pickmeta">Fair 1.84 · MEDIUM reliability</div></div><div class="odd"><div class="px">4.45</div><div class="lab">best snapshot</div></div></div>
-        <div class="pickrow"><div class="rank">3</div><div class="pickmain"><div class="pickname">Feyenoord under 2.5 offsides</div><div class="pickmeta">Fair 1.57 · HIGH reliability</div></div><div class="odd"><div class="px">2.60</div><div class="lab">snapshot</div></div></div>
-      </div>
-
-      <div class="card">
-        <div class="cardhead"><div class="title">Napoli vs Arsenal</div><span class="chip high">HIGH</span></div>
-        <div class="pickrow"><div class="rank">1</div><div class="pickmain"><div class="pickname">Napoli over 4.5 corners</div><div class="pickmeta">Expected NAP 5.55 / ARS 3.92 · fair 1.73</div></div><div class="odd"><div class="px">2.57</div><div class="lab">best snapshot</div></div></div>
-        <div class="pickrow"><div class="rank">2</div><div class="pickmain"><div class="pickname">Arsenal under 4.5 corners</div><div class="pickmeta">Fair 1.55 · 8-book snapshot</div></div><div class="odd"><div class="px">2.15</div><div class="lab">best snapshot</div></div></div>
-      </div>
-
-      <div class="card">
-        <div class="cardhead"><div class="title">Liverpool vs Atlético Madrid</div><span class="chip high">HIGH</span></div>
-        <div class="pickrow"><div class="rank">1</div><div class="pickmain"><div class="pickname">Liverpool under 2.5 offsides</div><div class="pickmeta">Expected 1.59 · fair 1.30</div></div><div class="odd"><div class="px">1.80</div><div class="lab">best snapshot</div></div></div>
-        <div class="pickrow"><div class="rank">2</div><div class="pickmain"><div class="pickname">Atlético over 4.5 corners</div><div class="pickmeta">Expected 4.36 · fair 2.38</div></div><div class="odd"><div class="px">3.15</div><div class="lab">best snapshot</div></div></div>
-      </div>
-
-      <div class="card">
-        <div class="cardhead"><div class="title">Other UCL plays</div><span class="chip">09/09</span></div>
-        <div class="pickrow"><div class="rank">1</div><div class="pickmain"><div class="pickname">Galatasaray U13.5 fouls</div><div class="pickmeta">vs Sporting CP · expected 11.27 · HIGH</div></div><div class="odd"><div class="px">1.72</div><div class="lab">best snapshot</div></div></div>
-        <div class="pickrow"><div class="rank">2</div><div class="pickmain"><div class="pickname">PSG U1.5 offsides</div><div class="pickmeta">vs Slovan Bratislava · expected 1.58 · MEDIUM</div></div><div class="odd"><div class="px">2.40</div><div class="lab">best snapshot</div></div></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="nfl" class="view">
-    <div class="section">
-      <div class="sectionhead"><h2>Patriots @ Seahawks</h2><span>team-stat-first model</span></div>
-      <div class="grid2">
-        <div class="metric"><div class="k">Model total</div><div class="v">45.45</div><div class="s">points</div></div>
-        <div class="metric"><div class="k">Pass yards</div><div class="v">413.54</div><div class="s">match total</div></div>
-        <div class="metric"><div class="k">Rush yards</div><div class="v">233.98</div><div class="s">match total</div></div>
-        <div class="metric"><div class="k">Sacks</div><div class="v">5.21</div><div class="s">match total</div></div>
-      </div>
-
-      <div class="card" style="margin-top:10px">
-        <div class="cardhead"><div class="title">Team projections</div><span class="chip high">HIGH</span></div>
-        <div style="overflow:auto">
-          <table class="projtable">
-            <thead><tr><th>Stat</th><th>NE</th><th>SEA</th><th>Total</th></tr></thead>
-            <tbody>
-              <tr><td>Plays</td><td>61.43</td><td>60.75</td><td>122.18</td></tr>
-              <tr><td>Pass attempts</td><td>31.24</td><td>30.32</td><td>61.56</td></tr>
-              <tr><td>Completions</td><td>20.36</td><td>19.55</td><td>39.91</td></tr>
-              <tr><td>Passing yards</td><td>210.98</td><td>202.56</td><td>413.54</td></tr>
-              <tr><td>Rush attempts</td><td>26.95</td><td>28.47</td><td>55.42</td></tr>
-              <tr><td>Rushing yards</td><td>117.23</td><td>116.76</td><td>233.98</td></tr>
-              <tr><td>Sacks made</td><td>2.03</td><td>3.18</td><td>5.21</td></tr>
-              <tr><td>Turnovers</td><td>1.47</td><td>1.17</td><td>2.65</td></tr>
-              <tr><td>Points</td><td>21.41</td><td>24.04</td><td>45.45</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="footerline">Current book total is centered close to the model, so the team-total recommendation is <strong>PASS</strong> rather than forcing action.</div>
-      </div>
-
-      <div class="card">
-        <div class="cardhead"><div class="title">NFL experimental player card</div><span class="chip exp">EXPERIMENTAL</span></div>
-        <div class="pickrow"><div class="rank">1</div><div class="pickmain"><div class="pickname">Sam Darnold O6.5 rushing yards</div><div class="pickmeta">Projection 11.77 · 0.5u</div></div><div class="odd"><div class="px">1.95</div><div class="lab">Bet365</div></div></div>
-        <div class="pickrow"><div class="rank">2</div><div class="pickmain"><div class="pickname">George Holani U22.5 rushing yards</div><div class="pickmeta">Projection 13.28 · 0.5u</div></div><div class="odd"><div class="px">1.90</div><div class="lab">Bet365</div></div></div>
-        <div class="pickrow"><div class="rank">L</div><div class="pickmain"><div class="pickname">Rhamondre Stevenson U10.5 rush attempts</div><div class="pickmeta">Projection 9.38 · lean only</div></div><div class="odd"><div class="px">1.95</div><div class="lab">Bet365</div></div></div>
-        <div class="pickrow"><div class="rank">L</div><div class="pickmain"><div class="pickname">Drake Maye O5.5 rush attempts</div><div class="pickmeta">Projection 5.92 · lean only</div></div><div class="odd"><div class="px">2.20</div><div class="lab">Bet365</div></div></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="model" class="view">
-    <div class="section">
-      <div class="sectionhead"><h2>Model status</h2><span>what is actually validated</span></div>
-      <div class="card">
-        <div class="cardhead"><div class="title">NFL team-stat walk-forward · 2025</div><span class="chip high">80 games / 160 team rows</span></div>
-        <div style="overflow:auto">
-          <table class="projtable">
-            <thead><tr><th>Stat</th><th>Team MAE</th><th>Match MAE</th><th>Bias</th></tr></thead>
-            <tbody>
-              <tr><td>Plays</td><td>6.20</td><td>5.52</td><td>+0.89</td></tr>
-              <tr><td>Pass attempts</td><td>6.05</td><td>7.28</td><td>+0.40</td></tr>
-              <tr><td>Completions</td><td>4.21</td><td>5.04</td><td>+0.22</td></tr>
-              <tr><td>Passing yards</td><td>51.62</td><td>75.73</td><td>+10.00</td></tr>
-              <tr><td>Rush attempts</td><td>4.71</td><td>4.49</td><td>+0.48</td></tr>
-              <tr><td>Rushing yards</td><td>36.12</td><td>44.30</td><td>+1.56</td></tr>
-              <tr><td>Sacks</td><td>1.33</td><td>1.69</td><td>+0.08</td></tr>
-              <tr><td>Turnovers</td><td>0.96</td><td>1.31</td><td>+0.05</td></tr>
-              <tr><td>Points</td><td>7.09</td><td>10.14</td><td>-0.24</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="footerline">Leakage barrier: each target game is projected using only prior games. 2024 is used only as pre-2025 warmup history.</div>
-      </div>
-
-      <div class="card">
-        <div class="cardhead"><div class="title">UCL methodology</div><span class="chip">STAT EDGE</span></div>
-        <div class="footerline" style="border-top:0">
-          Domestic stat form → league normalization → opponent adjustment → UCL transfer → home/away → recency → proper-stage UCL history → fair distributions → market comparison.<br><br>
-          Preferred surface: <strong>team totals</strong> in corners, shots, shots on target, fouls, offsides and cards. Joint H2H/AH/combined totals remain experimental until covariance calibration is complete.
-        </div>
-      </div>
-
-      <div class="note"><strong>Important:</strong> large model EV does not automatically equal a validated betting edge. Prices move, settlement rules matter, and some markets have limited historical calibration. The site intentionally shows PASS when model and market are too close.</div>
-    </div>
-  </section>
-</main>
-
-<nav>
-  <button id="navPicks" class="on">Today's board</button>
-  <button id="navModel">Model status</button>
-</nav>
-
-<script>
-const tabs=[...document.querySelectorAll(".tab")];
-const views=[...document.querySelectorAll(".view")];
-function show(id){
-  tabs.forEach(t=>t.classList.toggle("on",t.dataset.view===id));
-  views.forEach(v=>v.classList.toggle("on",v.id===id));
-  document.getElementById("navPicks").classList.toggle("on",id!=="model");
-  document.getElementById("navModel").classList.toggle("on",id==="model");
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-tabs.forEach(t=>t.addEventListener("click",()=>show(t.dataset.view)));
-document.getElementById("navPicks").onclick=()=>show("picks");
-document.getElementById("navModel").onclick=()=>show("model");
-</script>
-</body>
-</html>
+<section id="model" class="view">
+  <div class="panel"><div class="head">Tracker <span>Sep 8–9</span></div><div class="kpis"><div class="kpi"><b>6–7</b><span>official</span></div><div class="kpi"><b>+0.34u</b><span>ref P&L</span></div><div class="kpi"><b>3–1</b><span>fouls</span></div></div><div class="note">Fouls are currently the strongest observed market, but the sample is small. We do not overfit weights yet.</div></div>
+  <div class="panel"><div class="head">Method update <span>API source</span></div><div class="note">API-Football is the source of truth. Missing stat coverage is skipped, not converted to zero. Safe Mode requires multi-book consensus, positive EV, and usable team-history transfer quality.</div></div>
+</section>
+<div class="footer">ANÁLISIS ESTADÍSTICO · JUEGA CON INTELIGENCIA</div>
+</div>
+<nav><button class="on" data-v="board">Board</button><button data-v="parlays">Parlays</button><button data-v="cuoton">Cuotón</button><button data-v="model">Model</button></nav>
+<script>const btns=[...document.querySelectorAll('nav button')],views=[...document.querySelectorAll('.view')];btns.forEach(b=>b.onclick=()=>{btns.forEach(x=>x.classList.toggle('on',x===b));views.forEach(v=>v.classList.toggle('on',v.id===b.dataset.v));scrollTo(0,0)});</script>
+</body></html>
