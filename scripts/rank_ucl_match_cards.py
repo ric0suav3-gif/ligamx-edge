@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import argparse
-import math
 import statistics
 import sys
-from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -12,13 +10,13 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from config.ucl_2026 import DOMESTIC_LEAGUES, FIXTURES, MATCH_DATE
+from config.ucl_2026 import FIXTURES, MATCH_DATE
 from ingest.cache import load_json, save_json
 from ingest.stat_odds import StatQuote, parse_stat_quotes
-from model.stat_markets import asian_team_total
+from model.selection import balanced_score
+from model.stat_markets import asian_handicap, asian_match_total, asian_team_total, h2h
 from model.stat_projection import SplitStatProfile, TeamStatProfile, project_stat
 from scripts.predict_stat_markets import (
-    PRIMARY_STATS,
     build_team_profile,
     safe_float,
     transfer_pair,
@@ -37,10 +35,9 @@ def offered_ev(odd: float, win_equivalent: float, loss_equivalent: float) -> flo
 
 
 def grouped_quotes(quotes: list[StatQuote]) -> list[dict[str, Any]]:
+    """Consensus groups for every stat market the parser knows how to price."""
     grouped: dict[tuple[str, str, str, float | None], list[StatQuote]] = {}
     for quote in quotes:
-        if quote.market_type not in {"home_total", "away_total"}:
-            continue
         key = (quote.stat, quote.market_type, quote.selection, quote.line)
         grouped.setdefault(key, []).append(quote)
 
@@ -64,12 +61,7 @@ def grouped_quotes(quotes: list[StatQuote]) -> list[dict[str, Any]]:
 
 
 def neutral_profile(team_id: int, ucl_home: float, ucl_away: float) -> TeamStatProfile:
-    """Neutral opponent used only when API-Football has no usable domestic stat history.
-
-    The neutral side contributes a relative factor of 1.0. This lets the covered
-    team's own attack/concession profile drive its team-total projection without
-    fabricating a missing opponent average.
-    """
+    """Neutral opponent used only when API-Football has no usable domestic stat history."""
     return TeamStatProfile(
         team_id=team_id,
         home=SplitStatProfile(
@@ -129,10 +121,10 @@ def projection_for_stat(
         home_transfer, away_transfer, _ = transfer_pair(
             transfers, home_id, away_id, stat
         )
-        reliability = "MODEL"
+        source = "MODEL"
     else:
         home_transfer, away_transfer = 1.0, 1.0
-        reliability = "ONE_SIDED_FALLBACK"
+        source = "ONE_SIDED_FALLBACK"
 
     projection = project_stat(
         home=home,
@@ -153,67 +145,127 @@ def projection_for_stat(
         "dispersion_r": dispersion_r,
         "home_real": home_real is not None,
         "away_real": away_real is not None,
-        "source": reliability,
+        "source": source,
     }
 
 
-def price_team_total(
+def price_market(
     quote: StatQuote,
     projection: dict[str, Any],
     odd: float,
-) -> tuple[float, float] | None:
-    if quote.line is None:
-        return None
-    if quote.market_type == "home_total":
-        mean = projection["home_mean"]
-        if not projection["home_real"]:
+) -> dict[str, float] | None:
+    """Price team totals plus the joint market families supported by UCL Edge.
+
+    Joint markets are only priced when both teams have real model inputs. This
+    prevents a neutral proxy opponent from leaking into H2H/AH/match-total
+    recommendations for limited-data fixtures such as Sabah.
+    """
+    kind = quote.market_type
+    selection = quote.selection
+    line = quote.line
+    hm = float(projection["home_mean"])
+    am = float(projection["away_mean"])
+    r = projection["dispersion_r"]
+
+    market = None
+    if kind == "home_total":
+        if line is None or not projection["home_real"]:
             return None
-    elif quote.market_type == "away_total":
-        mean = projection["away_mean"]
-        if not projection["away_real"]:
+        market = asian_team_total(hm, float(line), selection, r)
+    elif kind == "away_total":
+        if line is None or not projection["away_real"]:
             return None
+        market = asian_team_total(am, float(line), selection, r)
+    elif kind == "match_total":
+        if line is None or not (projection["home_real"] and projection["away_real"]):
+            return None
+        market = asian_match_total(hm, am, float(line), selection, r, r)
+    elif kind == "handicap":
+        if line is None or not (projection["home_real"] and projection["away_real"]):
+            return None
+        if selection == "home":
+            market = asian_handicap(hm, am, float(line), r, r)
+        elif selection == "away":
+            market = asian_handicap(am, hm, float(line), r, r)
+        else:
+            return None
+    elif kind == "h2h":
+        if not (projection["home_real"] and projection["away_real"]):
+            return None
+        matchup = h2h(hm, am, r, r)
+        if selection == "home":
+            fair = matchup.fair_first
+            win_eq = matchup.first_win
+            loss_eq = matchup.second_win
+            push = matchup.tie
+        elif selection == "away":
+            fair = matchup.fair_second
+            win_eq = matchup.second_win
+            loss_eq = matchup.first_win
+            push = matchup.tie
+        else:
+            # The current H2H model treats ties as pushes. Do not pretend that
+            # this prices a bookmaker's separate 3-way Draw selection.
+            return None
+        if fair is None:
+            return None
+        return {
+            "fair": float(fair),
+            "ev": offered_ev(float(odd), win_eq, loss_eq),
+            "win_equivalent": float(win_eq),
+            "loss_equivalent": float(loss_eq),
+            "push": float(push),
+            "decision_probability": float(win_eq / (win_eq + loss_eq)),
+        }
     else:
         return None
 
-    market = asian_team_total(
-        mean,
-        float(quote.line),
-        quote.selection,
-        projection["dispersion_r"],
-    )
     if market.fair_odds is None:
         return None
-    return (
-        float(market.fair_odds),
-        offered_ev(float(odd), market.win_equivalent, market.loss_equivalent),
+    decisions = market.win_equivalent + market.loss_equivalent
+    decision_probability = (
+        market.win_equivalent / decisions if decisions > 1e-12 else 0.0
     )
+    return {
+        "fair": float(market.fair_odds),
+        "ev": offered_ev(float(odd), market.win_equivalent, market.loss_equivalent),
+        "win_equivalent": float(market.win_equivalent),
+        "loss_equivalent": float(market.loss_equivalent),
+        "push": float(market.push),
+        "decision_probability": float(decision_probability),
+    }
 
 
-def quality_score(row: dict[str, Any]) -> float:
-    """Rank within a fixture without pretending every candidate is equally reliable."""
-    score = float(row["model_ev_consensus"])
-    books = int(row["book_count"])
-    reliability = str(row["transfer_reliability"])
+def choose_candidate(candidates: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Choose a practical straight without allowing raw longshot EV to dominate."""
+    if not candidates:
+        return None
 
-    # Small ranking adjustments only; EV remains the dominant term.
-    score += min(books, 5) * 0.003
-    if reliability == "HIGH":
-        score += 0.015
-    elif reliability == "MEDIUM":
-        score += 0.007
-    elif reliability in {"LOW", "ONE_SIDED_FALLBACK"}:
-        score -= 0.025
-    return score
+    positive = [row for row in candidates if row["model_ev_consensus"] > 0]
+    practical_positive = [
+        row for row in positive if row["selection_band"] in {"CORE", "EXTENDED"}
+    ]
+    practical = [
+        row for row in candidates if row["selection_band"] in {"CORE", "EXTENDED"}
+    ]
+
+    pool = practical_positive or positive or practical or candidates
+    return max(pool, key=lambda row: row["quality_score"])
+
+
+def market_text(row: dict[str, Any]) -> str:
+    line = "" if row["line"] is None else f" {float(row['line']):g}"
+    return f"{row['stat']} | {row['market_type']} | {row['selection'].upper()}{line}"
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Return the best available API-Football stat-market pick for every UCL match."
+        description="Rank the full API-Football UCL stat board and select one practical straight per match."
     )
     parser.add_argument("--min-books", type=int, default=2)
     parser.add_argument("--split-prior", type=float, default=12.0)
     parser.add_argument("--matchup-shrinkage", type=float, default=0.55)
-    parser.add_argument("--top-per-match", type=int, default=5)
+    parser.add_argument("--top-per-match", type=int, default=10)
     args = parser.parse_args()
 
     date_key = MATCH_DATE.replace("-", "_")
@@ -224,13 +276,20 @@ def main() -> None:
 
     output: dict[str, Any] = {
         "date": MATCH_DATE,
-        "version": "ucl-match-card-v0.1",
-        "policy": "One ranked stat-market selection per fixture; no automatic PASS. Fallbacks are explicitly labeled.",
+        "version": "ucl-match-card-v0.2-balanced",
+        "policy": (
+            "One practical ranked stat selection per fixture. Raw EV remains visible, "
+            "but longshots, low reliability, one-sided proxies and joint-independence "
+            "markets receive explicit selection penalties rather than being hidden."
+        ),
         "fixtures": {},
     }
 
-    print(f"UCL EDGE — FULL MATCH CARD — {MATCH_DATE}")
-    print("One best available stat-market selection per fixture. API-Football data only.\n")
+    print(f"UCL EDGE — BALANCED FULL MATCH CARD — {MATCH_DATE}")
+    print(
+        "API-Football only. Full supported stat board. Straight selection favors practical fair-price bands; "
+        "raw longshot EV cannot win the ranking by itself.\n"
+    )
 
     for fixture_id, fixture in FIXTURES.items():
         home_id = int(fixture["home"]["id"])
@@ -239,13 +298,10 @@ def main() -> None:
         raw_odds = load_json("odds", f"fixture_{fixture_id}")
         groups = grouped_quotes(parse_stat_quotes(raw_odds or []))
         pred_fixture = predictions.get("fixtures", {}).get(str(fixture_id), {})
-        candidates: list[dict[str, Any]] = []
+        all_candidates: list[dict[str, Any]] = []
 
         for group in groups:
             quote = group["template"]
-            if group["books"] < args.min_books:
-                continue
-
             stat_pred = pred_fixture.get("stats", {}).get(quote.stat)
             source = "FULL_MODEL"
             if stat_pred is not None:
@@ -274,15 +330,12 @@ def main() -> None:
                 source = projection["source"]
                 reliability = "LOW" if source == "ONE_SIDED_FALLBACK" else "UNKNOWN"
 
-            consensus_quote = replace(quote, odd=float(group["median_odds"]))
-            priced = price_team_total(consensus_quote, projection, float(group["median_odds"]))
-            if priced is None:
+            consensus = price_market(quote, projection, float(group["median_odds"]))
+            if consensus is None:
                 continue
-            fair, ev_consensus = priced
-
-            best_quote = replace(quote, odd=float(group["best_odds"]))
-            best_priced = price_team_total(best_quote, projection, float(group["best_odds"]))
-            ev_best = ev_consensus if best_priced is None else best_priced[1]
+            best = price_market(quote, projection, float(group["best_odds"]))
+            if best is None:
+                best = consensus
 
             row = {
                 "fixture_id": fixture_id,
@@ -291,57 +344,97 @@ def main() -> None:
                 "market_type": quote.market_type,
                 "selection": quote.selection,
                 "line": quote.line,
-                "model_fair": fair,
+                "model_fair": consensus["fair"],
+                "decision_probability": consensus["decision_probability"],
+                "push_probability": consensus["push"],
                 "median_book_odds": float(group["median_odds"]),
                 "best_book_odds": float(group["best_odds"]),
                 "best_bookmaker": group["best"].bookmaker,
                 "book_count": group["books"],
-                "model_ev_consensus": ev_consensus,
-                "model_ev_best": ev_best,
+                "bookmakers": group["bookmakers"],
+                "model_ev_consensus": consensus["ev"],
+                "model_ev_best": best["ev"],
                 "home_mean": projection["home_mean"],
                 "away_mean": projection["away_mean"],
                 "transfer_reliability": reliability,
                 "projection_source": source,
                 "bet_id": quote.bet_id,
                 "market_name": quote.market_name,
+                "joint_market": quote.market_type in {"match_total", "handicap", "h2h"},
             }
-            row["quality_score"] = quality_score(row)
-            candidates.append(row)
+            grade = balanced_score(
+                fair_odds=row["model_fair"],
+                consensus_ev=row["model_ev_consensus"],
+                books=row["book_count"],
+                reliability=row["transfer_reliability"],
+                market_type=row["market_type"],
+                source=row["projection_source"],
+            )
+            row["selection_band"] = grade.band
+            row["quality_score"] = grade.score
+            row["flags"] = list(grade.flags)
+            all_candidates.append(row)
 
-        candidates.sort(key=lambda row: row["quality_score"], reverse=True)
-        selected = candidates[0] if candidates else None
+        eligible = [row for row in all_candidates if row["book_count"] >= args.min_books]
+        book_fallback = False
+        if not eligible:
+            eligible = all_candidates
+            book_fallback = bool(eligible)
+
+        eligible.sort(key=lambda row: row["quality_score"], reverse=True)
+        selected = choose_candidate(eligible)
+        raw_ev_top = max(eligible, key=lambda row: row["model_ev_consensus"]) if eligible else None
         output["fixtures"][str(fixture_id)] = {
             "match": match,
             "selected": selected,
-            "top_candidates": candidates[: args.top_per_match],
+            "raw_ev_top": raw_ev_top,
+            "one_book_fallback": book_fallback,
+            "top_candidates": eligible[: args.top_per_match],
         }
 
-        print("=" * 92)
+        print("=" * 112)
         print(match)
         if selected is None:
-            print("  NO PRICED TEAM-TOTAL CANDIDATE FOUND IN CURRENT API ODDS")
+            print("  NO PARSEABLE STAT MARKET IN CURRENT API ODDS")
             continue
-        line = "" if selected["line"] is None else f" {selected['line']:g}"
+
+        fallback_note = " | ONE-BOOK FALLBACK" if book_fallback else ""
+        print(f"  SELECTED: {market_text(selected)}{fallback_note}")
         print(
-            f"  PICK: {selected['stat']} | {selected['market_type']} | "
-            f"{selected['selection'].upper()}{line}"
-        )
-        print(
-            f"  fair {selected['model_fair']:.2f} | median {selected['median_book_odds']:.2f} "
-            f"({selected['book_count']} books) | EV {selected['model_ev_consensus']:+.1%}"
+            f"  fair {selected['model_fair']:.2f} | model decision {selected['decision_probability']:.1%} | "
+            f"median {selected['median_book_odds']:.2f} ({selected['book_count']} books) | "
+            f"EV {selected['model_ev_consensus']:+.1%}"
         )
         print(
             f"  best {selected['best_book_odds']:.2f} ({selected['best_bookmaker']}) | "
-            f"best EV {selected['model_ev_best']:+.1%} | rel {selected['transfer_reliability']} | "
-            f"source {selected['projection_source']}"
+            f"best EV {selected['model_ev_best']:+.1%} | band {selected['selection_band']} | "
+            f"rel {selected['transfer_reliability']} | source {selected['projection_source']}"
         )
         print(
-            f"  expected {selected['home_mean']:.2f}-{selected['away_mean']:.2f}"
+            f"  expected {selected['home_mean']:.2f}-{selected['away_mean']:.2f} | "
+            f"flags {','.join(selected['flags']) if selected['flags'] else 'none'}"
         )
 
-    path = save_json("match_cards", f"ucl_{date_key}_v01", output)
-    print("\n" + "=" * 92)
-    print(f"Saved per-match card to {path}")
+        if raw_ev_top is not None and raw_ev_top is not selected:
+            print(
+                f"  RAW-EV TOP (not auto-selected): {market_text(raw_ev_top)} | "
+                f"fair {raw_ev_top['model_fair']:.2f} | median {raw_ev_top['median_book_odds']:.2f} | "
+                f"EV {raw_ev_top['model_ev_consensus']:+.1%} | band {raw_ev_top['selection_band']}"
+            )
+
+        print(f"\n  TOP {min(args.top_per_match, len(eligible))} BALANCED CANDIDATES")
+        for idx, row in enumerate(eligible[: args.top_per_match], start=1):
+            flag = f" [{','.join(row['flags'])}]" if row["flags"] else ""
+            print(
+                f"    {idx:2d}. {market_text(row):43s} | fair {row['model_fair']:5.2f} | "
+                f"p {row['decision_probability']:5.1%} | med {row['median_book_odds']:5.2f} | "
+                f"EV {row['model_ev_consensus']:+6.1%} | best {row['best_book_odds']:5.2f} "
+                f"{row['best_bookmaker']} | {row['selection_band']}/{row['transfer_reliability']}{flag}"
+            )
+
+    path = save_json("match_cards", f"ucl_{date_key}_v02_balanced", output)
+    print("\n" + "=" * 112)
+    print(f"Saved balanced per-match card to {path}")
 
 
 if __name__ == "__main__":
