@@ -296,10 +296,11 @@ def main() -> None:
         key=lambda item: (item[1]["hit_rate"] is not None, item[1]["hit_rate"] or -1),
         reverse=True,
     ):
+        mae_text = "—" if metrics["model_mae"] is None else f"{metrics['model_mae']:.2f}"
         print(
             f"  {name:18s} n={metrics['picks']:2d} | "
             f"hit={pct(metrics['hit_rate']):>6s} | ref ROI={pct(metrics['reference_roi']):>7s} | "
-            f"MAE={'—' if metrics['model_mae'] is None else f'{metrics['model_mae']:.2f}'}"
+            f"MAE={mae_text}"
         )
 
     if experimental:
