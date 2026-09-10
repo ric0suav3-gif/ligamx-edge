@@ -33,6 +33,10 @@ def parse_dt(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
+def fmt_mean(value: float | None) -> str:
+    return "NA" if value is None else f"{value:.2f}"
+
+
 def cached_fixture_list(
     client: APIFootballClient,
     league_id: int,
@@ -124,11 +128,13 @@ def summarize_environment(
         hfit = fit_count_distribution(home_values[stat])
         afit = fit_count_distribution(away_values[stat])
         combined = fit_count_distribution(home_values[stat] + away_values[stat])
+        usable = hfit.mean is not None and afit.mean is not None
         out["stats"][stat] = {
             "home": hfit.__dict__,
             "away": afit.__dict__,
             "combined": combined.__dict__,
             "complete_pairs": complete_pairs[stat],
+            "usable": usable,
         }
     return out
 
@@ -185,11 +191,18 @@ def main() -> None:
         shots = env["stats"]["shots"]
         sot = env["stats"]["shots_on_target"]
         corners = env["stats"]["corners"]
+        coverage = min(
+            int(shots["complete_pairs"]),
+            int(sot["complete_pairs"]),
+            int(corners["complete_pairs"]),
+        )
+        coverage_note = "NO STAT COVERAGE" if coverage == 0 else f"pairs>={coverage}"
         print(
             f"{label:28s} | "
-            f"Shots H {shots['home']['mean']:.2f} A {shots['away']['mean']:.2f} | "
-            f"SOT H {sot['home']['mean']:.2f} A {sot['away']['mean']:.2f} | "
-            f"Corners H {corners['home']['mean']:.2f} A {corners['away']['mean']:.2f}"
+            f"Shots H {fmt_mean(shots['home']['mean'])} A {fmt_mean(shots['away']['mean'])} | "
+            f"SOT H {fmt_mean(sot['home']['mean'])} A {fmt_mean(sot['away']['mean'])} | "
+            f"Corners H {fmt_mean(corners['home']['mean'])} A {fmt_mean(corners['away']['mean'])} | "
+            f"{coverage_note}"
         )
 
     print("\nBuilding proper-stage UCL stat environment...")
@@ -211,8 +224,8 @@ def main() -> None:
         row = payload["ucl"]["stats"][stat]
         print(
             f"UCL {stat:16s} | "
-            f"H {row['home']['mean']:.2f} | "
-            f"A {row['away']['mean']:.2f} | "
+            f"H {fmt_mean(row['home']['mean'])} | "
+            f"A {fmt_mean(row['away']['mean'])} | "
             f"r {row['combined']['r'] if row['combined']['r'] is not None else 'Poisson'}"
         )
 
