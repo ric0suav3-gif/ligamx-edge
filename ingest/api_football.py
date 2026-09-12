@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Mapping
 
 import requests
@@ -45,7 +46,8 @@ class APIFootballClient:
         min_interval: float | None = None,
         max_retries: int | None = None,
     ) -> None:
-        load_dotenv()
+        env_path = Path(__file__).resolve().parents[1] / ".env"
+        load_dotenv(dotenv_path=env_path, override=False)
         self.api_key = api_key or os.getenv("API_FOOTBALL_KEY")
         self.base_url = (
             base_url
@@ -67,7 +69,8 @@ class APIFootballClient:
 
         if not self.api_key:
             raise APIFootballError(
-                "Missing API_FOOTBALL_KEY. Copy .env.example to .env and add the key locally."
+                f"Missing API_FOOTBALL_KEY. Run scripts/setup_api_football_env.sh "
+                f"or add it to {env_path}."
             )
 
     def _throttle(self) -> None:
@@ -87,8 +90,6 @@ class APIFootballClient:
             except ValueError:
                 pass
 
-        # 429s often mean a minute bucket is full, so use a meaningful pause
-        # rather than hammering the endpoint every second.
         if response.status_code == 429:
             return min(60.0, 8.0 * (attempt + 1))
 
