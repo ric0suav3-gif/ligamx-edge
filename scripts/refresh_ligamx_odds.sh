@@ -13,12 +13,21 @@ if [[ ! -f .env ]]; then
   exit 2
 fi
 
+echo "Refreshing API-Football sportsbook odds..."
 python -u scripts/refresh_ligamx_odds.py --date "$DATE" --season "$SEASON"
 
 echo
-echo "Odds embedded in:"
+echo "Refreshing derby referee + H2H discipline context..."
+python -u scripts/refresh_ligamx_derby_context.py \
+  --date "$DATE" \
+  --season "$SEASON" \
+  --h2h-last 10
+
+echo
+echo "Updated:"
 echo "  ligamx edge.html"
 echo "  exports/LigaMX_Edge_V30.html"
 echo
 echo "Audit JSON:"
 echo "  exports/ligamx_odds_${DATE//-/_}.json"
+echo "  exports/ligamx_derby_context_${DATE//-/_}.json"
