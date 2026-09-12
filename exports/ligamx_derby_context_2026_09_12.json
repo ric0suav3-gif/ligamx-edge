@@ -1,0 +1,268 @@
+{
+  "captured_at": "2026-09-12T21:17:04.328545+00:00",
+  "date": "2026-09-12",
+  "fixtures": {
+    "1550961": {
+      "away": "América",
+      "derby": "Clásico Joven",
+      "fixture_id": 1550961,
+      "history": {
+        "avg_fouls": 21.1,
+        "avg_yellow": 3.5,
+        "fouls_n": 10,
+        "fouls_yellow_correlation": -0.114,
+        "matches": 10,
+        "samples": [
+          {
+            "away": "Club America",
+            "date": "2024-08-31",
+            "fixture_id": 1206054,
+            "fouls": 17.0,
+            "home": "Cruz Azul",
+            "yellow": 6.0
+          },
+          {
+            "away": "Cruz Azul",
+            "date": "2024-12-05",
+            "fixture_id": 1318625,
+            "fouls": 23.0,
+            "home": "Club America",
+            "yellow": 1.0
+          },
+          {
+            "away": "Club America",
+            "date": "2024-12-08",
+            "fixture_id": 1318626,
+            "fouls": 18.0,
+            "home": "Cruz Azul",
+            "yellow": 7.0
+          },
+          {
+            "away": "Cruz Azul",
+            "date": "2025-04-01",
+            "fixture_id": 1361470,
+            "fouls": 34.0,
+            "home": "Club America",
+            "yellow": 4.0
+          },
+          {
+            "away": "Club America",
+            "date": "2025-04-08",
+            "fixture_id": 1361471,
+            "fouls": 18.0,
+            "home": "Cruz Azul",
+            "yellow": 8.0
+          },
+          {
+            "away": "Cruz Azul",
+            "date": "2025-04-12",
+            "fixture_id": 1323606,
+            "fouls": 16.0,
+            "home": "Club America",
+            "yellow": 1.0
+          },
+          {
+            "away": "Club America",
+            "date": "2025-05-15",
+            "fixture_id": 1375218,
+            "fouls": 20.0,
+            "home": "Cruz Azul",
+            "yellow": 1.0
+          },
+          {
+            "away": "Cruz Azul",
+            "date": "2025-05-18",
+            "fixture_id": 1375219,
+            "fouls": 25.0,
+            "home": "Club America",
+            "yellow": 3.0
+          },
+          {
+            "away": "Club America",
+            "date": "2025-10-18",
+            "fixture_id": 1379596,
+            "fouls": 21.0,
+            "home": "Cruz Azul",
+            "yellow": 3.0
+          },
+          {
+            "away": "Cruz Azul",
+            "date": "2026-04-11",
+            "fixture_id": 1492586,
+            "fouls": 19.0,
+            "home": "Club America",
+            "yellow": 1.0
+          }
+        ],
+        "yellow_n": 10
+      },
+      "home": "Cruz Azul",
+      "league_reference": {
+        "avg_fouls": 24.98,
+        "avg_yellow": 4.59
+      },
+      "model": {
+        "base_fouls_mean": 23.928,
+        "base_yellow_mean": 3.307,
+        "context_fouls_mean": 21.863,
+        "context_yellow_mean": 2.87,
+        "fouls_components": {
+          "history_component": 0.9137,
+          "referee_component": 1.0
+        },
+        "fouls_multiplier": 0.9137,
+        "policy": "H2H and referee effects reliability-shrunk toward league average and capped at +/-25%.",
+        "yellow_components": {
+          "history_component": 0.8681,
+          "referee_component": 1.0
+        },
+        "yellow_multiplier": 0.8681
+      },
+      "referee": {
+        "avg_fouls": null,
+        "avg_yellow": null,
+        "fixture_referee": null,
+        "match_confidence": 0.0,
+        "matched_model_referee": null,
+        "n": null,
+        "n_fouls": null,
+        "n_yellow": null,
+        "source": null
+      },
+      "slug": "clasico-joven",
+      "source": "API-Football H2H + V30 referee table + V30 team model"
+    },
+    "1550965": {
+      "away": "Tigres UANL",
+      "derby": "Clásico Regio",
+      "fixture_id": 1550965,
+      "history": {
+        "avg_fouls": 26.3,
+        "avg_yellow": 5.9,
+        "fouls_n": 10,
+        "fouls_yellow_correlation": -0.47,
+        "matches": 10,
+        "samples": [
+          {
+            "away": "Tigres UANL",
+            "date": "2023-05-20",
+            "fixture_id": 1027144,
+            "fouls": 38.0,
+            "home": "Monterrey",
+            "yellow": 3.0
+          },
+          {
+            "away": "Monterrey",
+            "date": "2023-08-08",
+            "fixture_id": 1108403,
+            "fouls": 14.0,
+            "home": "Tigres UANL",
+            "yellow": 12.0
+          },
+          {
+            "away": "Monterrey",
+            "date": "2023-09-23",
+            "fixture_id": 1031350,
+            "fouls": 28.0,
+            "home": "Tigres UANL",
+            "yellow": 8.0
+          },
+          {
+            "away": "Tigres UANL",
+            "date": "2024-04-13",
+            "fixture_id": 1150342,
+            "fouls": 22.0,
+            "home": "Monterrey",
+            "yellow": 6.0
+          },
+          {
+            "away": "Monterrey",
+            "date": "2024-05-09",
+            "fixture_id": 1197969,
+            "fouls": 27.0,
+            "home": "Tigres UANL",
+            "yellow": 8.0
+          },
+          {
+            "away": "Tigres UANL",
+            "date": "2024-05-12",
+            "fixture_id": 1197970,
+            "fouls": 23.0,
+            "home": "Monterrey",
+            "yellow": 5.0
+          },
+          {
+            "away": "Tigres UANL",
+            "date": "2024-10-19",
+            "fixture_id": 1206109,
+            "fouls": 25.0,
+            "home": "Monterrey",
+            "yellow": 1.0
+          },
+          {
+            "away": "Monterrey",
+            "date": "2025-04-12",
+            "fixture_id": 1323605,
+            "fouls": 29.0,
+            "home": "Tigres UANL",
+            "yellow": 8.0
+          },
+          {
+            "away": "Tigres UANL",
+            "date": "2025-11-01",
+            "fixture_id": 1379620,
+            "fouls": 31.0,
+            "home": "Monterrey",
+            "yellow": 6.0
+          },
+          {
+            "away": "Monterrey",
+            "date": "2026-03-07",
+            "fixture_id": 1492549,
+            "fouls": 26.0,
+            "home": "Tigres UANL",
+            "yellow": 2.0
+          }
+        ],
+        "yellow_n": 10
+      },
+      "home": "Monterrey",
+      "league_reference": {
+        "avg_fouls": 24.98,
+        "avg_yellow": 4.59
+      },
+      "model": {
+        "base_fouls_mean": 23.796,
+        "base_yellow_mean": 3.02,
+        "context_fouls_mean": 24.495,
+        "context_yellow_mean": 3.499,
+        "fouls_components": {
+          "history_component": 1.0294,
+          "referee_component": 1.0
+        },
+        "fouls_multiplier": 1.0294,
+        "policy": "H2H and referee effects reliability-shrunk toward league average and capped at +/-25%.",
+        "yellow_components": {
+          "history_component": 1.1586,
+          "referee_component": 1.0
+        },
+        "yellow_multiplier": 1.1586
+      },
+      "referee": {
+        "avg_fouls": null,
+        "avg_yellow": null,
+        "fixture_referee": null,
+        "match_confidence": 0.0,
+        "matched_model_referee": null,
+        "n": null,
+        "n_fouls": null,
+        "n_yellow": null,
+        "source": null
+      },
+      "slug": "clasico-regio",
+      "source": "API-Football H2H + V30 referee table + V30 team model"
+    }
+  },
+  "policy": "Derby discipline overlay using H2H yellow/foul history plus assigned-referee averages with reliability shrinkage.",
+  "source": "API-Football"
+}
