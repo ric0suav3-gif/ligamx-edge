@@ -243,8 +243,7 @@ function apiOddsSection(home,away){
   return meta+supported;
 }
 '''
-        html = html.replace(helper_marker, helper + "
-" + helper_marker, 1)
+        html = html.replace(helper_marker, helper + "\n" + helper_marker, 1)
 
     init_old = """try { M = JSON.parse(localStorage.getItem('lmxModel_'+CUR_LEAGUE)) || EMBEDDED; }
 catch(e){ M = EMBEDDED; }
