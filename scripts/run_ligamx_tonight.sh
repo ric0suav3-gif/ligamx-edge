@@ -29,8 +29,10 @@ echo
 echo "Checking API-Football credentials..."
 if ! python - <<'PY'
 import os
+from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv()
+env_path = Path.cwd() / ".env"
+load_dotenv(dotenv_path=env_path, override=False)
 raise SystemExit(0 if os.getenv("API_FOOTBALL_KEY") else 1)
 PY
 then
