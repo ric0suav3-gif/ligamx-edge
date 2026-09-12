@@ -26,6 +26,25 @@ echo "Preserving the complete embedded V29 historical model first..."
 python scripts/snapshot_ligamx_prior.py
 
 echo
+echo "Checking API-Football credentials..."
+if ! python - <<'PY'
+import os
+from dotenv import load_dotenv
+load_dotenv()
+raise SystemExit(0 if os.getenv("API_FOOTBALL_KEY") else 1)
+PY
+then
+  echo
+  echo "API_FOOTBALL_KEY is not available in this Codespace."
+  echo "Set it locally without exposing it in chat or shell history:"
+  echo "  bash scripts/setup_api_football_env.sh"
+  echo
+  echo "Then rerun:"
+  echo "  bash scripts/run_ligamx_tonight.sh $TARGET_DATE $SEASON"
+  exit 2
+fi
+
+echo
 echo "Collecting tonight's Liga MX data from API-Football..."
 python scripts/collect_ligamx_tonight.py \
   --date "$TARGET_DATE" \
