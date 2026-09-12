@@ -199,10 +199,9 @@ def build_derby(client, fixture, derby, model, target, h2h_last):
         client,
         "ligamx_derby_h2h",
         f"{home_id}_{away_id}_last{h2h_last}",
-        "fixtures",
+        "fixtures/headtohead",
         h2h=f"{home_id}-{away_id}",
         last=h2h_last,
-        timezone=TZ,
     )
     h2h = [
         row for row in h2h
