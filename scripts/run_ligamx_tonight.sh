@@ -48,8 +48,18 @@ fi
 
 echo
 echo "Collecting tonight's Liga MX data from API-Football..."
-python scripts/collect_ligamx_tonight.py \
+python -u scripts/collect_ligamx_tonight.py \
   --date "$TARGET_DATE" \
   --season "$SEASON" \
   --matches 30 \
   --league-window 120
+
+echo
+echo "Exporting completed API slate..."
+python scripts/export_ligamx_slate.py --date "$TARGET_DATE"
+
+echo
+echo "Done. Next:"
+echo "  git add exports/ligamx_${TARGET_DATE//-/_}_api.json"
+echo "  git commit -m \"Add $TARGET_DATE Liga MX API slate\""
+echo "  git push"
