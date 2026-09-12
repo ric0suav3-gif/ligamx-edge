@@ -69,9 +69,16 @@ def cached(
 
 
 def discover_ligamx(client: APIFootballClient, season: int) -> dict[str, Any]:
-    rows = client.leagues(search="Liga MX", country="Mexico", season=season).response
+    # API-Football does not allow `search` to be combined with `country`
+    # or `season`. Query the Mexico+season catalog first, then rank locally.
+    rows = client.leagues(country="Mexico", season=season).response
+
+    # Fallbacks are intentionally separate calls because the API rejects
+    # search+country/season combinations.
     if not rows:
-        rows = client.leagues(country="Mexico", season=season).response
+        rows = client.leagues(search="Liga MX").response
+    if not rows:
+        rows = client.leagues(country="Mexico").response
     if not rows:
         raise SystemExit(f"No Mexico league rows returned for season {season}.")
 
