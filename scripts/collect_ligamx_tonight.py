@@ -414,6 +414,10 @@ def main() -> None:
     baseline = build_league_baseline(
         client, league_id, seasons, target, args.league_window
     )
+    print(
+        f"League environment complete: {baseline.get('n_fixtures', 0)} fixtures "
+        f"(window={baseline.get('window', args.league_window)})."
+    )
 
     standings = cached(
         client,
@@ -440,6 +444,10 @@ def main() -> None:
         "league_baseline": baseline,
         "fixtures": {},
     }
+
+    output_key = args.date.replace("-", "_")
+    checkpoint_path = save_json("ligamx_tonight", output_key, payload)
+    print(f"Initial checkpoint saved to {checkpoint_path}")
 
     for row in fixtures:
         fixture = row["fixture"]
@@ -502,6 +510,8 @@ def main() -> None:
             "h2h": h2h,
             "odds": odds,
         }
+        checkpoint_path = save_json("ligamx_tonight", output_key, payload)
+        print(f"  checkpoint saved: {checkpoint_path}")
 
         def cov(profile: dict[str, Any], stat: str) -> str:
             s = profile["overall"]["stats"][stat]
@@ -520,11 +530,9 @@ def main() -> None:
             f"h2h={len(h2h)} | relevant odds markets={odds['market_count']}"
         )
 
-    path = save_json(
-        "ligamx_tonight",
-        args.date.replace("-", "_"),
-        payload,
-    )
+    payload["meta"]["complete"] = True
+    payload["meta"]["fixture_count"] = len(payload["fixtures"])
+    path = save_json("ligamx_tonight", output_key, payload)
     print("\n" + "=" * 96)
     print(f"Saved model-ready Liga MX slate to {path}")
     print("Source policy: API-Football only. No web data mixed in.")
