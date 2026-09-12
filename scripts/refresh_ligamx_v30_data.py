@@ -249,9 +249,10 @@ def patch_ref_ui(html: str) -> str:
         return `<option value="${n}">${n} · ${y} amarillas · ${f} faltas · n=${d.n||0}</option>`;
       }).join('');
     rw.style.display='block';"""
-    if old not in html:
+    if old in html:
+        html = html.replace(old, new, 1)
+    elif "d.avg_yellow==null" not in html or "d.avg_fouls==null" not in html:
         raise RuntimeError("Referee dropdown renderer not found")
-    html = html.replace(old, new, 1)
 
     html = html.replace(
         "Tarjetas: no hay efecto de árbitro comprobable (es ruido) — se quedan cerca del promedio de liga.<br>Faltas: el árbitro SÍ importa; elígelo arriba para ajustar.",
