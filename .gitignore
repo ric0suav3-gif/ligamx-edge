@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+nfl/data/cache/
+nfl/data/processed/
+nfl/predictions/
