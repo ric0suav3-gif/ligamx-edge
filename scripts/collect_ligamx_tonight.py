@@ -306,7 +306,7 @@ def build_league_baseline(
             "n_home": len(home_good),
             "n_away": len(away_good),
             "dispersion_r": fit.r,
-            "distribution": fit.kind,
+            "distribution": fit.family,
         }
     return summary
 
