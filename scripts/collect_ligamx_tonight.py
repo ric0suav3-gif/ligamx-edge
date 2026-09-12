@@ -487,10 +487,9 @@ def main() -> None:
             client,
             "ligamx_h2h",
             f"{home_id}_{away_id}_last10",
-            "fixtures",
+            "fixtures/headtohead",
             h2h=f"{home_id}-{away_id}",
             last=10,
-            timezone=TZ_NAME,
         )
         raw_odds = cached(
             client,
