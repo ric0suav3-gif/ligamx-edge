@@ -306,8 +306,7 @@ def build_derby(client, fixture, derby, model, target, h2h_last):
 
 
 def patch_html(html: str) -> str:
-    if "function derbyContextCard(home,away)" not in html:
-        helper = r"""
+    helper = r"""
 function derbyContextForFixture(){
   var root=M.derby_context;
   if(!root||!root.fixtures||!window.__apiFixtureId) return null;
@@ -330,6 +329,102 @@ function derbyCandidate(stat,mean,r){
   candidates.sort(function(a,b){return b.p-a.p;});
   return candidates.length?candidates[0]:null;
 }
+function derbyHistoryProb(samples,field,side,line){
+  var vals=(samples||[]).map(function(x){return x[field];}).filter(function(x){return x!=null;});
+  if(!vals.length) return null;
+  var wins=vals.filter(function(x){return side==='over'?Number(x)>line:Number(x)<line;}).length;
+  return wins/vals.length;
+}
+function derbyMarketQuotes(fixtureId,kind){
+  var snap=M.api_odds, fx=snap&&snap.fixtures?snap.fixtures[String(fixtureId)]:null;
+  if(!fx) return [];
+  var out=[];
+  (fx.markets||[]).forEach(function(m){
+    var n=String(m.name||'').toLowerCase();
+    var match=false;
+    if(kind==='cards') match=n==='cards over/under';
+    if(kind==='fouls') match=n.indexOf('foul')>=0 && n.indexOf('over/under')>=0 && n.indexOf('between')<0;
+    if(!match) return;
+    (m.outcomes||[]).forEach(function(q){
+      var mm=String(q.value||'').match(/^(Over|Under)\s*([0-9]+(?:\.[0-9]+)?)/i);
+      if(!mm) return;
+      out.push({
+        market:m.name,
+        side:mm[1].toLowerCase(),
+        line:parseFloat(mm[2]),
+        consensus:Number(q.consensus_odd||0),
+        best:Number(q.best_odd||0),
+        books:Number(q.book_count||0),
+        bestBooks:q.best_bookmakers||[]
+      });
+    });
+  });
+  return out;
+}
+function derbyDisciplineOdds(d,home,away){
+  var h=d.history||{}, m=d.model||{};
+  var rows=[];
+
+  function addKind(kind){
+    var quotes=derbyMarketQuotes(d.fixture_id,kind);
+    if(!quotes.length) return;
+
+    var stat=kind==='cards'?'Cards':'Fouls';
+    var field=kind==='cards'?'yellow':'fouls';
+    var base=lambdas(stat,home,away);
+    var baseMean=base.h+base.a;
+    var targetMean=kind==='cards'
+      ? baseMean*Number(m.yellow_multiplier||1)
+      : Number(m.context_fouls_mean||baseMean);
+    var scale=baseMean>0?targetMean/baseMean:1;
+    var dd=conv(dist(base.h*scale,M.league[stat].r),dist(base.a*scale,M.league[stat].r));
+
+    quotes.forEach(function(q){
+      var po=pOver(dd,q.line);
+      var pModel=q.side==='over'?po:1-po;
+      var pHist=derbyHistoryProb(h.samples,field,q.side,q.line);
+      var ref=(q.books>=2&&q.consensus>0)?q.consensus:q.best;
+      if(!ref||pHist==null) return;
+      var edgeModel=ref*pModel-1;
+      var edgeHist=ref*pHist-1;
+      var robust=Math.min(edgeModel,edgeHist);
+      rows.push({
+        kind:kind,side:q.side,line:q.line,ref:ref,best:q.best,books:q.books,
+        bestBooks:q.bestBooks,pModel:pModel,pHist:pHist,
+        fairModel:1/pModel,fairHist:pHist>0?1/pHist:null,
+        edgeModel:edgeModel,edgeHist:edgeHist,robust:robust,
+        green:(pModel>=0.52&&pHist>=0.55&&robust>0.02)
+      });
+    });
+  }
+
+  addKind('cards');
+  addKind('fouls');
+  rows.sort(function(a,b){return b.robust-a.robust;});
+  return rows;
+}
+function derbyOddsRows(d,home,away){
+  var rows=derbyDisciplineOdds(d,home,away);
+  if(!rows.length){
+    return '<div class="tLam" style="margin-top:8px">Sin líneas API-Football comparables de tarjetas/faltas en el snapshot.</div>';
+  }
+  return rows.slice(0,4).map(function(x){
+    var label=(x.side==='over'?'Más de ':'Menos de ')+x.line+' '+(x.kind==='cards'?'tarjetas':'faltas');
+    var histLabel=x.kind==='cards'?'H2H amarillas*':'H2H';
+    var edge=(x.robust>=0?'+':'')+(x.robust*100).toFixed(1)+'%';
+    var books=x.books>=2?x.books+' casas':'1 casa';
+    return '<div class="ticket" style="margin-top:8px;border-color:'+(x.green?'#4ade80':'var(--line)')+'">'+
+      '<div class="tHead"><div class="tName">'+(x.green?'🟢 ':'')+label+'</div><div class="tLam">'+books+'</div></div>'+
+      '<div class="h4col">'+
+        '<div class="odd"><div class="lab">V30 ctx</div><div class="px cond">'+(x.pModel*100).toFixed(0)+'%</div><div class="pc">justa '+x.fairModel.toFixed(2)+'</div></div>'+
+        '<div class="odd"><div class="lab">'+histLabel+'</div><div class="px cond">'+(x.pHist*100).toFixed(0)+'%</div><div class="pc">n='+(d.history.matches||0)+'</div></div>'+
+        '<div class="odd '+(x.green?'fav':'')+'"><div class="lab">Referencia</div><div class="px cond">'+x.ref.toFixed(2)+'</div><div class="pc">consenso</div></div>'+
+        '<div class="odd"><div class="lab">Mejor</div><div class="px cond">'+x.best.toFixed(2)+'</div><div class="pc">'+(x.bestBooks||[]).slice(0,2).join(', ')+'</div></div>'+
+      '</div>'+
+      '<div class="tLam" style="margin-top:6px">Edge conservador (mínimo entre modelo e H2H): <b>' + edge + '</b></div>'+
+    '</div>';
+  }).join('');
+}
 function derbyContextCard(home,away){
   var d=derbyContextForFixture();
   if(!d) return '';
@@ -339,6 +434,7 @@ function derbyContextCard(home,away){
   var fmt=function(x){return x==null?'—':Number(x).toFixed(2);};
   var corr=h.fouls_yellow_correlation==null?'—':Number(h.fouls_yellow_correlation).toFixed(2);
   var refName=r.fixture_referee||r.matched_model_referee||'pendiente';
+  var refWarn=r.fixture_referee?'':'<br><b style="color:var(--amber)">Árbitro pendiente:</b> el componente arbitral aún no se aplica.';
   var row=function(x){
     if(!x) return '';
     var label=x.stat==='Yellow'?'amarillas':'faltas';
@@ -353,15 +449,25 @@ function derbyContextCard(home,away){
       'H2H ('+(h.matches||0)+'): <b>'+fmt(h.avg_yellow)+'</b> amarillas · <b>'+fmt(h.avg_fouls)+'</b> faltas'+
       ' · liga: '+fmt(lg.avg_yellow)+' / '+fmt(lg.avg_fouls)+
       ' · corr faltas↔amarillas: <b>'+corr+'</b><br>'+
-      'Árbitro: <b>'+refName+'</b> · '+fmt(r.avg_yellow)+' amarillas · '+fmt(r.avg_fouls)+' faltas · n='+(r.n||0)+'<br>'+
+      'Árbitro: <b>'+refName+'</b> · '+fmt(r.avg_yellow)+' amarillas · '+fmt(r.avg_fouls)+' faltas · n='+(r.n||0)+refWarn+'<br>'+
       'V30 base → contexto: amarillas <b>'+fmt(m.base_yellow_mean)+' → '+fmt(m.context_yellow_mean)+'</b>'+
       ' · faltas <b>'+fmt(m.base_fouls_mean)+' → '+fmt(m.context_fouls_mean)+'</b>'+
     '</div>'+row(yellow)+row(fouls)+
-    '<div class="tLam" style="margin-top:8px">Overlay contextual con shrinkage por tamaño de muestra; no reemplaza el modelo base ni convierte el edge en validado. Compara la cuota de la casa contra la justa.</div>'+
+    derbyOddsRows(d,home,away)+
+    '<div class="tLam" style="margin-top:8px">*El mercado API se llama Cards; H2H usa amarillas como proxy. Verde solo si modelo contextual e histórico H2H coinciden y ambos superan la cuota de referencia. Árbitro pendiente reduce confianza.</div>'+
     '</div>';
 }
 """
-        html = html.replace("function picksMarkets(home,away){", helper + "\nfunction picksMarkets(home,away){", 1)
+
+    # Replace an older helper block if already embedded; otherwise insert it.
+    old_start = html.find("function derbyContextForFixture(){")
+    picks_start = html.find("function picksMarkets(home,away){")
+    if old_start >= 0 and picks_start > old_start:
+        html = html[:old_start] + helper + "\n" + html[picks_start:]
+    elif picks_start >= 0:
+        html = html[:picks_start] + helper + "\n" + html[picks_start:]
+    else:
+        raise RuntimeError("Could not locate picksMarkets for derby helper.")
 
     target = "  valueSection(home,away).then(v=>{ const b=document.getElementById('valueBox'); if(b) b.innerHTML=v; });\n  const inBand=(lo,hi)=>C.filter(c=>c.fair>=lo&&c.fair<=hi).sort((x,y)=>y.p-x.p);"
     replacement = "  valueSection(home,away).then(v=>{ const b=document.getElementById('valueBox'); if(b) b.innerHTML=v; });\n  html+=derbyContextCard(home,away);\n  const inBand=(lo,hi)=>C.filter(c=>c.fair>=lo&&c.fair<=hi).sort((x,y)=>y.p-x.p);"
@@ -371,7 +477,6 @@ function derbyContextCard(home,away){
         raise RuntimeError("Could not attach derby context card")
 
     return html
-
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Add derby H2H + referee discipline context to V30 picks.")
