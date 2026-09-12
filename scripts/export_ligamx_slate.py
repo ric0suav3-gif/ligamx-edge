@@ -19,6 +19,13 @@ def main() -> None:
 
     payload = json.loads(src.read_text(encoding="utf-8"))
 
+    if not payload.get("meta", {}).get("complete"):
+        done = len(payload.get("fixtures", {}))
+        raise SystemExit(
+            f"Collected slate is only a checkpoint ({done} fixture(s) complete). "
+            "Rerun scripts/run_ligamx_tonight.sh and let it finish before exporting."
+        )
+
     # Sanity guard: exported collector data should never contain secrets.
     text = json.dumps(payload, ensure_ascii=False)
     forbidden = ("API_FOOTBALL_KEY", "x-apisports-key", "RAPIDAPI_KEY")
