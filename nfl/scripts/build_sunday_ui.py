@@ -91,7 +91,13 @@ def market_name(row: dict[str, Any], game: dict[str, Any]) -> str:
     return f"{owner} · {stat} · {side} {float(row['line']):g}"
 
 
-def build_payload(date: str, slate: list[dict[str, Any]]) -> dict[str, Any]:
+def build_payload(
+    date: str,
+    slate: list[dict[str, Any]],
+    excluded_games: set[str] | None = None,
+    exclusion_note: str = "",
+) -> dict[str, Any]:
+    excluded_games = excluded_games or set()
     games = {game["game_id"]: game for game in map(game_info, slate)}
     market_rows: list[dict[str, Any]] = []
     projections: list[dict[str, Any]] = []
@@ -115,6 +121,8 @@ def build_payload(date: str, slate: list[dict[str, Any]]) -> dict[str, Any]:
                     }
                 )
         for row in (comparison or {}).get("rows") or []:
+            if game_id in excluded_games:
+                continue
             market_rows.append(
                 {
                     **row,
@@ -133,6 +141,7 @@ def build_payload(date: str, slate: list[dict[str, Any]]) -> dict[str, Any]:
             "version": "nfl-edge-sunday-v1.1",
             "games": len(games),
             "priced_games": len({row["game_id"] for row in market_rows}),
+            "exclusion_note": exclusion_note,
             "rules": (
                 "Straights: cuota mediana 1.60–1.80, probabilidad modelo ≥62%, "
                 "EV ≥5%, ≥3 casas y máximo una por partido. Parlays: dos partidos "
@@ -150,12 +159,24 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Build the NFL Sunday iPhone card.")
     parser.add_argument("--date", required=True)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument(
+        "--exclude-game",
+        action="append",
+        default=[],
+        help="Game ID to omit from recommendations after the injury screen (repeatable).",
+    )
+    parser.add_argument("--exclusion-note", default="")
     args = parser.parse_args()
 
     slate = load_json("audits", f"slate_{args.date}")
     if not slate:
         raise SystemExit(f"Missing slate cache for {args.date}; run audit_day.py first.")
-    payload = build_payload(args.date, slate)
+    payload = build_payload(
+        args.date,
+        slate,
+        excluded_games=set(args.exclude_game),
+        exclusion_note=args.exclusion_note,
+    )
     encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     template = TEMPLATE.read_text(encoding="utf-8")
     output = args.output if args.output.is_absolute() else ROOT / args.output

@@ -1,4 +1,4 @@
-from nfl.scripts.build_sunday_ui import game_info, market_name
+from nfl.scripts.build_sunday_ui import build_payload, game_info, market_name
 
 
 def test_game_info_reads_api_sports_shape():
@@ -21,3 +21,16 @@ def test_market_name_is_human_readable():
     row = {"scope": "home_total", "stat": "points", "side": "over", "line": 24.5}
 
     assert market_name(row, game) == "Home · Puntos · Más 24.5"
+
+
+def test_build_payload_records_injury_screen(monkeypatch):
+    monkeypatch.setattr("nfl.scripts.build_sunday_ui.load_json", lambda *_: None)
+
+    payload = build_payload(
+        "2026-09-13",
+        [{"game": {"id": 99}, "teams": {"away": "Away", "home": "Home"}}],
+        excluded_games={"99"},
+        exclusion_note="Game omitted after injury review.",
+    )
+
+    assert payload["meta"]["exclusion_note"] == "Game omitted after injury review."
