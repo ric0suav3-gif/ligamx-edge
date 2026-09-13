@@ -1,0 +1,1 @@
+"""NFL Edge configuration."""
