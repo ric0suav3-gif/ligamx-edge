@@ -167,3 +167,18 @@ python nfl/scripts/build_mobile_ui.py \
 ```
 
 The result is `NFL_Edge_iPhone.html`. It embeds the current snapshot, works as a standalone static file, and keeps the user's saved picks and results in iPhone `localStorage`. The displayed moneyline is explicitly labeled as a rough normal approximation; team totals and props remain the primary model product.
+
+### Sunday slate interface
+
+After running the context, team projection and market comparison scripts for
+every game in the cached Sunday slate, build the confidence-filtered card with:
+
+```bash
+python nfl/scripts/build_sunday_ui.py --date 2026-09-13
+```
+
+This intentionally favors probability over raw EV. Straight picks require a
+consensus price from 1.60 to 1.80, at least 62% model probability, at least 5%
+consensus EV and three bookmakers. Two-leg parlays use different games, require
+at least 75% probability per leg and must finish between 1.60 and 1.80. The
+builder writes the same `NFL_Edge_iPhone.html` mobile entry point.
