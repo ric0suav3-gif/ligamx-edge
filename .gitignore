@@ -1,0 +1,22 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local model/data caches
+data/raw/
+data/cache/
+data/processed/
+*.sqlite3
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
