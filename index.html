@@ -100,7 +100,7 @@ nav button.on{color:var(--amber)}
 </head>
 <body>
 <header>
-  <h1>Liga<span>MX</span> Edge <span style="font-size:.62rem;border:1px solid var(--amber-dim);border-radius:6px;padding:2px 5px;vertical-align:middle">V30</span></h1>
+  <h1>Liga<span>MX</span> Edge <span style="font-size:.62rem;border:1px solid var(--amber-dim);border-radius:6px;padding:2px 5px;vertical-align:middle">V30.2</span></h1>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
     <select id="leagueSel" style="appearance:none;background:var(--bg);color:var(--amber);border:1px solid var(--amber-dim);border-radius:8px;padding:4px 8px;font-family:'Barlow Condensed';font-weight:600;font-size:.85rem;letter-spacing:.04em">
       <option value="ligamx">LIGA MX</option>
@@ -138,7 +138,7 @@ nav button.on{color:var(--amber)}
   <div id="lowWarn" class="warn" style="display:none"></div>
   <div id="markets"></div>
   <p class="note">Cuotas justas sin margen (100%). Si Playdoit/Novibet paga MÁS que la cuota justa, hay valor.<br>
-  Árbitros: el selector muestra promedio de amarillas y faltas de API-Football con tamaño de muestra.<br>Faltas: el árbitro ajusta el modelo; amarillas se muestran pero no ajustan hasta validar ese efecto.<br><b>V30.1:</b> grading visible · mercados API con mapeo conservador · prior histórico V30 preservado.</p>
+  Árbitros: el selector muestra promedio de amarillas y faltas de API-Football con tamaño de muestra.<br>Faltas: el árbitro ajusta el modelo; amarillas se muestran pero no ajustan hasta validar ese efecto.<br><b>V30.2:</b> líneas Playdoit del 15-sep · grading al 14-sep · prior histórico V30 preservado.</p>
 </div>
 
 <div id="regView" style="padding:0 12px;display:none;flex-direction:column;gap:10px"></div>
@@ -150,9 +150,9 @@ nav button.on{color:var(--amber)}
     <button class="btn ghost" style="margin-top:10px;padding:8px" onclick="resetStatus()">Borrar todo</button>
   </div>
   <div style="border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px">
-    <div style="font-family:'Barlow Condensed';font-weight:700;letter-spacing:.05em;color:var(--amber);margin-bottom:6px">CALIBRACIÓN V30.1</div>
+    <div style="font-family:'Barlow Condensed';font-weight:700;letter-spacing:.05em;color:var(--amber);margin-bottom:6px">CALIBRACIÓN V30.2</div>
     <div class="tLam">
-      <b style="color:var(--text)">Liga MX V30.1</b> — conserva íntegro el prior histórico V30 y publica el grading del slate anterior.<br><b style="color:var(--amber)">Estado:</b> próximos partidos actualizados al 14-sep; el comparador solo valora mercados completos que el modelo puede interpretar sin ambigüedad. No se borró historial.<br><br><b style="color:var(--text)">Base histórica:</b> medido sobre los <b>44 partidos</b> del Apertura 2026,
+      <b style="color:var(--text)">Liga MX V30.2</b> — conserva íntegro el prior histórico V30, publica el grading pendiente y compara con las líneas Playdoit observadas el 15-sep.<br><b style="color:var(--amber)">Estado:</b> próximo partido actualizado al 15-sep; el comparador solo valora mercados completos que el modelo puede interpretar sin ambigüedad. No se borró historial ni se reajustaron parámetros por un solo resultado.<br><br><b style="color:var(--text)">Base histórica:</b> medido sobre los <b>44 partidos</b> del Apertura 2026,
       datos al <b>28-ago (J6 viernes)</b>. Se integraron 9 partidos de J5/J6 por actualización incremental
       EWMA (alpha 0.0539 por split) y se recalcularon los baselines de liga.
       Sesgos actuales: tiros +0.27, SOT +0.17, córners +0.13, faltas +0.08, amarillas y tarjetas 0.00.
@@ -429,7 +429,7 @@ function fillTeams(){
   } else { rw.style.display='none'; }
   const _mm = M.meta.matches || M.meta.matches_lc_hist || '?';
   const _dr = (M.meta.date_range && M.meta.date_range[1]) || M.meta.built || '';
-  const _v  = CUR_LEAGUE==='ligamx' ? 'v30.1 · ' : (M.meta.version ? M.meta.version+' · ' : '');
+  const _v  = CUR_LEAGUE==='ligamx' ? 'v30.2 · ' : (M.meta.version ? M.meta.version+' · ' : '');
   document.getElementById('dataDate').textContent = `${_v}${_mm} partidos · datos al ${_dr}`;
 }
 function ticket(name, lamTxt, key, d, dflt){
@@ -528,11 +528,10 @@ async function loadFixtures(){
   try{
     if(CUR_LEAGUE==='ligamx'){
       FIX=[
-        {id:null,date:'09-14',kick:'19:00',home:'León',away:'Atlético de San Luis',source:'Liga MX'},
         {id:null,date:'09-15',kick:'19:00',home:'Puebla',away:'Toluca',source:'Liga MX'}
       ];
       const sel=document.getElementById('fixSel');
-      sel.innerHTML='<option value="">Próximos Liga MX · 14 Sep 2026</option>'+
+      sel.innerHTML='<option value="">Próximos Liga MX · 15 Sep 2026</option>'+
         FIX.map((x,i)=>`<option value="${i}">${x.kick} · ${short(x.home)} vs ${short(x.away)}</option>`).join('');
       sel.style.display='block';
       sel.onchange=()=>{
@@ -702,7 +701,39 @@ function apiOddsSection(home,away){
   return meta+supported;
 }
 
+function playdoitTodaySection(home,away){
+  if(home!=='Puebla' || away!=='Toluca' || window.__matchDate!=='2026-09-15') return null;
+  const {h,a,r}=lambdas('Goals',home,away);
+  const dh=dist(h,r), da=dist(a,r), dt=conv(dh,da);
+  let pH=0,pD=0,pA=0;
+  for(let i=0;i<dh.length;i++) for(let j=0;j<da.length;j++){
+    const p=dh[i]*da[j];
+    if(i>j) pH+=p; else if(i===j) pD+=p; else pA+=p;
+  }
+  const pUnder=1-pOver(dt,2.5);
+  const md=marginDist(dh,da), puePlusOne=ahEval(md.dm,md.off,1);
+  const toDec=am=>am>0?1+am/100:1+100/(-am);
+  const toAm=dec=>dec>=2?'+'+Math.round((dec-1)*100):''+Math.round(-100/(dec-1));
+  const edge=(dec,p,push=0)=>(dec*p+push-1)*100;
+  const line=(title,price,p,fairDec,edgePct,detail)=>
+    '<div class="ticket"><div class="tHead"><div class="tName">'+title+'</div><div class="tLam">Playdoit '+(price>0?'+':'')+price+'</div></div>'+
+    '<div class="h3col">'+
+      '<div class="odd"><div class="lab">Modelo</div><div class="px cond">'+(p*100).toFixed(1)+'%</div><div class="pc">'+detail+'</div></div>'+
+      '<div class="odd"><div class="lab">Justa</div><div class="px cond">'+toAm(fairDec)+'</div><div class="pc">'+fairDec.toFixed(2)+' decimal</div></div>'+
+      '<div class="odd fav"><div class="lab">Edge</div><div class="px cond">+'+edgePct.toFixed(1)+'%</div><div class="pc">vs precio</div></div>'+
+    '</div></div>';
+  const pueOneDec=toDec(-108), underDec=toDec(133), pueMlDec=toDec(450);
+  return '<div class="ticket" style="border-color:#4ade80"><div class="tHead"><div class="tName">🟢 Straight bets · Puebla vs Toluca</div><div class="tLam">Playdoit · 15 Sep</div></div>'+
+    '<div class="tLam">Mejor perfil: Puebla +1 AH. Si pierde por uno, se devuelve; evita duplicar riesgo con Puebla +0.5/ML.</div></div>'+
+    line('1) Puebla +1 · Hándicap asiático',-108,puePlusOne.w,puePlusOne.fair,edge(pueOneDec,puePlusOne.w,puePlusOne.p),'push '+(puePlusOne.p*100).toFixed(1)+'%')+
+    line('2) Menos de 2.5 goles',133,pUnder,1/pUnder,edge(underDec,pUnder),'sin push')+
+    line('Longshot · Puebla ML',450,pH,1/pH,edge(pueMlDec,pH),'0.25u máx.')+
+    '<div class="ticket"><div class="tName">Mercado que se pasa</div><div class="tLam">Toluca ML -184: modelo '+(pA*100).toFixed(1)+'% (justa '+toAm(1/pA)+'). Over 2.5 -163 y BTTS Sí -140 tampoco superan la justa del modelo. Empate +350: '+(pD*100).toFixed(1)+'%, edge pequeño; no entra sobre Puebla +1.</div></div>';
+}
+
 async function valueSection(home,away){
+  const playdoit=playdoitTodaySection(home,away);
+  if(playdoit) return playdoit;
   if(window.__fixtureSource==='API-Football'){
     return apiOddsSection(home,away);
   }
@@ -769,14 +800,24 @@ const API_SCORE_GRADE={
     ['❌','Cruz Azul–América U2.5 2.02','7 goles']
   ]
 };
+const LEON_API_GRADE={
+  date:'14 Sep 2026',
+  record:'0-1',
+  units:-1.00,
+  roi:-100.0,
+  rows:[
+    ['❌','León–San Luis O2.5 · consenso 1.93','León 2-0 San Luis']
+  ]
+};
 function recentGradeCard(){
-  const g=RECENT_GRADE, a=API_SCORE_GRADE;
+  const g=RECENT_GRADE, a=API_SCORE_GRADE, l=LEON_API_GRADE;
   const rowHtml=rows=>rows.map(x=>'<div class="lineRow" style="grid-template-columns:auto 1fr auto;margin-top:6px"><div>'+x[0]+'</div><div style="font-size:.84rem">'+x[1]+'</div><div class="tLam">'+x[2]+'</div></div>').join('');
   return '<div class="ticket" style="border-color:var(--amber-dim)">'+
     '<div class="tHead"><div class="tName">Grading Playdoit · '+g.date+'</div><div class="tLam">'+g.record+' · '+g.units.toFixed(2)+'u · '+g.roi.toFixed(1)+'% ROI</div></div>'+rowHtml(g.rows)+
     '<div class="tLam" style="margin-top:8px">'+g.optional+'<br>*Tarjetas: derrota bajo conteo estándar que incluye la roja; confirma la regla exacta del ticket si Playdoit liquidó solo amarillas. Parlays ML: perdidos.</div>'+
     '<div class="tHead" style="margin-top:14px"><div class="tName">Auditoría V30 · 1X2/goles · '+a.date+'</div><div class="tLam">'+a.record+' · +'+a.units.toFixed(2)+'u · +'+a.roi.toFixed(1)+'% ROI</div></div>'+rowHtml(a.rows)+
-    '<div class="tLam" style="margin-top:8px">Usa cuota consenso del snapshot API y cuenta solo señales verdes en mercados de marcador interpretables. Los props ambiguos quedaron fuera y ahora se ocultan.</div></div>';
+    '<div class="tHead" style="margin-top:14px"><div class="tName">Auditoría API pendiente · '+l.date+'</div><div class="tLam">'+l.record+' · '+l.units.toFixed(2)+'u · '+l.roi.toFixed(1)+'% ROI</div></div>'+rowHtml(l.rows)+
+    '<div class="tLam" style="margin-top:8px">El over era la única señal verde 1X2/goles frente al consenso prepartido; no había ticket oficial guardado, por eso se registra como auditoría. Un fallo aislado no justifica recalibrar tasas. Los props ambiguos quedan fuera.</div></div>';
 }
 function collectPicks(home,away){
   const C=[];
