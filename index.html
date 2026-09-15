@@ -138,7 +138,7 @@ nav button.on{color:var(--amber)}
   <div id="lowWarn" class="warn" style="display:none"></div>
   <div id="markets"></div>
   <p class="note">Cuotas justas sin margen (100%). Si Playdoit/Novibet paga MÁS que la cuota justa, hay valor.<br>
-  Árbitros: el selector muestra promedio de amarillas y faltas de API-Football con tamaño de muestra.<br>Faltas: el árbitro ajusta el modelo; amarillas se muestran pero no ajustan hasta validar ese efecto.<br><b>V30:</b> partidos de hoy vía API-Football · prior histórico V29 preservado.</p>
+  Árbitros: el selector muestra promedio de amarillas y faltas de API-Football con tamaño de muestra.<br>Faltas: el árbitro ajusta el modelo; amarillas se muestran pero no ajustan hasta validar ese efecto.<br><b>V30.1:</b> grading visible · mercados API con mapeo conservador · prior histórico V30 preservado.</p>
 </div>
 
 <div id="regView" style="padding:0 12px;display:none;flex-direction:column;gap:10px"></div>
@@ -150,9 +150,9 @@ nav button.on{color:var(--amber)}
     <button class="btn ghost" style="margin-top:10px;padding:8px" onclick="resetStatus()">Borrar todo</button>
   </div>
   <div style="border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px">
-    <div style="font-family:'Barlow Condensed';font-weight:700;letter-spacing:.05em;color:var(--amber);margin-bottom:6px">CALIBRACIÓN V30</div>
+    <div style="font-family:'Barlow Condensed';font-weight:700;letter-spacing:.05em;color:var(--amber);margin-bottom:6px">CALIBRACIÓN V30.1</div>
     <div class="tLam">
-      <b style="color:var(--text)">Liga MX V30</b> — conserva íntegro el prior histórico V29 y usa el slate de hoy descubierto por API-Football.<br><b style="color:var(--amber)">Estado:</b> fixtures API cargados; la capa estadística fresca del 12-sep se incorpora cuando termine el collector. No se borró historial.<br><br><b style="color:var(--text)">Base histórica:</b> medido sobre los <b>44 partidos</b> del Apertura 2026,
+      <b style="color:var(--text)">Liga MX V30.1</b> — conserva íntegro el prior histórico V30 y publica el grading del slate anterior.<br><b style="color:var(--amber)">Estado:</b> próximos partidos actualizados al 14-sep; el comparador solo valora mercados completos que el modelo puede interpretar sin ambigüedad. No se borró historial.<br><br><b style="color:var(--text)">Base histórica:</b> medido sobre los <b>44 partidos</b> del Apertura 2026,
       datos al <b>28-ago (J6 viernes)</b>. Se integraron 9 partidos de J5/J6 por actualización incremental
       EWMA (alpha 0.0539 por split) y se recalcularon los baselines de liga.
       Sesgos actuales: tiros +0.27, SOT +0.17, córners +0.13, faltas +0.08, amarillas y tarjetas 0.00.
@@ -256,7 +256,7 @@ const LIGAMX_STANDINGS = {"Tijuana": [13, 6, 10, 7], "Atlas": [12, 5, 8, 5], "Am
 const STATUS_KEY='lmxStand_';
 // v27: eran constantes de fase de grupos; ahora dependen del torneo activo.
 function groupGames(){ return CUR_LEAGUE==='leaguescup' ? 3 : 17; }
-function advanceSlots(){ return 4; }
+function advanceSlots(){ return CUR_LEAGUE==='ligamx' ? 8 : 4; }
 function seedDefaults(){
   const S={};
   if(CUR_LEAGUE==='leaguescup'){
@@ -429,7 +429,7 @@ function fillTeams(){
   } else { rw.style.display='none'; }
   const _mm = M.meta.matches || M.meta.matches_lc_hist || '?';
   const _dr = (M.meta.date_range && M.meta.date_range[1]) || M.meta.built || '';
-  const _v  = M.meta.version ? M.meta.version+' · ' : '';
+  const _v  = CUR_LEAGUE==='ligamx' ? 'v30.1 · ' : (M.meta.version ? M.meta.version+' · ' : '');
   document.getElementById('dataDate').textContent = `${_v}${_mm} partidos · datos al ${_dr}`;
 }
 function ticket(name, lamTxt, key, d, dflt){
@@ -528,12 +528,11 @@ async function loadFixtures(){
   try{
     if(CUR_LEAGUE==='ligamx'){
       FIX=[
-        {id:1550962,date:'09-12',kick:'17:05',home:'Toluca',away:'Atlas',source:'API-Football'},
-        {id:1550965,date:'09-12',kick:'19:10',home:'Monterrey',away:'Tigres UANL',source:'API-Football'},
-        {id:1550961,date:'09-12',kick:'21:15',home:'Cruz Azul',away:'América',source:'API-Football'}
+        {id:null,date:'09-14',kick:'19:00',home:'León',away:'Atlético de San Luis',source:'Liga MX'},
+        {id:null,date:'09-15',kick:'19:00',home:'Puebla',away:'Toluca',source:'Liga MX'}
       ];
       const sel=document.getElementById('fixSel');
-      sel.innerHTML='<option value="">API-Football · 12 Sep 2026</option>'+
+      sel.innerHTML='<option value="">Próximos Liga MX · 14 Sep 2026</option>'+
         FIX.map((x,i)=>`<option value="${i}">${x.kick} · ${short(x.home)} vs ${short(x.away)}</option>`).join('');
       sel.style.display='block';
       sel.onchange=()=>{
@@ -544,12 +543,12 @@ async function loadFixtures(){
         const h=match(x.home), a=match(x.away);
         if(h) homeSel.value=h; if(a) awaySel.value=a;
         CUR_EVENT=null;
-        window.__fixtureSource='API-Football';
+        window.__fixtureSource=x.id?'API-Football':'Liga MX';
         window.__apiFixtureId=x.id;
-        window.__matchDate='2026-09-12';
+        window.__matchDate='2026-'+x.date;
         render();
       };
-      // Open directly on the first verified API fixture.
+      // Open directly on the next scheduled fixture.
       sel.value='0';
       sel.onchange();
       return;
@@ -587,7 +586,10 @@ function apiModelProbForQuote(marketName,value,home,away){
   const n=String(marketName||'').toLowerCase();
   const v=String(value||'').toLowerCase();
 
-  if(n.includes('match winner') || n==='1x2' || n.includes('fulltime result') || n.includes('full time result')){
+  // Only compare markets whose scope is unambiguous. API-Football also returns
+  // first-half, second-half and compound labels that must not be priced with a
+  // full-match distribution.
+  if(n==='match winner' || n==='1x2' || n==='fulltime result' || n==='full time result'){
     const {h,a,r}=lambdas('Goals',home,away);
     const dh=dist(h,r), da=dist(a,r);
     let pH=0,pD=0,pA=0;
@@ -600,7 +602,7 @@ function apiModelProbForQuote(marketName,value,home,away){
     if(v==='away' || v===String(away).toLowerCase()) return pA;
   }
 
-  if(n.includes('double chance')){
+  if(n==='double chance'){
     const {h,a,r}=lambdas('Goals',home,away);
     const dh=dist(h,r), da=dist(a,r);
     let pH=0,pD=0,pA=0;
@@ -613,28 +615,33 @@ function apiModelProbForQuote(marketName,value,home,away){
     if(v.includes('home')&&v.includes('away')) return pH+pA;
   }
 
-  if(n.includes('handicap')) return null;
-
-  let stat=null;
-  if(n.includes('shot on target') || n.includes('shots on target') || n.includes('shot on goal') || n.includes('shots on goal')) stat='Shots on Target';
-  else if(n.includes('corner')) stat='Corners';
-  else if(n.includes('offside')) stat='Offsides';
-  else if(n.includes('foul')) stat='Fouls';
-  else if(n.includes('yellow')) stat='Yellow';
-  else if(n.includes('card')) stat='Cards';
-  else if(n.includes('shot')) stat='Shots';
-  else if(n.includes('goal') || n.includes('total')) stat='Goals';
-
-  if(!stat || !M.league[stat]) return null;
+  const supported={
+    'goals over/under':{stat:'Goals',scope:'match'},
+    'goal line':{stat:'Goals',scope:'match'},
+    'corners over under':{stat:'Corners',scope:'match'},
+    'cards over/under':{stat:'Cards',scope:'match'},
+    'total shotongoal':{stat:'Shots on Target',scope:'match'},
+    'total shots':{stat:'Shots',scope:'match'},
+    'home corners over/under':{stat:'Corners',scope:'home'},
+    'away corners over/under':{stat:'Corners',scope:'away'},
+    'home team total cards':{stat:'Cards',scope:'home'},
+    'away team total cards':{stat:'Cards',scope:'away'},
+    'total - home':{stat:'Goals',scope:'home'},
+    'total - away':{stat:'Goals',scope:'away'}
+  };
+  const spec=supported[n];
+  if(!spec || !M.league[spec.stat]) return null;
   const m=v.match(/\b(over|under)\s*([0-9]+(?:\.[0-9]+)?)/i);
   if(!m) return null;
   const side=m[1].toLowerCase(), line=parseFloat(m[2]);
-  if(!isFinite(line)) return null;
+  // Whole and quarter lines need explicit push/split settlement; hide them
+  // until that is modelled instead of overstating edge.
+  if(!isFinite(line) || Math.abs(line*2-Math.round(line*2))>1e-9 || Math.round(line*2)%2===0) return null;
 
-  const {h,a,r}=lambdas(stat,home,away);
+  const {h,a,r}=lambdas(spec.stat,home,away);
   let d;
-  if(n.includes('home team') || n.includes('home total')) d=dist(h,r);
-  else if(n.includes('away team') || n.includes('away total')) d=dist(a,r);
+  if(spec.scope==='home') d=dist(h,r);
+  else if(spec.scope==='away') d=dist(a,r);
   else d=conv(dist(h,r),dist(a,r));
 
   const po=pOver(d,line);
@@ -736,6 +743,41 @@ async function valueSection(home,away){
 }
 const FAM={'Goals':'goles','Yellow':'tarjetas','Red':'tarjetas','Cards':'tarjetas',
   'Corners':'corners','Shots':'tiros','Shots on Target':'tiros','Fouls':'faltas','Offsides':'offsides'};
+const RECENT_GRADE={
+  date:'11 Sep 2026',
+  record:'2-3',
+  units:-0.85,
+  roi:-16.9,
+  rows:[
+    ['❌','Necaxa ML +100','Necaxa 0-1 Puebla'],
+    ['❌','Tijuana ML +100','Tijuana 0-1 Querétaro'],
+    ['✅','Necaxa–Puebla U2.5 +122','1 gol'],
+    ['✅','Atlante–Pachuca O2.5 -107','3 goles'],
+    ['❌','Necaxa–Puebla U4.5 tarjetas -150','4 amarillas + 1 roja*']
+  ],
+  optional:'Atlante ML +200 ❌ (0-3), excluido del récord principal porque se marcó como opcional.'
+};
+const API_SCORE_GRADE={
+  date:'12 Sep 2026',
+  record:'2-2',
+  units:0.21,
+  roi:5.3,
+  rows:[
+    ['❌','Atlas ML 6.84','Toluca 5-2 Atlas'],
+    ['✅','Monterrey–Tigres U3.5 1.48','0 goles'],
+    ['✅','Cruz Azul ML 2.73','Cruz Azul 4-3 América'],
+    ['❌','Cruz Azul–América U2.5 2.02','7 goles']
+  ]
+};
+function recentGradeCard(){
+  const g=RECENT_GRADE, a=API_SCORE_GRADE;
+  const rowHtml=rows=>rows.map(x=>'<div class="lineRow" style="grid-template-columns:auto 1fr auto;margin-top:6px"><div>'+x[0]+'</div><div style="font-size:.84rem">'+x[1]+'</div><div class="tLam">'+x[2]+'</div></div>').join('');
+  return '<div class="ticket" style="border-color:var(--amber-dim)">'+
+    '<div class="tHead"><div class="tName">Grading Playdoit · '+g.date+'</div><div class="tLam">'+g.record+' · '+g.units.toFixed(2)+'u · '+g.roi.toFixed(1)+'% ROI</div></div>'+rowHtml(g.rows)+
+    '<div class="tLam" style="margin-top:8px">'+g.optional+'<br>*Tarjetas: derrota bajo conteo estándar que incluye la roja; confirma la regla exacta del ticket si Playdoit liquidó solo amarillas. Parlays ML: perdidos.</div>'+
+    '<div class="tHead" style="margin-top:14px"><div class="tName">Auditoría V30 · 1X2/goles · '+a.date+'</div><div class="tLam">'+a.record+' · +'+a.units.toFixed(2)+'u · +'+a.roi.toFixed(1)+'% ROI</div></div>'+rowHtml(a.rows)+
+    '<div class="tLam" style="margin-top:8px">Usa cuota consenso del snapshot API y cuenta solo señales verdes en mercados de marcador interpretables. Los props ambiguos quedaron fuera y ahora se ocultan.</div></div>';
+}
 function collectPicks(home,away){
   const C=[];
   const push=(name,p,fam)=>{ if(p>0.02&&p<0.98) C.push({name,p,fair:1/p,fam}); };
@@ -992,7 +1034,7 @@ function picksMarkets(home,away){
   let html=`<div class="ticket" style="background:${_bg};border-color:${_bd}">
       <div class="tName" style="font-size:.8rem">CONTEXTO</div>
       <div class="tLam" style="margin-top:4px">${_ctx.txt}</div>
-    </div><div id="valueBox"></div>`;
+    </div>${recentGradeCard()}<div id="valueBox"></div>`;
   valueSection(home,away).then(v=>{ const b=document.getElementById('valueBox'); if(b) b.innerHTML=v; });
   html+=derbyContextCard(home,away);
   const inBand=(lo,hi)=>C.filter(c=>c.fair>=lo&&c.fair<=hi).sort((x,y)=>y.p-x.p);
@@ -1212,10 +1254,6 @@ document.getElementById('leagueSel').onchange=e=>switchLeague(e.target.value);
 // per-league saved model
 try{ const s=localStorage.getItem('lmxModel_'+CUR_LEAGUE); if(s) M=JSON.parse(s); }catch(e){}
 fillTeams(); render(); loadFixtures();
-// Service worker: cachea la app para que abra siempre, con o sin señal
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
 </script>
 </body>
 </html>
