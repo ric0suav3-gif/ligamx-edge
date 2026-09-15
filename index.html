@@ -4,9 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Liga MX Edge">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
 <meta name="theme-color" content="#0b1210">
-<title>LigaMX Edge V30</title>
+<title>LigaMX Edge V30.2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -24,9 +27,11 @@
   --radius:14px;
   font-size:16px;
 }
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--bg)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;
-  min-height:100vh;padding-bottom:90px}
+  min-height:100vh;min-height:100dvh;padding-bottom:90px;overscroll-behavior-y:none}
+button,select{touch-action:manipulation}
 .cond{font-family:'Barlow Condensed',system-ui,sans-serif}
 
 header{padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 10px;display:flex;align-items:baseline;justify-content:space-between}
@@ -95,6 +100,22 @@ nav button.on{color:var(--amber)}
 @media (prefers-reduced-motion:no-preference){
   .ticket{animation:up .25s ease both}
   @keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+@media (max-width:430px){
+  header{gap:8px;padding-left:12px;padding-right:12px}
+  header h1{font-size:1.3rem;white-space:nowrap}
+  #dataDate{font-size:.64rem;text-align:right}
+  .tabs{gap:4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;min-width:52px;min-height:44px;padding:8px 5px;font-size:.78rem}
+  .tHead{align-items:flex-start;gap:6px;flex-wrap:wrap}
+  .tLam{line-height:1.35}
+  .h4col{grid-template-columns:1fr 1fr}
+  .lineRow{gap:6px}
+  nav button{min-height:44px}
+}
+@supports (-webkit-touch-callout:none){
+  select,input,textarea{font-size:16px!important}
 }
 </style>
 </head>
