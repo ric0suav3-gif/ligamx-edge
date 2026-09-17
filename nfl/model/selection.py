@@ -9,6 +9,10 @@ STRAIGHT_MAX_PRICE = 1.80
 STRAIGHT_MIN_PROBABILITY = 0.62
 STRAIGHT_MIN_EV = 0.05
 STRAIGHT_MIN_BOOKS = 3
+# Early results show that full-game totals are more stable than allocating the
+# same projected points to one team. Keep the raw model probability for
+# reporting, but use a small conservative haircut when selecting team totals.
+TEAM_TOTAL_PROBABILITY_HAIRCUT = 0.03
 
 PARLAY_LEG_MIN_PRICE = 1.15
 PARLAY_LEG_MAX_PRICE = 1.50
@@ -30,6 +34,17 @@ def _probability(row: dict[str, Any]) -> float:
     return 0.0 if fair <= 1.0 else 1.0 / fair
 
 
+def _selection_probability(row: dict[str, Any]) -> float:
+    probability = _probability(row)
+    if str(row.get("scope")) in {"home_total", "away_total"}:
+        probability -= TEAM_TOTAL_PROBABILITY_HAIRCUT
+    return max(0.0, probability)
+
+
+def _annotate(row: dict[str, Any]) -> dict[str, Any]:
+    return {**row, "selection_probability": _selection_probability(row)}
+
+
 def _dedupe(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Keep the safest qualifying alternate line for each market family."""
     best: dict[tuple[str, str, str, str], dict[str, Any]] = {}
@@ -41,9 +56,9 @@ def _dedupe(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             str(row.get("side")),
         )
         current = best.get(key)
-        rank = (_probability(row), _number(row.get("consensus_ev")))
+        rank = (_selection_probability(row), _number(row.get("consensus_ev")))
         if current is None or rank > (
-            _probability(current),
+            _selection_probability(current),
             _number(current.get("consensus_ev")),
         ):
             best[key] = row
@@ -60,14 +75,14 @@ def select_straights(
         row
         for row in rows
         if STRAIGHT_MIN_PRICE <= _number(row.get("median_odd")) <= STRAIGHT_MAX_PRICE
-        and _probability(row) >= STRAIGHT_MIN_PROBABILITY
+        and _selection_probability(row) >= STRAIGHT_MIN_PROBABILITY
         and _number(row.get("consensus_ev")) >= STRAIGHT_MIN_EV
         and int(row.get("books") or 0) >= STRAIGHT_MIN_BOOKS
     ]
     qualified = _dedupe(qualified)
     qualified.sort(
         key=lambda row: (
-            _probability(row),
+            _selection_probability(row),
             _number(row.get("consensus_ev")),
             int(row.get("books") or 0),
         ),
@@ -80,7 +95,7 @@ def select_straights(
         game_id = str(row.get("game_id"))
         if game_id in used_games:
             continue
-        selected.append(row)
+        selected.append(_annotate(row))
         used_games.add(game_id)
         if len(selected) >= limit:
             break
@@ -97,7 +112,7 @@ def select_two_leg_parlays(
         row
         for row in rows
         if PARLAY_LEG_MIN_PRICE <= _number(row.get("median_odd")) <= PARLAY_LEG_MAX_PRICE
-        and _probability(row) >= PARLAY_LEG_MIN_PROBABILITY
+        and _selection_probability(row) >= PARLAY_LEG_MIN_PROBABILITY
         and _number(row.get("consensus_ev")) >= PARLAY_LEG_MIN_EV
         and int(row.get("books") or 0) >= STRAIGHT_MIN_BOOKS
     ]
@@ -109,10 +124,10 @@ def select_two_leg_parlays(
         price = _number(first.get("median_odd")) * _number(second.get("median_odd"))
         if not PARLAY_MIN_PRICE <= price <= PARLAY_MAX_PRICE:
             continue
-        probability = _probability(first) * _probability(second)
+        probability = _selection_probability(first) * _selection_probability(second)
         candidates.append(
             {
-                "legs": [first, second],
+                "legs": [_annotate(first), _annotate(second)],
                 "price": price,
                 "probability": probability,
                 "fair": 1.0 / probability,

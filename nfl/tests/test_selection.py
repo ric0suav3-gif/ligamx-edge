@@ -50,3 +50,14 @@ def test_parlays_are_two_separate_games_in_target_band():
     assert len(selected) == 1
     assert round(selected[0]["price"], 2) == 1.69
     assert {leg["game_id"] for leg in selected[0]["legs"]} == {"1", "2"}
+
+
+def test_team_totals_receive_conservative_selection_haircut():
+    team_total = market("1", price=1.70, fair=1 / 0.64, ev=0.08)
+    team_total["scope"] = "home_total"
+    match_total = market("2", price=1.70, fair=1 / 0.64, ev=0.08)
+
+    selected = select_straights([team_total, match_total])
+
+    assert [row["game_id"] for row in selected] == ["2"]
+    assert selected[0]["selection_probability"] == 0.64

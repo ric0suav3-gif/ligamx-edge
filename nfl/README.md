@@ -182,3 +182,9 @@ consensus price from 1.60 to 1.80, at least 62% model probability, at least 5%
 consensus EV and three bookmakers. Two-leg parlays use different games, require
 at least 75% probability per leg and must finish between 1.60 and 1.80. The
 builder writes the same `NFL_Edge_iPhone.html` mobile entry point.
+
+The selection layer applies a three-percentage-point confidence haircut to
+home/away team totals. Early completed-game grading showed that full-game totals
+were more stable than splitting the projection between the two teams. The raw
+projection is unchanged; this is a conservative ranking adjustment until the
+team allocation layer has a larger 2026 sample.
