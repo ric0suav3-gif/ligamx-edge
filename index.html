@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b1210">
+<!-- BUILD: LigaMX Edge V31.1 · 2026-09-25 · dynamic API fixtures -->
 <title>LigaMX Edge V31 Mobile ·  V30</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -152,7 +153,7 @@ nav button.on{color:var(--amber)}
   <div style="border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px">
     <div style="font-family:'Barlow Condensed';font-weight:700;letter-spacing:.05em;color:var(--amber);margin-bottom:6px">CALIBRACIÓN V30</div>
     <div class="tLam">
-      <b style="color:var(--text)">Liga MX V30</b> — conserva íntegro el prior histórico V29 y usa el slate de hoy descubierto por API-Football.<br><b style="color:var(--amber)">Estado:</b> fixtures API cargados; la capa estadística fresca del 12-sep se incorpora cuando termine el collector. No se borró historial.<br><br><b style="color:var(--text)">Base histórica:</b> medido sobre los <b>44 partidos</b> del Apertura 2026,
+      <b style="color:var(--text)">Liga MX V31.1</b> — conserva íntegro el prior histórico V29 y usa el slate de hoy descubierto por API-Football.<br><b style="color:var(--amber)">Estado:</b> fixtures dinámicos por API-Football; fallback verificado para la Jornada 10 del 25-sep. El modelo se actualiza con partidos completados al sincronizar. No se borró historial.<br><br><b style="color:var(--text)">Base histórica:</b> medido sobre los <b>44 partidos</b> del Apertura 2026,
       datos al <b>28-ago (J6 viernes)</b>. Se integraron 9 partidos de J5/J6 por actualización incremental
       EWMA (alpha 0.0539 por split) y se recalcularon los baselines de liga.
       Sesgos actuales: tiros +0.27, SOT +0.17, córners +0.13, faltas +0.08, amarillas y tarjetas 0.00.
@@ -544,67 +545,78 @@ let FIX=[], CUR_EVENT=null;
 const SLUGS={ligamx:'mex.1', leaguescup:'concacaf.leagues.cup'};
 function espnBase(){ return 'https://site.api.espn.com/apis/site/v2/sports/soccer/'+(SLUGS[CUR_LEAGUE]||'mex.1'); }
 function amToDec(x){ x=parseFloat(x); if(!x) return null; return x>0 ? 1+x/100 : 1+100/(-x); }
+function dateInTZ(tz='America/Mexico_City',d=new Date()){
+  const z={}; for(const x of new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d)) z[x.type]=x.value;
+  return `${z.year}-${z.month}-${z.day}`;
+}
+const VERIFIED_TONIGHT={
+  date:'2026-09-25',
+  source:'FMF + N+',
+  fixtures:[
+    {id:'verified-ate-mon-20260925',date:'2026-09-25',dateTime:'2026-09-26T01:00:00Z',home:'Atlante',away:'Monterrey',referee:'Mario Terrazas Chávez',venue:'Estadio Banorte',source:'Verified schedule'},
+    {id:'verified-tij-atl-20260925',date:'2026-09-25',dateTime:'2026-09-26T03:00:00Z',home:'Tijuana',away:'Atlas',referee:'Luis Enrique Santander Aguirre',venue:'Estadio Caliente',source:'Verified schedule'}
+  ]
+};
+function verifiedFallbackFixtures(){ return dateInTZ('America/Mexico_City')===VERIFIED_TONIGHT.date ? VERIFIED_TONIGHT.fixtures.map(x=>({...x})) : []; }
+function fixtureClock(x){
+  if(!x.dateTime) return x.kick||'';
+  try{return new Date(x.dateTime).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}catch(e){return x.kick||'';}
+}
+function renderFixtureSelect(list,label){
+  const sel=document.getElementById('fixSel'); FIX=list||[];
+  if(!FIX.length){
+    sel.innerHTML=`<option value="">${label||'No current fixtures'}</option>`; sel.style.display='block'; sel.onchange=null; return;
+  }
+  sel.innerHTML=`<option value="">${label||'Próximos partidos…'}</option>`+FIX.map((x,i)=>`<option value="${i}">${x.live?'🔴 ':''}${x.date||''} · ${fixtureClock(x)} · ${short(x.home)} vs ${short(x.away)}</option>`).join('');
+  sel.style.display='block';
+  sel.onchange=()=>{
+    const x=FIX[sel.value]; if(!x){CUR_EVENT=null;return;}
+    const names=Object.keys(M.teams);
+    const norm=n=>String(n).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const match=n=>names.find(t=>norm(t)===norm(n))||names.find(t=>norm(n).includes(norm(t))||norm(t).includes(norm(n)));
+    const h=match(x.home),a=match(x.away); if(h)homeSel.value=h;if(a)awaySel.value=a;
+    CUR_EVENT=null; window.__fixtureSource=x.source||label||''; window.__apiFixtureId=x.apiId||x.id||null; window.__matchDate=x.date||null;
+    if(typeof setRefByName==='function') setRefByName(x.referee);
+    render();
+  };
+  sel.value='0'; sel.onchange();
+}
 async function loadFixtures(){
+  const sel=document.getElementById('fixSel');
   try{
     if(CUR_LEAGUE==='ligamx'){
-      FIX=[
-        {id:1550962,date:'09-12',kick:'17:05',home:'Toluca',away:'Atlas',source:'API-Football'},
-        {id:1550965,date:'09-12',kick:'19:10',home:'Monterrey',away:'Tigres UANL',source:'API-Football'},
-        {id:1550961,date:'09-12',kick:'21:15',home:'Cruz Azul',away:'América',source:'API-Football'}
-      ];
-      const sel=document.getElementById('fixSel');
-      sel.innerHTML='<option value="">API-Football · 12 Sep 2026</option>'+
-        FIX.map((x,i)=>`<option value="${i}">${x.kick} · ${short(x.home)} vs ${short(x.away)}</option>`).join('');
-      sel.style.display='block';
-      sel.onchange=()=>{
-        const x=FIX[sel.value]; if(!x){ CUR_EVENT=null; window.__apiFixtureId=null; return; }
-        const names=Object.keys(M.teams);
-        const norm=n=>String(n).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-        const match=n=>names.find(t=>norm(t)===norm(n))||names.find(t=>norm(n).includes(norm(t))||norm(t).includes(norm(n)));
-        const h=match(x.home), a=match(x.away);
-        if(h) homeSel.value=h; if(a) awaySel.value=a;
-        CUR_EVENT=null;
-        window.__fixtureSource='API-Football';
-        window.__apiFixtureId=x.id;
-        window.__matchDate='2026-09-12';
-        render();
-      };
-      sel.value='0';
-      sel.onchange();
+      sel.innerHTML='<option value="">Loading current Liga MX fixtures…</option>'; sel.style.display='block';
+      if(typeof apiKey==='function' && apiKey()){
+        try{
+          const today=dateInTZ('America/Mexico_City'), to=(typeof addDays==='function'?addDays(today,7):today);
+          const j=await apiFetch(`/fixtures?league=262&season=2026&from=${today}&to=${to}&timezone=America%2FMexico_City`);
+          const active=['NS','TBD','1H','HT','2H','ET','BT','P','SUSP','INT'];
+          const live=(j.response||[]).filter(f=>active.includes(f.fixture?.status?.short)).map(f=>({
+            id:f.fixture?.id, apiId:f.fixture?.id, date:(f.fixture?.date||'').slice(0,10), dateTime:f.fixture?.date,
+            home:apiModelTeam(f.teams?.home?.name)||f.teams?.home?.name, away:apiModelTeam(f.teams?.away?.name)||f.teams?.away?.name,
+            referee:f.fixture?.referee||'', venue:f.fixture?.venue?.name||'', source:'API-Football', live:['1H','HT','2H','ET','BT','P'].includes(f.fixture?.status?.short)
+          })).filter(x=>M.teams[x.home]&&M.teams[x.away]);
+          if(live.length){ renderFixtureSelect(live,`API-Football · ${today} → ${to}`); return; }
+        }catch(e){ if(typeof apiSetStatus==='function') apiSetStatus('Fixture refresh failed: '+e.message,false,true); }
+      }
+      const fb=verifiedFallbackFixtures();
+      if(fb.length){ renderFixtureSelect(fb,'VERIFIED · FMF + N+ · tonight'); return; }
+      renderFixtureSelect([], (typeof apiKey==='function'&&apiKey())?'API-Football returned no upcoming Liga MX fixtures':'Save API key + Sync to load current fixtures');
       return;
     }
 
-    const now=new Date();
-    const startToday=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-    const endDate=new Date(startToday.getTime()+7*864e5);
+    const now=new Date(), startToday=new Date(now.getFullYear(),now.getMonth(),now.getDate()), endDate=new Date(startToday.getTime()+7*864e5);
     const f=d=>d.toISOString().slice(0,10).replace(/-/g,'');
-    const r=await fetch(`${espnBase()}/scoreboard?dates=${f(startToday)}-${f(endDate)}&limit=100`);
-    const j=await r.json();
-    FIX=(j.events||[]).filter(e=>!e.competitions[0].status.type.completed).map(e=>{
-      const c=e.competitions[0]; let ht,at;
-      for(const t of c.competitors){ if(t.homeAway==='home') ht=t.team.displayName; else at=t.team.displayName; }
-      return {id:e.id,date:e.date.slice(5,10),home:ht,away:at,live:e.competitions[0].status.type.state==='in'};
-    });
-    const sel=document.getElementById('fixSel');
-    if(FIX.length){
-      sel.innerHTML='<option value="">Próximos partidos…</option>'+
-        FIX.map((x,i)=>`<option value="${i}">${x.live?'🔴 ':''}${x.date} · ${short(x.home)} vs ${short(x.away)}</option>`).join('');
-      sel.style.display='block';
-      sel.onchange=()=>{ const x=FIX[sel.value]; if(!x){CUR_EVENT=null;return;}
-        const names=Object.keys(M.teams);
-        const match=n=>names.find(t=>t===n)||names.find(t=>n.includes(t)||t.includes(n));
-        const h=match(x.home),a=match(x.away);
-        if(h)homeSel.value=h;if(a)awaySel.value=a;
-        CUR_EVENT=x.id;window.__matchDate='2026-'+x.date;render();
-      };
-    }
-  }catch(e){}
+    const r=await fetch(`${espnBase()}/scoreboard?dates=${f(startToday)}-${f(endDate)}&limit=100`), j=await r.json();
+    const list=(j.events||[]).filter(e=>!e.competitions[0].status.type.completed).map(e=>{const c=e.competitions[0];let ht,at;for(const t of c.competitors){if(t.homeAway==='home')ht=t.team.displayName;else at=t.team.displayName;}return {id:e.id,date:e.date.slice(0,10),dateTime:e.date,home:ht,away:at,live:c.status.type.state==='in',source:'ESPN'};});
+    renderFixtureSelect(list,'Próximos partidos…');
+  }catch(e){ renderFixtureSelect(verifiedFallbackFixtures(),'VERIFIED fallback'); }
 }
 async function valueSection(home,away){
   if(window.__fixtureSource==='API-Football'){
-    return '<div class="ticket"><div class="tName">API-Football · fixture '+window.__apiFixtureId+'</div><div class="tLam">Slate verificado por API-Football. Esta copia V30 conserva el modelo histórico completo para cuotas justas. Momios y la capa estadística fresca no se incrustan hasta que termine el collector; compáralos contra la cuota justa antes de apostar.</div></div>';
+    return '<div class="ticket"><div class="tName">API-Football · fixture '+window.__apiFixtureId+'</div><div class="tLam">Fixture cargado por API-Football. V31.1 usa el modelo actualizado tras Sync para cuotas justas; compara siempre contra la cuota real de la casa.</div></div>';
   }
-  if(!CUR_EVENT) return '<div class="ticket"><div class="tName">Valor vs casa</div><div class="tLam">Elige el partido en "Próximos partidos…" arriba para jalar los momios reales (DraftKings vía ESPN).</div></div>';
+  if(!CUR_EVENT){ const src=window.__fixtureSource||''; if(src==='Verified schedule') return '<div class="ticket"><div class="tName">Fixture verificado</div><div class="tLam">Horario y árbitro verificados para hoy con FMF/N+. Guarda tu API key y pulsa Sync para actualizar estadísticas y picks con API-Football.</div></div>'; return '<div class="ticket"><div class="tName">Valor vs casa</div><div class="tLam">Selecciona un partido actual arriba.</div></div>'; }
   let odds=null, provider='';
   try{
     const j=await (await fetch(`${espnBase()}/summary?event=${CUR_EVENT}`)).json();
@@ -961,7 +973,7 @@ document.getElementById('leagueSel').value=CUR_LEAGUE;
 document.getElementById('leagueSel').onchange=e=>switchLeague(e.target.value);
 // per-league saved model
 try{ const s=localStorage.getItem('lmxModel_'+CUR_LEAGUE); if(s) M=JSON.parse(s); }catch(e){}
-fillTeams(); render(); loadFixtures();
+fillTeams(); render();
 // Service worker: cachea la app para que abra siempre, con o sin señal
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
@@ -976,6 +988,8 @@ const API_ALPHA=0.0539;
 const API_LEAGUE=262;
 const API_SEASON=2026;
 const API_MODEL_CUTOFF='2026-08-28';
+const API_TZ='America/Mexico_City';
+const API_LAST_SYNC_STORE='lmxApiLastFullSyncV311';
 
 const HIST_PICKS=[
  {id:'p01',date:'2026-09-12',home:'Toluca',away:'Atlas',scope:'away',stat:'Shots',dir:'under',line:10.5,p:.680,fair:1.47,label:'Atlas U10.5 shots'},
@@ -983,8 +997,7 @@ const HIST_PICKS=[
  {id:'p03',date:'2026-09-12',home:'Toluca',away:'Atlas',scope:'total',stat:'Fouls',dir:'over',line:24.5,p:.609,fair:1.64,label:'Toluca–Atlas O24.5 fouls'},
  {id:'p04',date:'2026-09-12',home:'Toluca',away:'Atlas',scope:'away',stat:'Corners',dir:'under',line:3.5,p:.680,fair:1.47,label:'Atlas U3.5 corners'},
  {id:'p05',date:'2026-09-12',home:'Monterrey',away:'Tigres UANL',scope:'home',stat:'Shots on Target',dir:'over',line:5.5,p:.630,fair:1.59,label:'Monterrey O5.5 SOT'},
- {id:'p06',date:'2026-09-12',home:'Monterrey',away:'Tigres UANL',scope:'away',stat:'Shots',dir:'under',line:14.5,p:.620,fair:1.61,label:'Tigres U14.5 shots'},
- {id:'p07',date:'2026-09-12',home:'Monterrey',away:'Tigres UANL',scope:'away',stat:'Goals',dir:'under',line:1.5,p:.653,fair:1.53,label:'Tigres U1.5 goals'},
+ {id:'p06',date:'2026-09-12',home:'Monterrey',away:'Tigres UANL',scope:'away',stat:'Shots',dir:'under',line:14.5,p:.620,fair:1.61,label:'Tigres U14.5 shots'}, {id:'p07',date:'2026-09-12',home:'Monterrey',away:'Tigres UANL',scope:'away',stat:'Goals',dir:'under',line:1.5,p:.653,fair:1.53,label:'Tigres U1.5 goals'},
  {id:'p08',date:'2026-09-12',home:'Monterrey',away:'Tigres UANL',scope:'total',stat:'Offsides',dir:'under',line:3.5,p:.656,fair:1.53,label:'Monterrey–Tigres U3.5 offsides'},
  {id:'p09',date:'2026-09-12',home:'Cruz Azul',away:'América',scope:'total',stat:'Fouls',dir:'over',line:23.5,p:.616,fair:1.62,label:'Cruz Azul–América O23.5 fouls'},
  {id:'p10',date:'2026-09-12',home:'Cruz Azul',away:'América',scope:'total',stat:'Offsides',dir:'under',line:4.5,p:.664,fair:1.51,label:'Cruz Azul–América U4.5 offsides'},
@@ -997,7 +1010,8 @@ const API_ALIAS={
  'club america':'América','america':'América','cf america':'América',
  'guadalajara chivas':'Guadalajara','chivas':'Guadalajara','guadalajara':'Guadalajara',
  'unam pumas':'Pumas UNAM','pumas unam':'Pumas UNAM','pumas':'Pumas UNAM',
- 'u.a.n.l. - tigres':'Tigres UANL','tigres uanl':'Tigres UANL','tigres':'Tigres UANL', 'fc juarez':'FC Juarez','juarez':'FC Juarez',
+ 'u.a.n.l. - tigres':'Tigres UANL','tigres uanl':'Tigres UANL','tigres':'Tigres UANL',
+ 'fc juarez':'FC Juarez','juarez':'FC Juarez',
  'atletico san luis':'Atlético de San Luis','atletico de san luis':'Atlético de San Luis','atletico san luis fc':'Atlético de San Luis',
  'leon':'León','club leon':'León','queretaro':'Querétaro','club queretaro':'Querétaro',
  'santos laguna':'Santos','santos':'Santos','club tijuana':'Tijuana','tijuana':'Tijuana',
@@ -1024,6 +1038,7 @@ async function apiFetch(path){
   return j;
 }
 function isoDateLocal(d=new Date()){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
+function isoDateMexico(){return dateInTZ(API_TZ);}
 function addDays(ds,n){const d=new Date(ds+'T12:00:00');d.setDate(d.getDate()+n);return isoDateLocal(d);}
 function daysBetween(a,b){return Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/86400000);}
 function apiCompleted(f){return ['FT','AET','PEN'].includes(f?.fixture?.status?.short);}
@@ -1038,7 +1053,7 @@ function statsMap(statResp){
     out[tm]=d;
   } return out;
 }
-async function fixturesOn(date){return (await apiFetch(`/fixtures?league=${API_LEAGUE}&season=${API_SEASON}&date=${date}`)).response||[];}
+async function fixturesOn(date){return (await apiFetch(`/fixtures?league=${API_LEAGUE}&season=${API_SEASON}&date=${date}&timezone=${encodeURIComponent(API_TZ)}`)).response||[];}
 function findFixture(list,home,away){return list.find(f=>apiModelTeam(f.teams?.home?.name)===home && apiModelTeam(f.teams?.away?.name)===away);}
 async function fixtureStats(id){return await apiFetch(`/fixtures/statistics?fixture=${id}`);}
 function metricForPick(pk,fix,sm){
@@ -1108,11 +1123,11 @@ function applyFixtureEWMA(fix,sm){
 }
 async function fixturesRange(from,to){
   let cur=from, all=[];
-  while(cur<=to){const end=addDays(cur,Math.min(13,Math.max(0,daysBetween(cur,to)))); const j=await apiFetch(`/fixtures?league=${API_LEAGUE}&season=${API_SEASON}&from=${cur}&to=${end}`); all.push(...(j.response||[])); cur=addDays(end,1);}
+  while(cur<=to){const end=addDays(cur,Math.min(13,Math.max(0,daysBetween(cur,to)))); const j=await apiFetch(`/fixtures?league=${API_LEAGUE}&season=${API_SEASON}&from=${cur}&to=${end}&timezone=${encodeURIComponent(API_TZ)}`); all.push(...(j.response||[])); cur=addDays(end,1);}
   return all;
 }
 async function updateModelFromAPI(){
-  const today=isoDateLocal(), to=addDays(today,-1), from=addDays(API_MODEL_CUTOFF,1); if(to<from)return 0;
+  const today=isoDateMexico(), to=addDays(today,-1), from=addDays(API_MODEL_CUTOFF,1); if(to<from)return 0;
   apiSetStatus('Updating V31 from completed API-Football matches…');
   const processed=new Set(JSON.parse(localStorage.getItem(API_PROCESSED_STORE)||'[]'));
   const fixtures=(await fixturesRange(from,to)).filter(apiCompleted).filter(f=>!processed.has(String(f.fixture.id)));
@@ -1147,7 +1162,7 @@ function tonightCard(home,away,ref){
   return chosen;
 }
 async function loadTonightFromAPI(){
-  const date=isoDateLocal(), fixtures=(await fixturesOn(date)).filter(f=>['NS','TBD','1H','HT','2H'].includes(f.fixture?.status?.short));
+  const date=isoDateMexico(), fixtures=(await fixturesOn(date)).filter(f=>['NS','TBD','1H','HT','2H'].includes(f.fixture?.status?.short));
   const cards=[];
   for(const f of fixtures){const h=apiModelTeam(f.teams?.home?.name),a=apiModelTeam(f.teams?.away?.name);if(!h||!a)continue;cards.push({fix:f,home:h,away:a,picks:tonightCard(h,a,f.fixture?.referee)});}
   renderTonight(cards,date); return cards;
@@ -1168,16 +1183,28 @@ function renderTonight(cards,date){
   box.innerHTML=h;
 }
 async function fullApiSync(){
-  try{const n=await updateModelFromAPI();apiProgress(`${n} new matches merged. Grading picks…`);await gradeHistorical();apiProgress('Loading today’s Liga MX slate…');await loadTonightFromAPI();apiSetStatus(`V31 synced · ${n} new matches merged · picks graded`,true);}
+  try{const n=await updateModelFromAPI();apiProgress(`${n} new matches merged. Grading picks…`);await gradeHistorical();apiProgress('Loading today’s Liga MX slate…');await loadTonightFromAPI();await loadFixtures();localStorage.setItem(API_LAST_SYNC_STORE,isoDateMexico());apiSetStatus(`V31.1 synced · ${n} new matches merged · picks graded`,true);}
   catch(e){console.error(e);apiSetStatus(e.message,false,true);apiProgress('If Safari reports a CORS/network error, run this page from a normal HTTPS host or the desktop collector.');}
 }
-function initApiV31(){
+async function initApiV31(){
   M.meta=M.meta||{}; if(M.meta.referee_weight==null)M.meta.referee_weight=.50;
   const inp=document.getElementById('apiKeyInput'); if(apiKey())inp.placeholder='API key saved on this device';
-  document.getElementById('apiSaveBtn').onclick=()=>{const v=inp.value.trim();if(!v)return;localStorage.setItem(API_KEY_STORE,v);inp.value='';apiSetStatus('API key saved locally. Tap Sync + Update V31.');};
+  document.getElementById('apiSaveBtn').onclick=()=>{const v=inp.value.trim();if(!v)return;localStorage.setItem(API_KEY_STORE,v);inp.value='';apiSetStatus('API key saved locally. Refreshing fixtures…');loadFixtures();};
   document.getElementById('apiFullSyncBtn').onclick=fullApiSync;
-  document.getElementById('apiGradeBtn').onclick=async()=>{try{await gradeHistorical();await loadTonightFromAPI();}catch(e){apiSetStatus(e.message,false,true);}};
+  document.getElementById('apiGradeBtn').onclick=async()=>{try{await gradeHistorical();await loadTonightFromAPI();await loadFixtures();}catch(e){apiSetStatus(e.message,false,true);}};
   try{const g=JSON.parse(localStorage.getItem('lmxApiGradesV31')||'[]');if(g.length)renderApiGrades(g);}catch(e){}
+  await loadFixtures();
+  if(apiKey()){
+    const today=isoDateMexico();
+    if(localStorage.getItem(API_LAST_SYNC_STORE)!==today){
+      apiProgress('Auto-syncing today’s model and grading from API-Football…');
+      fullApiSync();
+    }else{
+      try{await loadTonightFromAPI();apiSetStatus('Current fixtures loaded from API-Football.',true);}catch(e){apiSetStatus('Fixtures loaded; API detail refresh failed: '+e.message,false,true);}
+    }
+  }else{
+    apiSetStatus('Tonight’s schedule is verified. Save API-Football key to refresh stats/picks.');
+  }
 }
 initApiV31();
 // ================= end V31 API-Football mobile sync =================
