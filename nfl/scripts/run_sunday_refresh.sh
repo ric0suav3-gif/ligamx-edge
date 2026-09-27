@@ -3,7 +3,8 @@ set -euo pipefail
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
 
-DATE="${1:-$(TZ=America/New_York date +%F)}"\nexport DATE_FOR_NFL="$DATE"
+DATE="${1:-$(TZ=America/New_York date +%F)}"
+export DATE_FOR_NFL="$DATE"
 SEASON="${2:-2026}"
 
 if [[ ! -f .env ]]; then
