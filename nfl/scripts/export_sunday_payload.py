@@ -39,6 +39,25 @@ def main() -> None:
     out.write_text(text, encoding="utf-8")
     print(f"Exported Sunday card: {out}")
     print(f"games={payload['meta']['games']} priced={payload['meta']['priced_games']} straights={len(payload.get('straights') or [])} parlays={len(payload.get('parlays') or [])}")
+    print("\nFINAL STRAIGHTS")
+    for i,row in enumerate(payload.get("straights") or [], 1):
+        print(
+            f"  {i}. {row['market']} | p={row.get('selection_probability', row.get('probability', 0)):.1%} "
+            f"| fair={row['fair']:.2f} | median={row['median_odd']:.2f} "
+            f"| best={row['best_odd']:.2f} {row['best_book']} | books={row['books']} "
+            f"| EV={row['consensus_ev']:+.1%}"
+        )
+    print("\n2-LEG PARLAYS")
+    for i,row in enumerate(payload.get("parlays") or [], 1):
+        print(
+            f"  P{i}: price={row['price']:.2f} | p={row['probability']:.1%} "
+            f"| fair={row['fair']:.2f} | edge={row['edge']:+.1%}"
+        )
+        for leg in row.get("legs") or []:
+            print(
+                f"      - {leg['market']} | {leg['median_odd']:.2f} "
+                f"| p={leg.get('selection_probability', leg.get('probability', 0)):.1%}"
+            )
 
 
 if __name__ == "__main__":
