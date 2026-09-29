@@ -30,8 +30,12 @@ def match_probabilities(home_xg: float, away_xg: float) -> dict[str, float]:
         "HOME": 0.0,
         "DRAW": 0.0,
         "AWAY": 0.0,
+        "OVER_1_5": 0.0,
+        "UNDER_1_5": 0.0,
         "OVER_2_5": 0.0,
         "UNDER_2_5": 0.0,
+        "OVER_3_5": 0.0,
+        "UNDER_3_5": 0.0,
         "BTTS_YES": 0.0,
         "BTTS_NO": 0.0,
     }
@@ -44,10 +48,19 @@ def match_probabilities(home_xg: float, away_xg: float) -> dict[str, float]:
                 out["DRAW"] += probability
             else:
                 out["AWAY"] += probability
-            if home_goals + away_goals > 2:
+            total_goals = home_goals + away_goals
+            if total_goals > 1:
+                out["OVER_1_5"] += probability
+            else:
+                out["UNDER_1_5"] += probability
+            if total_goals > 2:
                 out["OVER_2_5"] += probability
             else:
                 out["UNDER_2_5"] += probability
+            if total_goals > 3:
+                out["OVER_3_5"] += probability
+            else:
+                out["UNDER_3_5"] += probability
             if home_goals > 0 and away_goals > 0:
                 out["BTTS_YES"] += probability
             else:
@@ -164,9 +177,19 @@ def settle(market: str, selection: str, home_goals: int, away_goals: int) -> str
     if market == "1X2":
         winner = "HOME" if home_goals > away_goals else "AWAY" if away_goals > home_goals else "DRAW"
         return "WIN" if selection == winner else "LOSS"
-    if market == "TOTAL_2_5":
+    if market == "DOUBLE_CHANCE":
+        winner = "HOME" if home_goals > away_goals else "AWAY" if away_goals > home_goals else "DRAW"
+        covered = {
+            "HOME_OR_DRAW": {"HOME", "DRAW"},
+            "HOME_OR_AWAY": {"HOME", "AWAY"},
+            "DRAW_OR_AWAY": {"DRAW", "AWAY"},
+        }
+        return "WIN" if winner in covered[selection] else "LOSS"
+    if market in {"TOTAL_1_5", "TOTAL_2_5", "TOTAL_3_5"}:
         total = home_goals + away_goals
-        winner = "OVER_2_5" if total > 2.5 else "UNDER_2_5"
+        line = float(market.removeprefix("TOTAL_").replace("_", "."))
+        key = f"{line:g}".replace(".", "_")
+        winner = f"OVER_{key}" if total > line else f"UNDER_{key}"
         return "WIN" if selection == winner else "LOSS"
     if market == "BTTS":
         winner = "BTTS_YES" if home_goals > 0 and away_goals > 0 else "BTTS_NO"

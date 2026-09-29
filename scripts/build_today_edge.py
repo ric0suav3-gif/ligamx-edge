@@ -35,8 +35,15 @@ FINAL_STATUSES = {"FT", "AET", "PEN"}
 PREGAME_STATUSES = {"NS", "TBD"}
 SELECTION_LABELS = {
     "DRAW": "Empate",
+    "HOME_OR_DRAW": "Local o empate",
+    "HOME_OR_AWAY": "Local o visitante",
+    "DRAW_OR_AWAY": "Empate o visitante",
+    "OVER_1_5": "Más de 1.5 goles",
+    "UNDER_1_5": "Menos de 1.5 goles",
     "OVER_2_5": "Más de 2.5 goles",
     "UNDER_2_5": "Menos de 2.5 goles",
+    "OVER_3_5": "Más de 3.5 goles",
+    "UNDER_3_5": "Menos de 3.5 goles",
     "BTTS_YES": "Ambos anotan — Sí",
     "BTTS_NO": "Ambos anotan — No",
 }
@@ -170,7 +177,9 @@ def value_map(values: Iterable[dict[str, Any]]) -> dict[str, float]:
     return out
 
 
-def complete_book_market(bookmaker: dict[str, Any], bet_id: int) -> dict[str, float] | None:
+def complete_book_market(
+    bookmaker: dict[str, Any], bet_id: int, total_line: float | None = None
+) -> dict[str, float] | None:
     bet = next((row for row in bookmaker.get("bets", []) if int(row.get("id", -1)) == bet_id), None)
     if not bet:
         return None
@@ -178,9 +187,18 @@ def complete_book_market(bookmaker: dict[str, Any], bet_id: int) -> dict[str, fl
     if bet_id == 1:
         aliases = {"HOME": "home", "DRAW": "draw", "AWAY": "away"}
     elif bet_id == 5:
-        aliases = {"OVER_2_5": "over 2.5", "UNDER_2_5": "under 2.5"}
+        line = total_line if total_line is not None else 2.5
+        suffix = f"{line:g}"
+        key = suffix.replace(".", "_")
+        aliases = {f"OVER_{key}": f"over {suffix}", f"UNDER_{key}": f"under {suffix}"}
     elif bet_id == 8:
         aliases = {"BTTS_YES": "yes", "BTTS_NO": "no"}
+    elif bet_id == 12:
+        aliases = {
+            "HOME_OR_DRAW": "home/draw",
+            "HOME_OR_AWAY": "home/away",
+            "DRAW_OR_AWAY": "draw/away",
+        }
     else:
         return None
     if not all(alias in values for alias in aliases.values()):
@@ -192,18 +210,39 @@ def aggregate_odds(raw_odds: list[dict[str, Any]]) -> dict[str, dict[str, dict[s
     if not raw_odds:
         return {}
     bookmakers = raw_odds[0].get("bookmakers", [])
-    market_specs = {"1X2": 1, "TOTAL_2_5": 5, "BTTS": 8}
+    market_specs = [
+        ("1X2", 1, None),
+        ("DOUBLE_CHANCE", 12, None),
+        ("TOTAL_1_5", 5, 1.5),
+        ("TOTAL_2_5", 5, 2.5),
+        ("TOTAL_3_5", 5, 3.5),
+        ("BTTS", 8, None),
+    ]
     result: dict[str, dict[str, dict[str, Any]]] = {}
-    for market_name, bet_id in market_specs.items():
+    for market_name, bet_id, total_line in market_specs:
         by_selection: dict[str, list[dict[str, Any]]] = {}
         for bookmaker in bookmakers:
-            prices = complete_book_market(bookmaker, bet_id)
+            prices = complete_book_market(bookmaker, bet_id, total_line)
             if not prices:
                 continue
-            try:
-                fair = devig(prices)
-            except ValueError:
-                continue
+            if market_name == "DOUBLE_CHANCE":
+                one_x_two = complete_book_market(bookmaker, 1)
+                if not one_x_two:
+                    continue
+                try:
+                    base = devig(one_x_two)
+                except ValueError:
+                    continue
+                fair = {
+                    "HOME_OR_DRAW": base["HOME"] + base["DRAW"],
+                    "HOME_OR_AWAY": base["HOME"] + base["AWAY"],
+                    "DRAW_OR_AWAY": base["DRAW"] + base["AWAY"],
+                }
+            else:
+                try:
+                    fair = devig(prices)
+                except ValueError:
+                    continue
             for selection, price in prices.items():
                 by_selection.setdefault(selection, []).append(
                     {
@@ -250,6 +289,12 @@ def selection_label(selection: str, home: str, away: str) -> str:
         return home
     if selection == "AWAY":
         return away
+    if selection == "HOME_OR_DRAW":
+        return f"{home} o empate"
+    if selection == "HOME_OR_AWAY":
+        return f"{home} o {away}"
+    if selection == "DRAW_OR_AWAY":
+        return f"Empate o {away}"
     return SELECTION_LABELS.get(selection, selection)
 
 
@@ -264,9 +309,28 @@ def build_candidates(
     candidates: list[dict[str, Any]] = []
     model_groups = {
         "1X2": {key: poisson[key] for key in ("HOME", "DRAW", "AWAY")},
+        "DOUBLE_CHANCE": {
+            "HOME_OR_DRAW": poisson["HOME"] + poisson["DRAW"],
+            "HOME_OR_AWAY": poisson["HOME"] + poisson["AWAY"],
+            "DRAW_OR_AWAY": poisson["DRAW"] + poisson["AWAY"],
+        },
+        "TOTAL_1_5": {key: poisson[key] for key in ("OVER_1_5", "UNDER_1_5")},
         "TOTAL_2_5": {key: poisson[key] for key in ("OVER_2_5", "UNDER_2_5")},
+        "TOTAL_3_5": {key: poisson[key] for key in ("OVER_3_5", "UNDER_3_5")},
         "BTTS": {key: poisson[key] for key in ("BTTS_YES", "BTTS_NO")},
     }
+    blended_one_x_two: dict[str, float] | None = None
+    if "1X2" in markets:
+        one_x_two_market = {key: row["probability"] for key, row in markets["1X2"].items()}
+        if set(one_x_two_market) == {"HOME", "DRAW", "AWAY"}:
+            blended_one_x_two = blend_probabilities(
+                one_x_two_market,
+                model_groups["1X2"],
+                api_model,
+                market_weight=0.77,
+                model_weight=0.20,
+                api_weight=0.03,
+            )
     for market_name, quotes_by_selection in markets.items():
         if market_name not in model_groups:
             continue
@@ -275,7 +339,13 @@ def build_candidates(
         }
         if set(market_probs) != set(model_groups[market_name]):
             continue
-        if market_name == "1X2":
+        if market_name == "DOUBLE_CHANCE" and blended_one_x_two:
+            blended = {
+                "HOME_OR_DRAW": blended_one_x_two["HOME"] + blended_one_x_two["DRAW"],
+                "HOME_OR_AWAY": blended_one_x_two["HOME"] + blended_one_x_two["AWAY"],
+                "DRAW_OR_AWAY": blended_one_x_two["DRAW"] + blended_one_x_two["AWAY"],
+            }
+        elif market_name == "1X2":
             # API-Football's competition sample is one match on this slate, so
             # its opaque prediction remains a small corroborating signal only.
             blended = blend_probabilities(
@@ -300,17 +370,18 @@ def build_candidates(
             median_edge = expected_value(probability, quote["median_odds"])
             stable_best_price = quote["best_odds"] <= quote["median_odds"] * 1.12
             grade = grade_pick(edge, quote["books"], quote["disagreement"])
-            eligible = (
+            minimum_odds = 1.25 if market_name == "DOUBLE_CHANCE" else 1.35
+            passes_guardrails = (
                 minimum_samples >= 6
                 and quote["books"] >= 4
-                and 1.35 <= quote["best_odds"] <= 3.00
+                and minimum_odds <= quote["best_odds"] <= 3.00
                 and probability >= 0.36
                 and edge >= 0.025
                 and median_edge >= -0.025
                 and quote["disagreement"] <= 0.08
                 and stable_best_price
-                and grade in {"A", "B"}
             )
+            eligible = passes_guardrails and grade in {"A", "B"}
             candidates.append(
                 {
                     "market": market_name,
@@ -326,6 +397,7 @@ def build_candidates(
                     "edge": edge,
                     "median_edge": median_edge,
                     "eligible": eligible,
+                    "passes_guardrails": passes_guardrails,
                     "grade": grade,
                     "score": edge - 0.65 * quote["disagreement"] + min(quote["books"], 10) * 0.002,
                 }
@@ -430,6 +502,7 @@ def upsert_tracking(
                 "selection": pick["selection"],
                 "label": pick["label"],
                 "grade": pick["grade"],
+                "tier": pick.get("tier", "OFFICIAL"),
                 "opening_odds": pick["best_odds"],
                 "opening_book": pick["best_book"],
                 "closing_odds": pick["best_odds"],
@@ -475,6 +548,7 @@ def build_payload(
 
     public_rows: list[dict[str, Any]] = []
     all_candidates: list[dict[str, Any]] = []
+    all_leans: list[dict[str, Any]] = []
     baseline_goals_values: list[float] = []
     for team_id, rows in history_cache.items():
         for goals_for, _ in parse_team_history(rows, team_id, now, limit=10):
@@ -485,6 +559,7 @@ def build_payload(
     for raw in sorted(league_rows, key=fixture_sort_key):
         row = public_fixture(raw)
         row["recommendation"] = None
+        row["lean"] = None
         row["alternatives"] = []
         if row["status"] not in PREGAME_STATUSES:
             row["screen"] = "IN_PLAY_OR_FINAL"
@@ -521,7 +596,12 @@ def build_payload(
             minimum_samples,
         )
         eligible = [candidate for candidate in candidates if candidate["eligible"]]
-        row["screen"] = "PASS" if eligible else "NO_BET"
+        secondary = [
+            candidate
+            for candidate in candidates
+            if candidate["passes_guardrails"] and not candidate["eligible"]
+        ]
+        row["screen"] = "PASS" if eligible else "LEAN" if secondary else "NO_BET"
         row["projection"] = {
             "home_xg": projection.home_xg,
             "away_xg": projection.away_xg,
@@ -537,6 +617,7 @@ def build_payload(
             for market, selections in markets.items()
         }
         row["recommendation"] = eligible[0] if eligible else None
+        row["lean"] = secondary[0] if not eligible and secondary else None
         row["alternatives"] = candidates[:3]
         for candidate in eligible[:1]:
             candidate.update(
@@ -550,14 +631,31 @@ def build_payload(
                 }
             )
             all_candidates.append(candidate)
+        if not eligible:
+            for candidate in secondary[:1]:
+                candidate.update(
+                    {
+                        "fixture_id": row["id"],
+                        "date": match_date,
+                        "kickoff": row["date"],
+                        "match": f"{row['home']['name']} vs {row['away']['name']}",
+                        "home": row["home"]["name"],
+                        "away": row["away"]["name"],
+                        "tier": "LEAN",
+                    }
+                )
+                all_leans.append(candidate)
         public_rows.append(row)
 
     official_picks = sorted(all_candidates, key=lambda row: row["score"], reverse=True)[:top_picks]
+    secondary_picks = sorted(all_leans, key=lambda row: row["score"], reverse=True)[:3]
+    for pick in official_picks:
+        pick["tier"] = "OFFICIAL"
     tracking = {"version": 1, "picks": []}
     if tracking_path.exists():
         tracking = json.loads(tracking_path.read_text(encoding="utf-8"))
     settle_tracking(client, tracking)
-    upsert_tracking(tracking, public_rows, official_picks, now)
+    upsert_tracking(tracking, public_rows, official_picks + secondary_picks, now)
     tracking["updated_at"] = now.isoformat()
     tracking_path.parent.mkdir(parents=True, exist_ok=True)
     tracking_path.write_text(json.dumps(tracking, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -582,6 +680,7 @@ def build_payload(
         "league": public_rows[0]["league"],
         "fixtures": public_rows,
         "picks": official_picks,
+        "leans": secondary_picks,
         "tracking": {
             "summary": tracking_summary(tracking),
             "picks": sorted(tracking.get("picks", []), key=lambda row: row["published_at"], reverse=True),
@@ -631,6 +730,11 @@ def main() -> None:
     for index, pick in enumerate(payload["picks"], 1):
         print(
             f"{index}. {pick['match']} — {pick['label']} @ {pick['best_odds']:.2f} "
+            f"({pick['best_book']}) | p={pick['probability']:.1%} EV={pick['edge']:.1%} | {pick['grade']}"
+        )
+    for index, pick in enumerate(payload["leans"], 1):
+        print(
+            f"Lean {index}. {pick['match']} — {pick['label']} @ {pick['best_odds']:.2f} "
             f"({pick['best_book']}) | p={pick['probability']:.1%} EV={pick['edge']:.1%} | {pick['grade']}"
         )
 

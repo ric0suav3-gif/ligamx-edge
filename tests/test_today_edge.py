@@ -25,6 +25,16 @@ def test_match_probabilities_are_normalized() -> None:
         abs_tol=1e-9,
     )
     assert math.isclose(
+        probabilities["OVER_1_5"] + probabilities["UNDER_1_5"],
+        1.0,
+        abs_tol=1e-9,
+    )
+    assert math.isclose(
+        probabilities["OVER_3_5"] + probabilities["UNDER_3_5"],
+        1.0,
+        abs_tol=1e-9,
+    )
+    assert math.isclose(
         probabilities["BTTS_YES"] + probabilities["BTTS_NO"],
         1.0,
         abs_tol=1e-9,
@@ -55,4 +65,7 @@ def test_ev_and_settlement() -> None:
     assert math.isclose(expected_value(0.55, 2.0), 0.10)
     assert settle("1X2", "HOME", 2, 1) == "WIN"
     assert settle("TOTAL_2_5", "UNDER_2_5", 1, 1) == "WIN"
+    assert settle("TOTAL_1_5", "OVER_1_5", 1, 1) == "WIN"
+    assert settle("TOTAL_3_5", "UNDER_3_5", 2, 1) == "WIN"
+    assert settle("DOUBLE_CHANCE", "DRAW_OR_AWAY", 1, 1) == "WIN"
     assert settle("BTTS", "BTTS_YES", 1, 0) == "LOSS"
