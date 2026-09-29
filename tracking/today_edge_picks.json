@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "picks": [
+    {
+      "id": "2026-09-29:1528913:BTTS:BTTS_YES",
+      "date": "2026-09-29",
+      "fixture_id": 1528913,
+      "match": "Slovakia vs Kazakhstan",
+      "market": "BTTS",
+      "selection": "BTTS_YES",
+      "label": "Ambos anotan — Sí",
+      "grade": "A",
+      "opening_odds": 2.62,
+      "opening_book": "Bet365",
+      "closing_odds": 2.62,
+      "closing_book": "Bet365",
+      "clv": 0.0,
+      "result": "PENDING",
+      "published_at": "2026-09-29T11:03:02.824512-06:00",
+      "kickoff": "2026-09-29T12:45:00-06:00",
+      "last_price_at": "2026-09-29T11:03:02.824512-06:00"
+    },
+    {
+      "id": "2026-09-29:1528909:TOTAL_2_5:UNDER_2_5",
+      "date": "2026-09-29",
+      "fixture_id": 1528909,
+      "match": "Spain vs Croatia",
+      "market": "TOTAL_2_5",
+      "selection": "UNDER_2_5",
+      "label": "Menos de 2.5 goles",
+      "grade": "B",
+      "opening_odds": 2.82,
+      "opening_book": "Betano",
+      "closing_odds": 2.82,
+      "closing_book": "Betano",
+      "clv": 0.0,
+      "result": "PENDING",
+      "published_at": "2026-09-29T11:03:02.824512-06:00",
+      "kickoff": "2026-09-29T12:45:00-06:00",
+      "last_price_at": "2026-09-29T11:03:02.824512-06:00"
+    }
+  ],
+  "updated_at": "2026-09-29T11:03:02.824512-06:00"
+}

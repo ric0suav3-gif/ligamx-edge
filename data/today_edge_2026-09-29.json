@@ -1,0 +1,1146 @@
+{
+  "meta": {
+    "title": "Today Edge",
+    "date": "2026-09-29",
+    "timezone": "America/Mexico_City",
+    "generated_at": "2026-09-29T11:03:02.824512-06:00",
+    "api_connected": true,
+    "api_requests": 33,
+    "league_id": 5,
+    "method": "API-Football fixtures + multi-book de-vigged prices, shrunk 77–80% toward market consensus with a 20% recency-weighted Poisson signal and a maximum 3% API prediction signal.",
+    "guardrail": "Pregame only. Minimum six completed matches per team, four bookmakers, stable price, and at least 2.5% expected value at the best listed book.",
+    "status_counts": {
+      "HT": 1,
+      "2H": 1,
+      "NS": 8
+    },
+    "baseline_goals": 1.3375
+  },
+  "league": {
+    "id": 5,
+    "name": "UEFA Nations League",
+    "country": "World",
+    "round": "League C - 2",
+    "logo": "https://media.api-sports.io/football/leagues/5.png",
+    "flag": null
+  },
+  "fixtures": [
+    {
+      "id": 1528912,
+      "date": "2026-09-29T10:00:00-06:00",
+      "timestamp": 1790697600,
+      "status": "HT",
+      "status_long": "Halftime",
+      "venue": "Helsinki Olympic Stadium",
+      "league": {
+        "id": 5,
+        "name": "UEFA Nations League",
+        "country": "World",
+        "round": "League C - 2",
+        "logo": "https://media.api-sports.io/football/leagues/5.png",
+        "flag": null
+      },
+      "home": {
+        "id": 1099,
+        "name": "Finland",
+        "logo": "https://media.api-sports.io/football/teams/1099.png"
+      },
+      "away": {
+        "id": 1100,
+        "name": "Belarus",
+        "logo": "https://media.api-sports.io/football/teams/1100.png"
+      },
+      "goals": {
+        "home": 0,
+        "away": 0
+      },
+      "recommendation": null,
+      "alternatives": [],
+      "screen": "IN_PLAY_OR_FINAL"
+    },
+    {
+      "id": 1528914,
+      "date": "2026-09-29T10:00:00-06:00",
+      "timestamp": 1790697600,
+      "status": "2H",
+      "status_long": "Second Half",
+      "venue": "Zimbru",
+      "league": {
+        "id": 5,
+        "name": "UEFA Nations League",
+        "country": "World",
+        "round": "League C - 2",
+        "logo": "https://media.api-sports.io/football/leagues/5.png",
+        "flag": null
+      },
+      "home": {
+        "id": 1114,
+        "name": "Moldova",
+        "logo": "https://media.api-sports.io/football/teams/1114.png"
+      },
+      "away": {
+        "id": 1098,
+        "name": "Faroe Islands",
+        "logo": "https://media.api-sports.io/football/teams/1098.png"
+      },
+      "goals": {
+        "home": 0,
+        "away": 1
+      },
+      "recommendation": null,
+      "alternatives": [],
+      "screen": "IN_PLAY_OR_FINAL"
+    },
+    {
+      "id": 1528909,
+      "date": "2026-09-29T12:45:00-06:00",
+      "timestamp": 1790707500,
+      "status": "NS",
+      "status_long": "Not Started",
+      "venue": "Estadio Ramón Sánchez-Pizjuán",
+      "league": {
+        "id": 5,
+        "name": "UEFA Nations League",
+        "country": "World",
+        "round": "League A - 2",
+        "logo": "https://media.api-sports.io/football/leagues/5.png",
+        "flag": null
+      },
+      "home": {
+        "id": 9,
+        "name": "Spain",
+        "logo": "https://media.api-sports.io/football/teams/9.png"
+      },
+      "away": {
+        "id": 3,
+        "name": "Croatia",
+        "logo": "https://media.api-sports.io/football/teams/3.png"
+      },
+      "goals": {
+        "home": null,
+        "away": null
+      },
+      "recommendation": {
+        "market": "TOTAL_2_5",
+        "selection": "UNDER_2_5",
+        "label": "Menos de 2.5 goles",
+        "probability": 0.3735700195947892,
+        "fair_odds": 2.6768743409460383,
+        "best_odds": 2.82,
+        "median_odds": 2.7,
+        "best_book": "Betano",
+        "books": 7,
+        "disagreement": 0.007257950798754235,
+        "edge": 0.05346745525730556,
+        "median_edge": 0.00863905290593081,
+        "eligible": true,
+        "grade": "B",
+        "score": 0.0627497872381153,
+        "fixture_id": 1528909,
+        "date": "2026-09-29",
+        "kickoff": "2026-09-29T12:45:00-06:00",
+        "match": "Spain vs Croatia",
+        "home": "Spain",
+        "away": "Croatia"
+      },
+      "alternatives": [
+        {
+          "market": "1X2",
+          "selection": "AWAY",
+          "label": "Croatia",
+          "probability": 0.1112908994679581,
+          "fair_odds": 8.985460669117076,
+          "best_odds": 13.0,
+          "median_odds": 12.1,
+          "best_book": "Betfair",
+          "books": 9,
+          "disagreement": 0.007210806702512262,
+          "edge": 0.4467816930834554,
+          "median_edge": 0.3466198835622929,
+          "eligible": false,
+          "grade": "A",
+          "score": 0.4600946687268224
+        },
+        {
+          "market": "1X2",
+          "selection": "DRAW",
+          "label": "Empate",
+          "probability": 0.16637174090328372,
+          "fair_odds": 6.0106361487274835,
+          "best_odds": 7.32,
+          "median_odds": 7.0,
+          "best_book": "Pinnacle",
+          "books": 9,
+          "disagreement": 0.006896291558892031,
+          "edge": 0.21784114341203686,
+          "median_edge": 0.16460218632298607,
+          "eligible": false,
+          "grade": "A",
+          "score": 0.23135855389875704
+        },
+        {
+          "market": "TOTAL_2_5",
+          "selection": "UNDER_2_5",
+          "label": "Menos de 2.5 goles",
+          "probability": 0.3735700195947892,
+          "fair_odds": 2.6768743409460383,
+          "best_odds": 2.82,
+          "median_odds": 2.7,
+          "best_book": "Betano",
+          "books": 7,
+          "disagreement": 0.007257950798754235,
+          "edge": 0.05346745525730556,
+          "median_edge": 0.00863905290593081,
+          "eligible": true,
+          "grade": "B",
+          "score": 0.0627497872381153,
+          "fixture_id": 1528909,
+          "date": "2026-09-29",
+          "kickoff": "2026-09-29T12:45:00-06:00",
+          "match": "Spain vs Croatia",
+          "home": "Spain",
+          "away": "Croatia"
+        }
+      ],
+      "screen": "PASS",
+      "projection": {
+        "home_xg": 1.722169369415036,
+        "away_xg": 1.04820359482182,
+        "home_samples": 10,
+        "away_samples": 10,
+        "baseline_goals": 1.3375,
+        "poisson": {
+          "HOME": 0.531622968747369,
+          "DRAW": 0.23822079628380388,
+          "AWAY": 0.23015623496882687,
+          "OVER_2_5": 0.523454249852141,
+          "UNDER_2_5": 0.4765457501478591,
+          "BTTS_YES": 0.5333935860022948,
+          "BTTS_NO": 0.4666064139977052
+        },
+        "api_1x2": {
+          "HOME": 0.45,
+          "DRAW": 0.45,
+          "AWAY": 0.1
+        },
+        "api_advice": "Combo Double chance : Spain or draw and +1.5 goals"
+      },
+      "market_coverage": {
+        "1X2": 9,
+        "TOTAL_2_5": 7,
+        "BTTS": 7
+      }
+    },
+    {
+      "id": 1528910,
+      "date": "2026-09-29T12:45:00-06:00",
+      "timestamp": 1790707500,
+      "status": "NS",
+      "status_long": "Not Started",
+      "venue": "Sinobo Stadium",
+      "league": {
+        "id": 5,
+        "name": "UEFA Nations League",
+        "country": "World",
+        "round": "League A - 2",
+        "logo": "https://media.api-sports.io/football/leagues/5.png",
+        "flag": null
+      },
+      "home": {
+        "id": 770,
+        "name": "Czechia",
+        "logo": "https://media.api-sports.io/football/teams/770.png"
+      },
+      "away": {
+        "id": 10,
+        "name": "England",
+        "logo": "https://media.api-sports.io/football/teams/10.png"
+      },
+      "goals": {
+        "home": null,
+        "away": null
+      },
+      "recommendation": null,
+      "alternatives": [
+        {
+          "market": "1X2",
+          "selection": "HOME",
+          "label": "Czechia",
+          "probability": 0.1547731588580617,
+          "fair_odds": 6.4610686205420995,
+          "best_odds": 10.67,
+          "median_odds": 10.0,
+          "best_book": "Pinnacle",
+          "books": 9,
+          "disagreement": 0.010559173422854813,
+          "edge": 0.6514296050155184,
+          "median_edge": 0.5477315885806169,
+          "eligible": false,
+          "grade": "A",
+          "score": 0.6625661422906628
+        },
+        {
+          "market": "1X2",
+          "selection": "DRAW",
+          "label": "Empate",
+          "probability": 0.19229454210045863,
+          "fair_odds": 5.200355605920315,
+          "best_odds": 5.77,
+          "median_odds": 5.5,
+          "best_book": "Pinnacle",
+          "books": 9,
+          "disagreement": 0.009172589197154973,
+          "edge": 0.10953950791964617,
+          "median_edge": 0.05761998155252246,
+          "eligible": false,
+          "grade": "A",
+          "score": 0.12157732494149544
+        },
+        {
+          "market": "BTTS",
+          "selection": "BTTS_YES",
+          "label": "Ambos anotan — Sí",
+          "probability": 0.5027165339336128,
+          "fair_odds": 1.989192581702628,
+          "best_odds": 2.05,
+          "median_odds": 1.99,
+          "best_book": "Betfair",
+          "books": 7,
+          "disagreement": 0.007333255339398173,
+          "edge": 0.030568894563906213,
+          "median_edge": 0.0004059025278895234,
+          "eligible": false,
+          "grade": "C",
+          "score": 0.0398022785932974
+        }
+      ],
+      "screen": "NO_BET",
+      "projection": {
+        "home_xg": 1.6648019549881263,
+        "away_xg": 1.6391693567268133,
+        "home_samples": 10,
+        "away_samples": 10,
+        "baseline_goals": 1.3375,
+        "poisson": {
+          "HOME": 0.39036009858926624,
+          "DRAW": 0.23007364515670933,
+          "AWAY": 0.3795662562540242,
+          "OVER_2_5": 0.6413704636975127,
+          "UNDER_2_5": 0.35862953630248706,
+          "BTTS_YES": 0.6533676159046228,
+          "BTTS_NO": 0.34663238409537694
+        },
+        "api_1x2": {
+          "HOME": 0.1,
+          "DRAW": 0.45,
+          "AWAY": 0.45
+        },
+        "api_advice": "Combo Double chance : draw or England and +1.5 goals"
+      },
+      "market_coverage": {
+        "1X2": 9,
+        "TOTAL_2_5": 8,
+        "BTTS": 7
+      }
+    },
+    {
+      "id": 1528911,
+      "date": "2026-09-29T12:45:00-06:00",
+      "timestamp": 1790707500,
+      "status": "NS",
+      "status_long": "Not Started",
+      "venue": "San Marino Stadium",
+      "league": {
+        "id": 5,
+        "name": "UEFA Nations League",
+        "country": "World",
+        "round": "League C - 2",
+        "logo": "https://media.api-sports.io/football/leagues/5.png",
+        "flag": null
+      },
+      "home": {
+        "id": 1115,
+        "name": "San Marino",
+        "logo": "https://media.api-sports.io/football/teams/1115.png"
+      },
+      "away": {
+        "id": 778,
+        "name": "Albania",
+        "logo": "https://media.api-sports.io/football/teams/778.png"
+      },
+      "goals": {
+        "home": null,
+        "away": null
+      },
+      "recommendation": null,
+      "alternatives": [
+        {
+          "market": "1X2",
+          "selection": "HOME",
+          "label": "San Marino",
+          "probability": 0.06633267427212584,
+          "fair_odds": 15.075526668765978,
+          "best_odds": 61.0,
+          "median_odds": 46.0,
+          "best_book": "BetVictor",
+          "books": 9,
+          "disagreement": 0.00529567529870577,
+          "edge": 3.0462931305996763,
+          "median_edge": 2.051303016517789,
+          "eligible": false,
+          "grade": "A",
+          "score": 3.0608509416555174
+        },
+        {
+          "market": "1X2",
+          "selection": "DRAW",
+          "label": "Empate",
+          "probability": 0.11761025165415166,
+          "fair_odds": 8.502660150244647,
+          "best_odds": 18.19,
+          "median_odds": 14.0,
+          "best_book": "Pinnacle",
+          "books": 9,
+          "disagreement": 0.020942642577350727,
+          "edge": 1.1393304775890187,
+          "median_edge": 0.6465435231581234,
+          "eligible": false,
+          "grade": "A",
+          "score": 1.1437177599137407
+        },
+        {
+          "market": "BTTS",
+          "selection": "BTTS_YES",
+          "label": "Ambos anotan — Sí",
+          "probability": 0.26350196826988853,
+          "fair_odds": 3.7950380658096745,
+          "best_odds": 5.35,
+          "median_odds": 4.6,
+          "best_book": "Marathonbet",
+          "books": 6,
+          "disagreement": 0.020940834575735767,
+          "edge": 0.40973553024390363,
+          "median_edge": 0.21210905404148717,
+          "eligible": false,
+          "grade": "B",
+          "score": 0.4081239877696754
+        }
+      ],
+      "screen": "NO_BET",
+      "projection": {
+        "home_xg": 1.033741655020168,
+        "away_xg": 1.5620346841212636,
+        "home_samples": 10,
+        "away_samples": 10,
+        "baseline_goals": 1.3375,
+        "poisson": {
+          "HOME": 0.2509480831050515,
+          "DRAW": 0.25331103292302026,
+          "AWAY": 0.4957408839719284,
+          "OVER_2_5": 0.48050958043494796,
+          "UNDER_2_5": 0.5194904195650523,
+          "BTTS_YES": 0.5092053430795466,
+          "BTTS_NO": 0.4907946569204537
+        },
+        "api_1x2": {
+          "HOME": 0.0,
+          "DRAW": 0.5,
+          "AWAY": 0.5
+        },
+        "api_advice": "Combo Winner : Albania and +1.5 goals"
+      },
+      "market_coverage": {
+        "1X2": 9,
+        "TOTAL_2_5": 6,
+        "BTTS": 6
+      }
+    },
+    {
+      "id": 1528913,
+      "date": "2026-09-29T12:45:00-06:00",
+      "timestamp": 1790707500,
+      "status": "NS",
+      "status_long": "Not Started",
+      "venue": "Kosicka futbalova arena",
+      "league": {
+        "id": 5,
+        "name": "UEFA Nations League",
+        "country": "World",
+        "round": "League C - 2",
+        "logo": "https://media.api-sports.io/football/leagues/5.png",
+        "flag": null
+      },
+      "home": {
+        "id": 773,
+        "name": "Slovakia",
+        "logo": "https://media.api-sports.io/football/teams/773.png"
+      },
+      "away": {
+        "id": 1095,
+        "name": "Kazakhstan",
+        "logo": "https://media.api-sports.io/football/teams/1095.png"
+      },
+      "goals": {
+        "home": null,
+        "away": null
+      },
+      "recommendation": {
+        "market": "BTTS",
+        "selection": "BTTS_YES",
+        "label": "Ambos anotan — Sí",
+        "probability": 0.42741121180262875,
+        "fair_odds": 2.339667215987266,
+        "best_odds": 2.62,
+        "median_odds": 2.34,
+        "best_book": "Bet365",
+        "books": 7,
+        "disagreement": 0.017569893460652023,
+        "edge": 0.11981737492288747,
+        "median_edge": 0.00014223561815129848,
+        "eligible": true,
+        "grade": "A",
+        "score": 0.12239694417346365,
+        "fixture_id": 1528913,
+        "date": "2026-09-29",
+        "kickoff": "2026-09-29T12:45:00-06:00",
+        "match": "Slovakia vs Kazakhstan",
+        "home": "Slovakia",
+        "away": "Kazakhstan"
+      },
+      "alternatives": [
+        {
+          "market": "1X2",
+          "selection": "AWAY",
+          "label": "Kazakhstan",
+          "probability": 0.11563475644515162,
+          "fair_odds": 8.647918936676486,
+          "best_odds": 15.0,
+          "median_odds": 13.89,
+          "best_book": "BetVictor",
+          "books": 9,
+          "disagreement": 0.012753249016107924,
+          "edge": 0.7345213466772742,
+          "median_edge": 0.6061667670231561,
+          "eligible": false,
+          "grade": "A",
+          "score": 0.744231734816804
+        },
+        {
+          "market": "1X2",
+          "selection": "DRAW",
+          "label": "Empate",
+          "probability": 0.1786485800325913,
+          "fair_odds": 5.59758157505404,
+          "best_odds": 6.6,
+          "median_odds": 6.45,
+          "best_book": "Betano",
+          "books": 9,
+          "disagreement": 0.012893807740986607,
+          "edge": 0.1790806282151025,
+          "median_edge": 0.1522833412102138,
+          "eligible": false,
+          "grade": "A",
+          "score": 0.1886996531834612
+        },
+        {
+          "market": "BTTS",
+          "selection": "BTTS_YES",
+          "label": "Ambos anotan — Sí",
+          "probability": 0.42741121180262875,
+          "fair_odds": 2.339667215987266,
+          "best_odds": 2.62,
+          "median_odds": 2.34,
+          "best_book": "Bet365",
+          "books": 7,
+          "disagreement": 0.017569893460652023,
+          "edge": 0.11981737492288747,
+          "median_edge": 0.00014223561815129848,
+          "eligible": true,
+          "grade": "A",
+          "score": 0.12239694417346365,
+          "fixture_id": 1528913,
+          "date": "2026-09-29",
+          "kickoff": "2026-09-29T12:45:00-06:00",
+          "match": "Slovakia vs Kazakhstan",
+          "home": "Slovakia",
+          "away": "Kazakhstan"
+        }
+      ],
+      "screen": "PASS",
+      "projection": {
+        "home_xg": 1.5398073276444904,
+        "away_xg": 1.20195035546046,
+        "home_samples": 10,
+        "away_samples": 10,
+        "baseline_goals": 1.3375,
+        "poisson": {
+          "HOME": 0.45111067546969075,
+          "DRAW": 0.25171525182168475,
+          "AWAY": 0.2971740727086245,
+          "OVER_2_5": 0.5165486678469831,
+          "UNDER_2_5": 0.4834513321530164,
+          "BTTS_YES": 0.549427193033762,
+          "BTTS_NO": 0.4505728069662373
+        },
+        "api_1x2": {
+          "HOME": 0.45,
+          "DRAW": 0.45,
+          "AWAY": 0.1
+        },
+        "api_advice": "Combo Double chance : Slovakia or draw and -3.5 goals"
+      },
+      "market_coverage": {
+        "1X2": 9,
+        "TOTAL_2_5": 8,
+        "BTTS": 7
+      }
+    },
+    {
+      "id": 1528915,
+      "date": "2026-09-29T12:45:00-06:00",
+      "timestamp": 1790707500,
+      "status": "NS",
+      "status_long": "Not Started",
+      "venue": "Hristo Botev Stadium",
+      "league": {
+        "id": 5,
+        "name": "UEFA Nations League",
+        "country": "World",
+        "round": "League C - 2",
+        "logo": "https://media.api-sports.io/football/leagues/5.png",
+        "flag": null
+      },
+      "home": {
+        "id": 1103,
+        "name": "Bulgaria",
+        "logo": "https://media.api-sports.io/football/teams/1103.png"
+      },
+      "away": {
+        "id": 1101,
+        "name": "Estonia",
+        "logo": "https://media.api-sports.io/football/teams/1101.png"
+      },
+      "goals": {
+        "home": null,
+        "away": null
+      },
+      "recommendation": null,
+      "alternatives": [
+        {
+          "market": "1X2",
+          "selection": "AWAY",
+          "label": "Estonia",
+          "probability": 0.2196744981885956,
+          "fair_odds": 4.552189754595352,
+          "best_odds": 5.32,
+          "median_odds": 5.15,
+          "best_book": "Pinnacle",
+          "books": 9,
+          "disagreement": 0.00387659729775934,
+          "edge": 0.16866833036332873,
+          "median_edge": 0.13132366567126752,
+          "eligible": false,
+          "grade": "A",
+          "score": 0.18414854211978515
+        },
+        {
+          "market": "TOTAL_2_5",
+          "selection": "OVER_2_5",
+          "label": "Más de 2.5 goles",
+          "probability": 0.43569362197823985,
+          "fair_odds": 2.2951908165640846,
+          "best_odds": 2.37,
+          "median_odds": 2.3,
+          "best_book": "1xBet",
+          "books": 7,
+          "disagreement": 0.0055639046573479675,
+          "edge": 0.03259388408842856,
+          "median_edge": 0.0020953305499515906,
+          "eligible": false,
+          "grade": "C",
+          "score": 0.04297734606115238
+        },
+        {
+          "market": "BTTS",
+          "selection": "BTTS_YES",
+          "label": "Ambos anotan — Sí",
+          "probability": 0.46534055016166465,
+          "fair_odds": 2.1489638065124317,
+          "best_odds": 2.2,
+          "median_odds": 2.12,
+          "best_book": "Bet365",
+          "books": 7,
+          "disagreement": 0.011891461371191089,
+          "edge": 0.023749210355662242,
+          "median_edge": -0.01347803365727085,
+          "eligible": false,
+          "grade": "C",
+          "score": 0.030019760464388034
+        }
+      ],
+      "screen": "NO_BET",
+      "projection": {
+        "home_xg": 1.5236695851708404,
+        "away_xg": 1.3053814719688983,
+        "home_samples": 10,
+        "away_samples": 10,
+        "baseline_goals": 1.3375,
+        "poisson": {
+          "HOME": 0.4243685224949743,
+          "DRAW": 0.24962463925157233,
+          "AWAY": 0.3260068382534535,
+          "OVER_2_5": 0.5374424688655579,
+          "UNDER_2_5": 0.462557531134442,
+          "BTTS_YES": 0.5700889941945668,
+          "BTTS_NO": 0.42991100580543323
+        },
+        "api_1x2": {
+          "HOME": 0.1,
+          "DRAW": 0.45,
+          "AWAY": 0.45
+        },
+        "api_advice": "Double chance : draw or Estonia"
+      },
+      "market_coverage": {
+        "1X2": 9,
+        "TOTAL_2_5": 7,
+        "BTTS": 7
+      }
+    },
+    {
+      "id": 1545606,
+      "date": "2026-09-29T12:45:00-06:00",
+      "timestamp": 1790707500,
+      "status": "NS",
+      "status_long": "Not Started",
+      "venue": "Stade de Luxembourg",
+      "league": {
+        "id": 5,
+        "name": "UEFA Nations League",
+        "country": "World",
+        "round": "League C - 2",
+        "logo": "https://media.api-sports.io/football/leagues/5.png",
+        "flag": null
+      },
+      "home": {
+        "id": 1102,
+        "name": "Luxembourg",
+        "logo": "https://media.api-sports.io/football/teams/1102.png"
+      },
+      "away": {
+        "id": 18,
+        "name": "Iceland",
+        "logo": "https://media.api-sports.io/football/teams/18.png"
+      },
+      "goals": {
+        "home": null,
+        "away": null
+      },
+      "recommendation": null,
+      "alternatives": [
+        {
+          "market": "1X2",
+          "selection": "HOME",
+          "label": "Luxembourg",
+          "probability": 0.3252137424648683,
+          "fair_odds": 3.0749008096053214,
+          "best_odds": 3.55,
+          "median_odds": 3.4,
+          "best_book": "Betano",
+          "books": 9,
+          "disagreement": 0.008593926899881204,
+          "edge": 0.15450878575028226,
+          "median_edge": 0.1057267243805522,
+          "eligible": false,
+          "grade": "A",
+          "score": 0.1669227332653595
+        },
+        {
+          "market": "1X2",
+          "selection": "DRAW",
+          "label": "Empate",
+          "probability": 0.28722412547138804,
+          "fair_odds": 3.48160168773711,
+          "best_odds": 3.46,
+          "median_odds": 3.25,
+          "best_book": "1xBet",
+          "books": 9,
+          "disagreement": 0.004710704612771419,
+          "edge": -0.006204525868997446,
+          "median_edge": -0.06652159221798892,
+          "eligible": false,
+          "grade": "C",
+          "score": 0.008733516132701133
+        },
+        {
+          "market": "TOTAL_2_5",
+          "selection": "OVER_2_5",
+          "label": "Más de 2.5 goles",
+          "probability": 0.4421187548726921,
+          "fair_odds": 2.261835737522489,
+          "best_odds": 2.21,
+          "median_odds": 2.165,
+          "best_book": "Pinnacle",
+          "books": 8,
+          "disagreement": 0.003307899130477115,
+          "edge": -0.02291755173135046,
+          "median_edge": -0.042812895700621634,
+          "eligible": false,
+          "grade": "C",
+          "score": -0.009067686166160584
+        }
+      ],
+      "screen": "NO_BET",
+      "projection": {
+        "home_xg": 1.5184320738547386,
+        "away_xg": 0.9813560200335995,
+        "home_samples": 10,
+        "away_samples": 10,
+        "baseline_goals": 1.3375,
+        "poisson": {
+          "HOME": 0.4972460966817729,
+          "DRAW": 0.2583138909924071,
+          "AWAY": 0.24444001232582002,
+          "OVER_2_5": 0.4561325257371586,
+          "UNDER_2_5": 0.5438674742628415,
+          "BTTS_YES": 0.48824480037564666,
+          "BTTS_NO": 0.5117551996243537
+        },
+        "api_1x2": {
+          "HOME": 0.45,
+          "DRAW": 0.45,
+          "AWAY": 0.1
+        },
+        "api_advice": "Double chance : Luxembourg or draw"
+      },
+      "market_coverage": {
+        "1X2": 9,
+        "TOTAL_2_5": 8,
+        "BTTS": 7
+      }
+    },
+    {
+      "id": 1545651,
+      "date": "2026-09-29T12:45:00-06:00",
+      "timestamp": 1790707500,
+      "status": "NS",
+      "status_long": "Not Started",
+      "venue": "Hampden Park Stadium",
+      "league": {
+        "id": 5,
+        "name": "UEFA Nations League",
+        "country": "World",
+        "round": "League B - 2",
+        "logo": "https://media.api-sports.io/football/leagues/5.png",
+        "flag": null
+      },
+      "home": {
+        "id": 1108,
+        "name": "Scotland",
+        "logo": "https://media.api-sports.io/football/teams/1108.png"
+      },
+      "away": {
+        "id": 15,
+        "name": "Switzerland",
+        "logo": "https://media.api-sports.io/football/teams/15.png"
+      },
+      "goals": {
+        "home": null,
+        "away": null
+      },
+      "recommendation": null,
+      "alternatives": [
+        {
+          "market": "1X2",
+          "selection": "HOME",
+          "label": "Scotland",
+          "probability": 0.24042391764133642,
+          "fair_odds": 4.159319962050517,
+          "best_odds": 4.53,
+          "median_odds": 4.33,
+          "best_book": "Pinnacle",
+          "books": 9,
+          "disagreement": 0.007262131440297353,
+          "edge": 0.08912034691525395,
+          "median_edge": 0.04103556338698677,
+          "eligible": false,
+          "grade": "A",
+          "score": 0.10239996147906066
+        },
+        {
+          "market": "1X2",
+          "selection": "DRAW",
+          "label": "Empate",
+          "probability": 0.279999144551817,
+          "fair_odds": 3.571439482790772,
+          "best_odds": 3.6,
+          "median_odds": 3.48,
+          "best_book": "1xBet",
+          "books": 9,
+          "disagreement": 0.006776819244566384,
+          "edge": 0.007996920386541317,
+          "median_edge": -0.025602976959676838,
+          "eligible": false,
+          "grade": "C",
+          "score": 0.02159198787757317
+        },
+        {
+          "market": "TOTAL_2_5",
+          "selection": "OVER_2_5",
+          "label": "Más de 2.5 goles",
+          "probability": 0.4374714146514533,
+          "fair_odds": 2.2858636393345386,
+          "best_odds": 2.23,
+          "median_odds": 2.205,
+          "best_book": "Pinnacle",
+          "books": 8,
+          "disagreement": 0.003912712974490535,
+          "edge": -0.024438745327259204,
+          "median_edge": -0.03537553069354549,
+          "eligible": false,
+          "grade": "C",
+          "score": -0.01098200876067805
+        }
+      ],
+      "screen": "NO_BET",
+      "projection": {
+        "home_xg": 1.2083637621717054,
+        "away_xg": 1.2719046644100602,
+        "home_samples": 10,
+        "away_samples": 10,
+        "baseline_goals": 1.3375,
+        "poisson": {
+          "HOME": 0.3492383884545497,
+          "DRAW": 0.2711389113770226,
+          "AWAY": 0.3796227001684277,
+          "OVER_2_5": 0.4511155329393399,
+          "UNDER_2_5": 0.5488844670606601,
+          "BTTS_YES": 0.5047379083536911,
+          "BTTS_NO": 0.4952620916463082
+        },
+        "api_1x2": {
+          "HOME": 0.1,
+          "DRAW": 0.45,
+          "AWAY": 0.45
+        },
+        "api_advice": "Winner : Switzerland"
+      },
+      "market_coverage": {
+        "1X2": 9,
+        "TOTAL_2_5": 8,
+        "BTTS": 7
+      }
+    },
+    {
+      "id": 1545661,
+      "date": "2026-09-29T12:45:00-06:00",
+      "timestamp": 1790707500,
+      "status": "NS",
+      "status_long": "Not Started",
+      "venue": "Stožice Stadium",
+      "league": {
+        "id": 5,
+        "name": "UEFA Nations League",
+        "country": "World",
+        "round": "League B - 2",
+        "logo": "https://media.api-sports.io/football/leagues/5.png",
+        "flag": null
+      },
+      "home": {
+        "id": 1091,
+        "name": "Slovenia",
+        "logo": "https://media.api-sports.io/football/teams/1091.png"
+      },
+      "away": {
+        "id": 1105,
+        "name": "FYR Macedonia",
+        "logo": "https://media.api-sports.io/football/teams/1105.png"
+      },
+      "goals": {
+        "home": null,
+        "away": null
+      },
+      "recommendation": null,
+      "alternatives": [
+        {
+          "market": "1X2",
+          "selection": "AWAY",
+          "label": "FYR Macedonia",
+          "probability": 0.1587791747225386,
+          "fair_odds": 6.2980551558317845,
+          "best_odds": 7.1,
+          "median_odds": 6.5,
+          "best_book": "Betano",
+          "books": 9,
+          "disagreement": 0.013143581243134179,
+          "edge": 0.12733214053002406,
+          "median_edge": 0.032064635696500865,
+          "eligible": false,
+          "grade": "A",
+          "score": 0.13678881272198684
+        },
+        {
+          "market": "1X2",
+          "selection": "DRAW",
+          "label": "Empate",
+          "probability": 0.2679636074447996,
+          "fair_odds": 3.731850043129456,
+          "best_odds": 3.82,
+          "median_odds": 3.68,
+          "best_book": "1xBet",
+          "books": 9,
+          "disagreement": 0.006394159680082268,
+          "edge": 0.023620980439134298,
+          "median_edge": -0.013893924603137542,
+          "eligible": false,
+          "grade": "C",
+          "score": 0.037464776647080825
+        },
+        {
+          "market": "TOTAL_2_5",
+          "selection": "OVER_2_5",
+          "label": "Más de 2.5 goles",
+          "probability": 0.4063666273605252,
+          "fair_odds": 2.460831999161211,
+          "best_odds": 2.44,
+          "median_odds": 2.3600000000000003,
+          "best_book": "Pinnacle",
+          "books": 8,
+          "disagreement": 0.005621208755800349,
+          "edge": -0.008465429240318567,
+          "median_edge": -0.0409747594291604,
+          "eligible": false,
+          "grade": "C",
+          "score": 0.003880785068411205
+        }
+      ],
+      "screen": "NO_BET",
+      "projection": {
+        "home_xg": 1.4600231270288793,
+        "away_xg": 0.8846920288791634,
+        "home_samples": 10,
+        "away_samples": 10,
+        "baseline_goals": 1.3375,
+        "poisson": {
+          "HOME": 0.5058966102842901,
+          "DRAW": 0.265929804563008,
+          "AWAY": 0.22817358515270153,
+          "OVER_2_5": 0.41578296111214325,
+          "UNDER_2_5": 0.5842170388878567,
+          "BTTS_YES": 0.45080230677185257,
+          "BTTS_NO": 0.5491976932281472
+        },
+        "api_1x2": {
+          "HOME": 0.45,
+          "DRAW": 0.45,
+          "AWAY": 0.1
+        },
+        "api_advice": "Double chance : Slovenia or draw"
+      },
+      "market_coverage": {
+        "1X2": 9,
+        "TOTAL_2_5": 8,
+        "BTTS": 7
+      }
+    }
+  ],
+  "picks": [
+    {
+      "market": "BTTS",
+      "selection": "BTTS_YES",
+      "label": "Ambos anotan — Sí",
+      "probability": 0.42741121180262875,
+      "fair_odds": 2.339667215987266,
+      "best_odds": 2.62,
+      "median_odds": 2.34,
+      "best_book": "Bet365",
+      "books": 7,
+      "disagreement": 0.017569893460652023,
+      "edge": 0.11981737492288747,
+      "median_edge": 0.00014223561815129848,
+      "eligible": true,
+      "grade": "A",
+      "score": 0.12239694417346365,
+      "fixture_id": 1528913,
+      "date": "2026-09-29",
+      "kickoff": "2026-09-29T12:45:00-06:00",
+      "match": "Slovakia vs Kazakhstan",
+      "home": "Slovakia",
+      "away": "Kazakhstan"
+    },
+    {
+      "market": "TOTAL_2_5",
+      "selection": "UNDER_2_5",
+      "label": "Menos de 2.5 goles",
+      "probability": 0.3735700195947892,
+      "fair_odds": 2.6768743409460383,
+      "best_odds": 2.82,
+      "median_odds": 2.7,
+      "best_book": "Betano",
+      "books": 7,
+      "disagreement": 0.007257950798754235,
+      "edge": 0.05346745525730556,
+      "median_edge": 0.00863905290593081,
+      "eligible": true,
+      "grade": "B",
+      "score": 0.0627497872381153,
+      "fixture_id": 1528909,
+      "date": "2026-09-29",
+      "kickoff": "2026-09-29T12:45:00-06:00",
+      "match": "Spain vs Croatia",
+      "home": "Spain",
+      "away": "Croatia"
+    }
+  ],
+  "tracking": {
+    "summary": {
+      "wins": 0,
+      "losses": 0,
+      "pushes": 0,
+      "pending": 2,
+      "profit_units": 0,
+      "roi": null,
+      "average_clv": 0.0
+    },
+    "picks": [
+      {
+        "id": "2026-09-29:1528913:BTTS:BTTS_YES",
+        "date": "2026-09-29",
+        "fixture_id": 1528913,
+        "match": "Slovakia vs Kazakhstan",
+        "market": "BTTS",
+        "selection": "BTTS_YES",
+        "label": "Ambos anotan — Sí",
+        "grade": "A",
+        "opening_odds": 2.62,
+        "opening_book": "Bet365",
+        "closing_odds": 2.62,
+        "closing_book": "Bet365",
+        "clv": 0.0,
+        "result": "PENDING",
+        "published_at": "2026-09-29T11:03:02.824512-06:00",
+        "kickoff": "2026-09-29T12:45:00-06:00",
+        "last_price_at": "2026-09-29T11:03:02.824512-06:00"
+      },
+      {
+        "id": "2026-09-29:1528909:TOTAL_2_5:UNDER_2_5",
+        "date": "2026-09-29",
+        "fixture_id": 1528909,
+        "match": "Spain vs Croatia",
+        "market": "TOTAL_2_5",
+        "selection": "UNDER_2_5",
+        "label": "Menos de 2.5 goles",
+        "grade": "B",
+        "opening_odds": 2.82,
+        "opening_book": "Betano",
+        "closing_odds": 2.82,
+        "closing_book": "Betano",
+        "clv": 0.0,
+        "result": "PENDING",
+        "published_at": "2026-09-29T11:03:02.824512-06:00",
+        "kickoff": "2026-09-29T12:45:00-06:00",
+        "last_price_at": "2026-09-29T11:03:02.824512-06:00"
+      }
+    ]
+  }
+}
