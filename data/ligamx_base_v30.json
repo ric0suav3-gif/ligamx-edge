@@ -1,0 +1,1637 @@
+{
+  "meta": {
+    "league": "Liga MX",
+    "built": "2026-08-29",
+    "matches": 1027,
+    "date_range": [
+      "2023-07-01",
+      "2026-08-28"
+    ],
+    "half_life": 25.0,
+    "stats": [
+      "Shots",
+      "Shots on Target",
+      "Corners",
+      "Fouls",
+      "Yellow",
+      "Red",
+      "Offsides",
+      "Goals",
+      "Cards"
+    ],
+    "atlante_real": 3,
+    "version": "v30",
+    "base_version": "v29",
+    "ui_build": "2026-09-12",
+    "fixture_source": "API-Football",
+    "api_fixture_date": "2026-09-12",
+    "api_refresh_status": "Tonight fixture slate loaded; full fresh-stat merge pending collector completion",
+    "note": "v28: integrados 9 partidos (J5/J6) por actualización incremental EWMA alpha=0.0539 por split (half-life 25 juegos). Baselines de liga recalculados con la regla 65% sobre los 44 partidos del Apertura 2026. season_adj re-derivado: Yellow 0.8772, Cards 0.7869. Sesgos finales sobre 44 partidos: todos |t|<0.6.",
+    "data_scope": "Apertura 2026 J1-J4 completo, J5 parcial (6 de 8) y J6 parcial (3). Pendientes: San Luis-Pachuca, Pumas-Necaxa (J5) y América-Juárez.",
+    "calibration": {
+      "n": 44,
+      "fuente": "Excel maestro Apertura 2026 J1-J6",
+      "sesgo_v28": {
+        "Shots": 0.27,
+        "Shots on Target": 0.17,
+        "Corners": 0.13,
+        "Fouls": 0.08,
+        "Yellow": 0.0,
+        "Cards": 0.0
+      },
+      "t": {
+        "Shots": 0.48,
+        "Shots on Target": 0.56,
+        "Corners": 0.35,
+        "Fouls": 0.13,
+        "Yellow": 0.0,
+        "Cards": 0.0
+      }
+    }
+  },
+  "league": {
+    "Shots": {
+      "home": 14.7357,
+      "away": 12.7891,
+      "r": 11.6356
+    },
+    "Shots on Target": {
+      "home": 4.7587,
+      "away": 4.2116,
+      "r": 15.534
+    },
+    "Corners": {
+      "home": 5.5113,
+      "away": 4.8496,
+      "r": 8.0183
+    },
+    "Fouls": {
+      "home": 13.0075,
+      "away": 11.7174,
+      "r": 57.0517
+    },
+    "Yellow": {
+      "home": 1.8698,
+      "away": 1.8542,
+      "r": null
+    },
+    "Red": {
+      "home": 0.1502,
+      "away": 0.2489,
+      "r": null
+    },
+    "Offsides": {
+      "home": 1.6581,
+      "away": 1.6034,
+      "r": 5.5465
+    },
+    "Goals": {
+      "home": 1.6357,
+      "away": 1.2214,
+      "r": null
+    },
+    "Cards": {
+      "home": 2.2684,
+      "away": 2.4224,
+      "r": null
+    }
+  },
+  "teams": {
+    "América": {
+      "home": {
+        "Shots": {
+          "for": 17.123,
+          "against": 11.648
+        },
+        "Shots on Target": {
+          "for": 6.238,
+          "against": 2.931
+        },
+        "Corners": {
+          "for": 7.005,
+          "against": 4.763
+        },
+        "Fouls": {
+          "for": 11.53,
+          "against": 10.064
+        },
+        "Yellow": {
+          "for": 1.354,
+          "against": 1.848
+        },
+        "Red": {
+          "for": 0.043,
+          "against": 0.394
+        },
+        "Offsides": {
+          "for": 1.063,
+          "against": 1.937
+        },
+        "Goals": {
+          "for": 1.882,
+          "against": 0.849
+        },
+        "Cards": {
+          "for": 1.627,
+          "against": 2.312
+        },
+        "n": 62
+      },
+      "away": {
+        "Shots": {
+          "for": 14.54,
+          "against": 10.327
+        },
+        "Shots on Target": {
+          "for": 4.177,
+          "against": 3.5
+        },
+        "Corners": {
+          "for": 7.979,
+          "against": 3.115
+        },
+        "Fouls": {
+          "for": 11.278,
+          "against": 13.875
+        },
+        "Yellow": {
+          "for": 1.997,
+          "against": 2.374
+        },
+        "Red": {
+          "for": 0.266,
+          "against": 0.113
+        },
+        "Offsides": {
+          "for": 1.092,
+          "against": 2.586
+        },
+        "Goals": {
+          "for": 1.396,
+          "against": 1.141
+        },
+        "Cards": {
+          "for": 1.864,
+          "against": 2.751
+        },
+        "n": 64
+      }
+    },
+    "Atlante": {
+      "home": {
+        "Shots": {
+          "for": 11.8288,
+          "against": 13.7767
+        },
+        "Shots on Target": {
+          "for": 4.3415,
+          "against": 3.9546
+        },
+        "Corners": {
+          "for": 5.1192,
+          "against": 6.6158
+        },
+        "Fouls": {
+          "for": 12.3568,
+          "against": 11.1476
+        },
+        "Yellow": {
+          "for": 2.0937,
+          "against": 1.3642
+        },
+        "Red": {
+          "for": 0.0823,
+          "against": 0.1353
+        },
+        "Offsides": {
+          "for": 2.422,
+          "against": 2.0057
+        },
+        "Goals": {
+          "for": 1.504,
+          "against": 1.638
+        },
+        "Cards": {
+          "for": 2.576,
+          "against": 2.692
+        },
+        "n": 42
+      },
+      "away": {
+        "Shots": {
+          "for": 10.4891,
+          "against": 16.7673
+        },
+        "Shots on Target": {
+          "for": 4.2857,
+          "against": 6.4484
+        },
+        "Corners": {
+          "for": 2.473,
+          "against": 6.9546
+        },
+        "Fouls": {
+          "for": 12.8534,
+          "against": 14.4911
+        },
+        "Yellow": {
+          "for": 2.2602,
+          "against": 1.1296
+        },
+        "Red": {
+          "for": 0.3747,
+          "against": 0.0303
+        },
+        "Offsides": {
+          "for": 1.6415,
+          "against": 2.8259
+        },
+        "Goals": {
+          "for": 0.921,
+          "against": 2.012
+        },
+        "Cards": {
+          "for": 2.488,
+          "against": 1.924
+        },
+        "n": 45
+      }
+    },
+    "Atlas": {
+      "home": {
+        "Shots": {
+          "for": 10.608,
+          "against": 17.077
+        },
+        "Shots on Target": {
+          "for": 3.033,
+          "against": 5.095
+        },
+        "Corners": {
+          "for": 4.33,
+          "against": 7.902
+        },
+        "Fouls": {
+          "for": 14.469,
+          "against": 12.389
+        },
+        "Yellow": {
+          "for": 2.158,
+          "against": 1.932
+        },
+        "Red": {
+          "for": 0.446,
+          "against": 0.287
+        },
+        "Offsides": {
+          "for": 1.647,
+          "against": 0.824
+        },
+        "Goals": {
+          "for": 1.315,
+          "against": 1.424
+        },
+        "Cards": {
+          "for": 2.621,
+          "against": 2.631
+        },
+        "n": 50
+      },
+      "away": {
+        "Shots": {
+          "for": 11.5099,
+          "against": 14.1951
+        },
+        "Shots on Target": {
+          "for": 4.8382,
+          "against": 4.6263
+        },
+        "Corners": {
+          "for": 4.1485,
+          "against": 5.439
+        },
+        "Fouls": {
+          "for": 12.2497,
+          "against": 13.0756
+        },
+        "Yellow": {
+          "for": 1.7568,
+          "against": 2.1504
+        },
+        "Red": {
+          "for": 0.087,
+          "against": 0.2687
+        },
+        "Offsides": {
+          "for": 2.1107,
+          "against": 1.0615
+        },
+        "Goals": {
+          "for": 1.003,
+          "against": 1.733
+        },
+        "Cards": {
+          "for": 2.393,
+          "against": 2.28
+        },
+        "n": 55
+      }
+    },
+    "Atlético de San Luis": {
+      "home": {
+        "Shots": {
+          "for": 12.518,
+          "against": 10.871
+        },
+        "Shots on Target": {
+          "for": 3.515,
+          "against": 3.53
+        },
+        "Corners": {
+          "for": 5.49,
+          "against": 3.157
+        },
+        "Fouls": {
+          "for": 10.629,
+          "against": 10.396
+        },
+        "Yellow": {
+          "for": 1.632,
+          "against": 1.979
+        },
+        "Red": {
+          "for": 0.044,
+          "against": 0.086
+        },
+        "Offsides": {
+          "for": 0.823,
+          "against": 1.829
+        },
+        "Goals": {
+          "for": 1.551,
+          "against": 1.439
+        },
+        "Cards": {
+          "for": 1.966,
+          "against": 2.094
+        },
+        "n": 57
+      },
+      "away": {
+        "Shots": {
+          "for": 12.709,
+          "against": 17.136
+        },
+        "Shots on Target": {
+          "for": 3.796,
+          "against": 5.305
+        },
+        "Corners": {
+          "for": 3.264,
+          "against": 7.402
+        },
+        "Fouls": {
+          "for": 10.805,
+          "against": 13.055
+        },
+        "Yellow": {
+          "for": 1.636,
+          "against": 1.975
+        },
+        "Red": {
+          "for": 0.394,
+          "against": 0.033
+        },
+        "Offsides": {
+          "for": 1.425,
+          "against": 1.188
+        },
+        "Goals": {
+          "for": 1.291,
+          "against": 1.876
+        },
+        "Cards": {
+          "for": 1.878,
+          "against": 2.017
+        },
+        "n": 55
+      }
+    },
+    "Cruz Azul": {
+      "home": {
+        "Shots": {
+          "for": 19.4532,
+          "against": 10.0047
+        },
+        "Shots on Target": {
+          "for": 7.2658,
+          "against": 4.4683
+        },
+        "Corners": {
+          "for": 6.9291,
+          "against": 3.3472
+        },
+        "Fouls": {
+          "for": 10.5468,
+          "against": 10.9432
+        },
+        "Yellow": {
+          "for": 1.7455,
+          "against": 1.719
+        },
+        "Red": {
+          "for": 0.0501,
+          "against": 0.1107
+        },
+        "Offsides": {
+          "for": 2.1807,
+          "against": 1.3794
+        },
+        "Goals": {
+          "for": 1.877,
+          "against": 1.053
+        },
+        "Cards": {
+          "for": 2.222,
+          "against": 2.36
+        },
+        "n": 61
+      },
+      "away": {
+        "Shots": {
+          "for": 14.4703,
+          "against": 11.9887
+        },
+        "Shots on Target": {
+          "for": 5.0379,
+          "against": 3.8382
+        },
+        "Corners": {
+          "for": 5.2706,
+          "against": 4.2612
+        },
+        "Fouls": {
+          "for": 12.7862,
+          "against": 12.2735
+        },
+        "Yellow": {
+          "for": 2.5572,
+          "against": 2.0767
+        },
+        "Red": {
+          "for": 0.0757,
+          "against": 0.1362
+        },
+        "Offsides": {
+          "for": 1.3898,
+          "against": 2.4541
+        },
+        "Goals": {
+          "for": 1.587,
+          "against": 1.186
+        },
+        "Cards": {
+          "for": 2.18,
+          "against": 2.079
+        },
+        "n": 63
+      }
+    },
+    "FC Juarez": {
+      "home": {
+        "Shots": {
+          "for": 11.529,
+          "against": 13.061
+        },
+        "Shots on Target": {
+          "for": 2.855,
+          "against": 5.754
+        },
+        "Corners": {
+          "for": 3.199,
+          "against": 5.205
+        },
+        "Fouls": {
+          "for": 15.016,
+          "against": 12.453
+        },
+        "Yellow": {
+          "for": 1.882,
+          "against": 1.367
+        },
+        "Red": {
+          "for": 0.078,
+          "against": 0.374
+        },
+        "Offsides": {
+          "for": 1.006,
+          "against": 1.273
+        },
+        "Goals": {
+          "for": 1.471,
+          "against": 1.682
+        },
+        "Cards": {
+          "for": 2.345,
+          "against": 2.082
+        },
+        "n": 54
+      },
+      "away": {
+        "Shots": {
+          "for": 8.048,
+          "against": 20.252
+        },
+        "Shots on Target": {
+          "for": 2.686,
+          "against": 6.807
+        },
+        "Corners": {
+          "for": 2.523,
+          "against": 7.962
+        },
+        "Fouls": {
+          "for": 10.317,
+          "against": 12.406
+        },
+        "Yellow": {
+          "for": 1.69,
+          "against": 1.22
+        },
+        "Red": {
+          "for": 0.058,
+          "against": 0.081
+        },
+        "Offsides": {
+          "for": 1.07,
+          "against": 1.753
+        },
+        "Goals": {
+          "for": 1.139,
+          "against": 1.845
+        },
+        "Cards": {
+          "for": 2.709,
+          "against": 2.228
+        },
+        "n": 51
+      }
+    },
+    "Guadalajara": {
+      "home": {
+        "Shots": {
+          "for": 16.543,
+          "against": 10.0228
+        },
+        "Shots on Target": {
+          "for": 5.4929,
+          "against": 4.5393
+        },
+        "Corners": {
+          "for": 8.0662,
+          "against": 3.1571
+        },
+        "Fouls": {
+          "for": 12.5846,
+          "against": 10.9536
+        },
+        "Yellow": {
+          "for": 1.7181,
+          "against": 2.1003
+        },
+        "Red": {
+          "for": 0.2658,
+          "against": 0.0719
+        },
+        "Offsides": {
+          "for": 1.5515,
+          "against": 1.141
+        },
+        "Goals": {
+          "for": 1.69,
+          "against": 0.909
+        },
+        "Cards": {
+          "for": 2.151,
+          "against": 2.489
+        },
+        "n": 57
+      },
+      "away": {
+        "Shots": {
+          "for": 15.045,
+          "against": 10.66
+        },
+        "Shots on Target": {
+          "for": 4.507,
+          "against": 3.29
+        },
+        "Corners": {
+          "for": 5.974,
+          "against": 4.104
+        },
+        "Fouls": {
+          "for": 9.948,
+          "against": 10.893
+        },
+        "Yellow": {
+          "for": 1.033,
+          "against": 1.596
+        },
+        "Red": {
+          "for": 0.065,
+          "against": 0.043
+        },
+        "Offsides": {
+          "for": 2.335,
+          "against": 0.587
+        },
+        "Goals": {
+          "for": 1.207,
+          "against": 1.426
+        },
+        "Cards": {
+          "for": 2.242,
+          "against": 2.731
+        },
+        "n": 56
+      }
+    },
+    "León": {
+      "home": {
+        "Shots": {
+          "for": 12.3775,
+          "against": 13.3463
+        },
+        "Shots on Target": {
+          "for": 4.6074,
+          "against": 3.9839
+        },
+        "Corners": {
+          "for": 5.1088,
+          "against": 6.9849
+        },
+        "Fouls": {
+          "for": 13.2686,
+          "against": 13.4532
+        },
+        "Yellow": {
+          "for": 2.2337,
+          "against": 2.4513
+        },
+        "Red": {
+          "for": 0.5203,
+          "against": 0.2658
+        },
+        "Offsides": {
+          "for": 1.2062,
+          "against": 2.596
+        },
+        "Goals": {
+          "for": 1.511,
+          "against": 1.324
+        },
+        "Cards": {
+          "for": 2.244,
+          "against": 2.557
+        },
+        "n": 54
+      },
+      "away": {
+        "Shots": {
+          "for": 12.8713,
+          "against": 16.9035
+        },
+        "Shots on Target": {
+          "for": 4.6519,
+          "against": 4.912
+        },
+        "Corners": {
+          "for": 5.14,
+          "against": 5.4627
+        },
+        "Fouls": {
+          "for": 12.1617,
+          "against": 14.1316
+        },
+        "Yellow": {
+          "for": 1.6944,
+          "against": 2.3274
+        },
+        "Red": {
+          "for": 0.4059,
+          "against": 0.0993
+        },
+        "Offsides": {
+          "for": 1.2564,
+          "against": 2.4475
+        },
+        "Goals": {
+          "for": 0.972,
+          "against": 1.943
+        },
+        "Cards": {
+          "for": 2.335,
+          "against": 2.261
+        },
+        "n": 53
+      }
+    },
+    "Monterrey": {
+      "home": {
+        "Shots": {
+          "for": 20.077,
+          "against": 8.684
+        },
+        "Shots on Target": {
+          "for": 8.368,
+          "against": 3.237
+        },
+        "Corners": {
+          "for": 6.62,
+          "against": 3.257
+        },
+        "Fouls": {
+          "for": 10.868,
+          "against": 10.991
+        },
+        "Yellow": {
+          "for": 0.727,
+          "against": 1.158
+        },
+        "Red": {
+          "for": 0.055,
+          "against": 0.084
+        },
+        "Offsides": {
+          "for": 1.9,
+          "against": 1.524
+        },
+        "Goals": {
+          "for": 1.873,
+          "against": 1.232
+        },
+        "Cards": {
+          "for": 1.596,
+          "against": 2.536
+        },
+        "n": 62
+      },
+      "away": {
+        "Shots": {
+          "for": 13.5459,
+          "against": 11.7852
+        },
+        "Shots on Target": {
+          "for": 3.8325,
+          "against": 3.9253
+        },
+        "Corners": {
+          "for": 5.9537,
+          "against": 5.1816
+        },
+        "Fouls": {
+          "for": 15.3908,
+          "against": 13.2649
+        },
+        "Yellow": {
+          "for": 2.3737,
+          "against": 1.7228
+        },
+        "Red": {
+          "for": 0.4049,
+          "against": 0.403
+        },
+        "Offsides": {
+          "for": 1.5289,
+          "against": 1.5336
+        },
+        "Goals": {
+          "for": 1.45,
+          "against": 1.509
+        },
+        "Cards": {
+          "for": 2.317,
+          "against": 2.391
+        },
+        "n": 60
+      }
+    },
+    "Necaxa": {
+      "home": {
+        "Shots": {
+          "for": 16.7587,
+          "against": 12.2679
+        },
+        "Shots on Target": {
+          "for": 5.0397,
+          "against": 4.5592
+        },
+        "Corners": {
+          "for": 6.6131,
+          "against": 3.4078
+        },
+        "Fouls": {
+          "for": 15.4645,
+          "against": 14.6263
+        },
+        "Yellow": {
+          "for": 2.0786,
+          "against": 1.6462
+        },
+        "Red": {
+          "for": 0.0378,
+          "against": 0.5393
+        },
+        "Offsides": {
+          "for": 2.2876,
+          "against": 1.2299
+        },
+        "Goals": {
+          "for": 1.476,
+          "against": 1.154
+        },
+        "Cards": {
+          "for": 2.286,
+          "against": 2.126
+        },
+        "n": 52
+      },
+      "away": {
+        "Shots": {
+          "for": 10.68,
+          "against": 18.996
+        },
+        "Shots on Target": {
+          "for": 3.729,
+          "against": 6.158
+        },
+        "Corners": {
+          "for": 3.698,
+          "against": 5.984
+        },
+        "Fouls": {
+          "for": 13.262,
+          "against": 12.442
+        },
+        "Yellow": {
+          "for": 2.772,
+          "against": 1.631
+        },
+        "Red": {
+          "for": 0.199,
+          "against": 0.086
+        },
+        "Offsides": {
+          "for": 2.474,
+          "against": 1.114
+        },
+        "Goals": {
+          "for": 1.434,
+          "against": 2.104
+        },
+        "Cards": {
+          "for": 2.529,
+          "against": 2.026
+        },
+        "n": 51
+      }
+    },
+    "Pachuca": {
+      "home": {
+        "Shots": {
+          "for": 15.371,
+          "against": 12.517
+        },
+        "Shots on Target": {
+          "for": 4.179,
+          "against": 5.461
+        },
+        "Corners": {
+          "for": 4.967,
+          "against": 4.103
+        },
+        "Fouls": {
+          "for": 13.245,
+          "against": 14.225
+        },
+        "Yellow": {
+          "for": 1.087,
+          "against": 1.862
+        },
+        "Red": {
+          "for": 0.139,
+          "against": 0.117
+        },
+        "Offsides": {
+          "for": 1.366,
+          "against": 1.697
+        },
+        "Goals": {
+          "for": 1.456,
+          "against": 1.091
+        },
+        "Cards": {
+          "for": 2.503,
+          "against": 2.754
+        },
+        "n": 57
+      },
+      "away": {
+        "Shots": {
+          "for": 12.861,
+          "against": 11.235
+        },
+        "Shots on Target": {
+          "for": 3.287,
+          "against": 3.666
+        },
+        "Corners": {
+          "for": 4.937,
+          "against": 4.995
+        },
+        "Fouls": {
+          "for": 11.193,
+          "against": 12.636
+        },
+        "Yellow": {
+          "for": 1.741,
+          "against": 2.53
+        },
+        "Red": {
+          "for": 0.456,
+          "against": 0.102
+        },
+        "Offsides": {
+          "for": 2.751,
+          "against": 1.281
+        },
+        "Goals": {
+          "for": 1.327,
+          "against": 1.386
+        },
+        "Cards": {
+          "for": 2.648,
+          "against": 2.494
+        },
+        "n": 56
+      }
+    },
+    "Puebla": {
+      "home": {
+        "Shots": {
+          "for": 11.877,
+          "against": 17.1209
+        },
+        "Shots on Target": {
+          "for": 4.1221,
+          "against": 4.7303
+        },
+        "Corners": {
+          "for": 3.4229,
+          "against": 6.0539
+        },
+        "Fouls": {
+          "for": 11.9451,
+          "against": 8.9035
+        },
+        "Yellow": {
+          "for": 1.685,
+          "against": 1.2176
+        },
+        "Red": {
+          "for": 0.1183,
+          "against": 0.0208
+        },
+        "Offsides": {
+          "for": 1.1211,
+          "against": 0.807
+        },
+        "Goals": {
+          "for": 1.15,
+          "against": 1.756
+        },
+        "Cards": {
+          "for": 2.398,
+          "against": 1.788
+        },
+        "n": 53
+      },
+      "away": {
+        "Shots": {
+          "for": 12.771,
+          "against": 17.441
+        },
+        "Shots on Target": {
+          "for": 5.685,
+          "against": 4.696
+        },
+        "Corners": {
+          "for": 4.519,
+          "against": 5.432
+        },
+        "Fouls": {
+          "for": 13.927,
+          "against": 12.543
+        },
+        "Yellow": {
+          "for": 1.332,
+          "against": 0.993
+        },
+        "Red": {
+          "for": 0.23,
+          "against": 0.017
+        },
+        "Offsides": {
+          "for": 0.999,
+          "against": 0.992
+        },
+        "Goals": {
+          "for": 0.814,
+          "against": 1.942
+        },
+        "Cards": {
+          "for": 2.474,
+          "against": 1.906
+        },
+        "n": 52
+      }
+    },
+    "Pumas UNAM": {
+      "home": {
+        "Shots": {
+          "for": 13.034,
+          "against": 10.973
+        },
+        "Shots on Target": {
+          "for": 3.601,
+          "against": 3.769
+        },
+        "Corners": {
+          "for": 5.594,
+          "against": 3.452
+        },
+        "Fouls": {
+          "for": 12.73,
+          "against": 10.255
+        },
+        "Yellow": {
+          "for": 1.573,
+          "against": 1.839
+        },
+        "Red": {
+          "for": 0.069,
+          "against": 0.064
+        },
+        "Offsides": {
+          "for": 1.365,
+          "against": 1.665
+        },
+        "Goals": {
+          "for": 1.568,
+          "against": 1.166
+        },
+        "Cards": {
+          "for": 2.31,
+          "against": 2.049
+        },
+        "n": 58
+      },
+      "away": {
+        "Shots": {
+          "for": 11.438,
+          "against": 13.2686
+        },
+        "Shots on Target": {
+          "for": 4.6461,
+          "against": 4.0823
+        },
+        "Corners": {
+          "for": 3.6169,
+          "against": 5.1419
+        },
+        "Fouls": {
+          "for": 12.0425,
+          "against": 12.0407
+        },
+        "Yellow": {
+          "for": 1.7474,
+          "against": 1.702
+        },
+        "Red": {
+          "for": 0.1211,
+          "against": 0.0927
+        },
+        "Offsides": {
+          "for": 1.3122,
+          "against": 1.2016
+        },
+        "Goals": {
+          "for": 1.523,
+          "against": 1.41
+        },
+        "Cards": {
+          "for": 2.758,
+          "against": 2.1
+        },
+        "n": 60
+      }
+    },
+    "Querétaro": {
+      "home": {
+        "Shots": {
+          "for": 14.0663,
+          "against": 20.631
+        },
+        "Shots on Target": {
+          "for": 3.4759,
+          "against": 4.385
+        },
+        "Corners": {
+          "for": 4.7938,
+          "against": 6.9432
+        },
+        "Fouls": {
+          "for": 14.0284,
+          "against": 10.3406
+        },
+        "Yellow": {
+          "for": 3.6348,
+          "against": 2.2176
+        },
+        "Red": {
+          "for": 0.0587,
+          "against": 0.6036
+        },
+        "Offsides": {
+          "for": 1.9224,
+          "against": 0.4068
+        },
+        "Goals": {
+          "for": 1.3,
+          "against": 1.209
+        },
+        "Cards": {
+          "for": 3.054,
+          "against": 2.631
+        },
+        "n": 38
+      },
+      "away": {
+        "Shots": {
+          "for": 9.832,
+          "against": 14.852
+        },
+        "Shots on Target": {
+          "for": 3.593,
+          "against": 4.05
+        },
+        "Corners": {
+          "for": 3.816,
+          "against": 5.011
+        },
+        "Fouls": {
+          "for": 11.423,
+          "against": 13.865
+        },
+        "Yellow": {
+          "for": 2.524,
+          "against": 1.17
+        },
+        "Red": {
+          "for": 0.12,
+          "against": 0.059
+        },
+        "Offsides": {
+          "for": 2.17,
+          "against": 1.11
+        },
+        "Goals": {
+          "for": 0.824,
+          "against": 1.707
+        },
+        "Cards": {
+          "for": 2.273,
+          "against": 1.897
+        },
+        "n": 36
+      }
+    },
+    "Santos": {
+      "home": {
+        "Shots": {
+          "for": 12.026,
+          "against": 14.502
+        },
+        "Shots on Target": {
+          "for": 3.346,
+          "against": 5.359
+        },
+        "Corners": {
+          "for": 5.033,
+          "against": 5.89
+        },
+        "Fouls": {
+          "for": 11.946,
+          "against": 13.021
+        },
+        "Yellow": {
+          "for": 2.018,
+          "against": 1.364
+        },
+        "Red": {
+          "for": 0.1,
+          "against": 0.036
+        },
+        "Offsides": {
+          "for": 1.037,
+          "against": 2.586
+        },
+        "Goals": {
+          "for": 1.242,
+          "against": 1.449
+        },
+        "Cards": {
+          "for": 2.854,
+          "against": 2.429
+        },
+        "n": 52
+      },
+      "away": {
+        "Shots": {
+          "for": 11.3017,
+          "against": 17.9498
+        },
+        "Shots on Target": {
+          "for": 3.7199,
+          "against": 7.5203
+        },
+        "Corners": {
+          "for": 6.2175,
+          "against": 5.7795
+        },
+        "Fouls": {
+          "for": 11.4834,
+          "against": 12.3992
+        },
+        "Yellow": {
+          "for": 1.3188,
+          "against": 1.2006
+        },
+        "Red": {
+          "for": 0.123,
+          "against": 0.0407
+        },
+        "Offsides": {
+          "for": 2.1126,
+          "against": 2.3226
+        },
+        "Goals": {
+          "for": 1.004,
+          "against": 2.445
+        },
+        "Cards": {
+          "for": 2.383,
+          "against": 2.213
+        },
+        "n": 51
+      }
+    },
+    "Tigres UANL": {
+      "home": {
+        "Shots": {
+          "for": 16.8647,
+          "against": 11.7673
+        },
+        "Shots on Target": {
+          "for": 4.7994,
+          "against": 4.1599
+        },
+        "Corners": {
+          "for": 6.5194,
+          "against": 2.4919
+        },
+        "Fouls": {
+          "for": 15.0162,
+          "against": 14.175
+        },
+        "Yellow": {
+          "for": 1.3377,
+          "against": 2.3349
+        },
+        "Red": {
+          "for": 0.0691,
+          "against": 0.4314
+        },
+        "Offsides": {
+          "for": 2.4759,
+          "against": 2.2488
+        },
+        "Goals": {
+          "for": 2.044,
+          "against": 0.862
+        },
+        "Cards": {
+          "for": 2.177,
+          "against": 2.625
+        },
+        "n": 59
+      },
+      "away": {
+        "Shots": {
+          "for": 20.008,
+          "against": 12.364
+        },
+        "Shots on Target": {
+          "for": 5.342,
+          "against": 4.64
+        },
+        "Corners": {
+          "for": 9.53,
+          "against": 3.21
+        },
+        "Fouls": {
+          "for": 11.05,
+          "against": 13.194
+        },
+        "Yellow": {
+          "for": 2.391,
+          "against": 2.602
+        },
+        "Red": {
+          "for": 0.234,
+          "against": 0.674
+        },
+        "Offsides": {
+          "for": 0.725,
+          "against": 1.727
+        },
+        "Goals": {
+          "for": 1.221,
+          "against": 1.42
+        },
+        "Cards": {
+          "for": 2.797,
+          "against": 2.765
+        },
+        "n": 62
+      }
+    },
+    "Tijuana": {
+      "home": {
+        "Shots": {
+          "for": 12.6348,
+          "against": 11.3037
+        },
+        "Shots on Target": {
+          "for": 4.7549,
+          "against": 3.3879
+        },
+        "Corners": {
+          "for": 3.1655,
+          "against": 6.124
+        },
+        "Fouls": {
+          "for": 12.6443,
+          "against": 12.6669
+        },
+        "Yellow": {
+          "for": 2.1901,
+          "against": 2.9073
+        },
+        "Red": {
+          "for": 0.3122,
+          "against": 0.2772
+        },
+        "Offsides": {
+          "for": 2.4721,
+          "against": 0.947
+        },
+        "Goals": {
+          "for": 1.868,
+          "against": 1.096
+        },
+        "Cards": {
+          "for": 2.247,
+          "against": 2.614
+        },
+        "n": 56
+      },
+      "away": {
+        "Shots": {
+          "for": 9.9424,
+          "against": 15.2762
+        },
+        "Shots on Target": {
+          "for": 2.7436,
+          "against": 4.826
+        },
+        "Corners": {
+          "for": 2.8667,
+          "against": 6.017
+        },
+        "Fouls": {
+          "for": 10.0804,
+          "against": 11.1201
+        },
+        "Yellow": {
+          "for": 2.1873,
+          "against": 1.737
+        },
+        "Red": {
+          "for": 0.0577,
+          "against": 0.0889
+        },
+        "Offsides": {
+          "for": 1.2043,
+          "against": 0.9224
+        },
+        "Goals": {
+          "for": 1.049,
+          "against": 1.671
+        },
+        "Cards": {
+          "for": 2.451,
+          "against": 2.165
+        },
+        "n": 51
+      }
+    },
+    "Toluca": {
+      "home": {
+        "Shots": {
+          "for": 19.893,
+          "against": 8.593
+        },
+        "Shots on Target": {
+          "for": 6.682,
+          "against": 2.899
+        },
+        "Corners": {
+          "for": 6.272,
+          "against": 2.539
+        },
+        "Fouls": {
+          "for": 12.702,
+          "against": 10.502
+        },
+        "Yellow": {
+          "for": 1.512,
+          "against": 2.519
+        },
+        "Red": {
+          "for": 0.091,
+          "against": 0.04
+        },
+        "Offsides": {
+          "for": 1.06,
+          "against": 2.617
+        },
+        "Goals": {
+          "for": 2.217,
+          "against": 0.998
+        },
+        "Cards": {
+          "for": 2.229,
+          "against": 2.346
+        },
+        "n": 56
+      },
+      "away": {
+        "Shots": {
+          "for": 15.1987,
+          "against": 14.5772
+        },
+        "Shots on Target": {
+          "for": 4.3434,
+          "against": 3.965
+        },
+        "Corners": {
+          "for": 4.5506,
+          "against": 6.7143
+        },
+        "Fouls": {
+          "for": 9.9073,
+          "against": 13.6396
+        },
+        "Yellow": {
+          "for": 1.3122,
+          "against": 2.7644
+        },
+        "Red": {
+          "for": 0.403,
+          "against": 0.1864
+        },
+        "Offsides": {
+          "for": 1.6338,
+          "against": 1.701
+        },
+        "Goals": {
+          "for": 1.488,
+          "against": 1.217
+        },
+        "Cards": {
+          "for": 2.345,
+          "against": 2.421
+        },
+        "n": 59
+      }
+    }
+  },
+  "shrinkage": {
+    "Shots": 0.75,
+    "Shots on Target": 0.6,
+    "Corners": 0.75,
+    "Fouls": 0.25,
+    "Yellow": 0.25,
+    "Red": 0,
+    "Offsides": 0.5,
+    "Goals": 0.5,
+    "Cards": 0.4
+  },
+  "referees": {
+    "Adonai Gonzalez": {
+      "mult": 0.9537,
+      "n": 64
+    },
+    "César Arturo Ramos Palazuelos": {
+      "mult": 0.973,
+      "n": 62
+    },
+    "Daniel Quintero Huitrón": {
+      "mult": 1.0096,
+      "n": 59
+    },
+    "Fernando Gomez": {
+      "mult": 1.0261,
+      "n": 60
+    },
+    "Fernando Guerrero Ramírez": {
+      "mult": 1.0304,
+      "n": 30
+    },
+    "Guillermo Pacheco Larios": {
+      "mult": 0.883,
+      "n": 39
+    },
+    "Ismael Rosario Lopez Penuelas": {
+      "mult": 0.9483,
+      "n": 48
+    },
+    "Iván López Sánchez": {
+      "mult": 1.1404,
+      "n": 28
+    },
+    "Jesús Rafael López Valle": {
+      "mult": 0.9567,
+      "n": 44
+    },
+    "Jorge Abraham Camacho Peregrina": {
+      "mult": 0.9321,
+      "n": 37
+    },
+    "Katia Itzel García": {
+      "mult": 1.0328,
+      "n": 26
+    },
+    "Luis Enrique Santander Aguirre": {
+      "mult": 1.057,
+      "n": 50
+    },
+    "Marco Antonio Ortiz Nava": {
+      "mult": 0.9967,
+      "n": 65
+    },
+    "Mario Terrazas Chávez": {
+      "mult": 1.0743,
+      "n": 20
+    },
+    "Maximiliano Quintero Hernández": {
+      "mult": 0.9873,
+      "n": 35
+    },
+    "Oscar Garcia": {
+      "mult": 1.0167,
+      "n": 50
+    },
+    "Vicente Reynoso Arce": {
+      "mult": 1.0225,
+      "n": 28
+    },
+    "Víctor Alfonso Cáceres Hernández": {
+      "mult": 0.9974,
+      "n": 65
+    }
+  },
+  "halves": {
+    "share": {
+      "h1": 0.4603,
+      "h2": 0.5397
+    },
+    "n": 724
+  },
+  "season_adj": {
+    "Yellow": 0.8772,
+    "Cards": 0.7869
+  }
+}

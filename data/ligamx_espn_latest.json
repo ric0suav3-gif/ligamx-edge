@@ -1,0 +1,1383 @@
+{
+  "source": "ESPN",
+  "generatedAt": "2026-10-09T22:37:28.078298+00:00",
+  "todayMexico": "2026-10-09",
+  "matches": [
+    {
+      "id": "401876996",
+      "date": "2026-08-29",
+      "kickoff": "2026-08-29T23:00Z",
+      "home": {
+        "name": "Pachuca",
+        "Goals": 1,
+        "Shots": 17,
+        "Shots on Target": 7,
+        "Corners": 8,
+        "Fouls": 20,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 4
+      },
+      "away": {
+        "name": "Guadalajara",
+        "Goals": 1,
+        "Shots": 12,
+        "Shots on Target": 5,
+        "Corners": 7,
+        "Fouls": 8,
+        "Yellow": 0,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 0
+      }
+    },
+    {
+      "id": "401876997",
+      "date": "2026-08-29",
+      "kickoff": "2026-08-29T23:00Z",
+      "home": {
+        "name": "Atlas",
+        "Goals": 1,
+        "Shots": 14,
+        "Shots on Target": 3,
+        "Corners": 6,
+        "Fouls": 8,
+        "Yellow": 0,
+        "Red": 1,
+        "Offsides": 0,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Querétaro",
+        "Goals": 3,
+        "Shots": 12,
+        "Shots on Target": 5,
+        "Corners": 2,
+        "Fouls": 14,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876995",
+      "date": "2026-08-29",
+      "kickoff": "2026-08-30T01:05Z",
+      "home": {
+        "name": "América",
+        "Goals": 2,
+        "Shots": 20,
+        "Shots on Target": 6,
+        "Corners": 3,
+        "Fouls": 10,
+        "Yellow": 0,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 0
+      },
+      "away": {
+        "name": "Puebla",
+        "Goals": 0,
+        "Shots": 23,
+        "Shots on Target": 6,
+        "Corners": 8,
+        "Fouls": 8,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876994",
+      "date": "2026-08-29",
+      "kickoff": "2026-08-30T03:10Z",
+      "home": {
+        "name": "Santos",
+        "Goals": 0,
+        "Shots": 20,
+        "Shots on Target": 4,
+        "Corners": 12,
+        "Fouls": 7,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 4
+      },
+      "away": {
+        "name": "Tigres UANL",
+        "Goals": 0,
+        "Shots": 15,
+        "Shots on Target": 2,
+        "Corners": 3,
+        "Fouls": 11,
+        "Yellow": 1,
+        "Red": 1,
+        "Offsides": 1,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876993",
+      "date": "2026-08-30",
+      "kickoff": "2026-08-31T00:00Z",
+      "home": {
+        "name": "Toluca",
+        "Goals": 4,
+        "Shots": 26,
+        "Shots on Target": 9,
+        "Corners": 5,
+        "Fouls": 11,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 1
+      },
+      "away": {
+        "name": "FC Juarez",
+        "Goals": 0,
+        "Shots": 6,
+        "Shots on Target": 2,
+        "Corners": 3,
+        "Fouls": 8,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876992",
+      "date": "2026-08-30",
+      "kickoff": "2026-08-31T02:10Z",
+      "home": {
+        "name": "Monterrey",
+        "Goals": 1,
+        "Shots": 26,
+        "Shots on Target": 8,
+        "Corners": 14,
+        "Fouls": 10,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Atlético de San Luis",
+        "Goals": 3,
+        "Shots": 9,
+        "Shots on Target": 4,
+        "Corners": 1,
+        "Fouls": 10,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876990",
+      "date": "2026-09-04",
+      "kickoff": "2026-09-05T03:00Z",
+      "home": {
+        "name": "FC Juarez",
+        "Goals": 0,
+        "Shots": 10,
+        "Shots on Target": 1,
+        "Corners": 1,
+        "Fouls": 17,
+        "Yellow": 6,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 6
+      },
+      "away": {
+        "name": "Pachuca",
+        "Goals": 2,
+        "Shots": 14,
+        "Shots on Target": 4,
+        "Corners": 3,
+        "Fouls": 20,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 4
+      }
+    },
+    {
+      "id": "401876989",
+      "date": "2026-09-05",
+      "kickoff": "2026-09-05T23:00Z",
+      "home": {
+        "name": "Atlético de San Luis",
+        "Goals": 0,
+        "Shots": 10,
+        "Shots on Target": 4,
+        "Corners": 3,
+        "Fouls": 8,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Guadalajara",
+        "Goals": 3,
+        "Shots": 7,
+        "Shots on Target": 3,
+        "Corners": 2,
+        "Fouls": 8,
+        "Yellow": 0,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 0
+      }
+    },
+    {
+      "id": "401876987",
+      "date": "2026-09-05",
+      "kickoff": "2026-09-06T01:00Z",
+      "home": {
+        "name": "Tigres UANL",
+        "Goals": 1,
+        "Shots": 21,
+        "Shots on Target": 6,
+        "Corners": 6,
+        "Fouls": 13,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 3
+      },
+      "away": {
+        "name": "Necaxa",
+        "Goals": 1,
+        "Shots": 17,
+        "Shots on Target": 4,
+        "Corners": 3,
+        "Fouls": 10,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876985",
+      "date": "2026-09-05",
+      "kickoff": "2026-09-06T03:00Z",
+      "home": {
+        "name": "Atlas",
+        "Goals": 1,
+        "Shots": 16,
+        "Shots on Target": 3,
+        "Corners": 3,
+        "Fouls": 19,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 2
+      },
+      "away": {
+        "name": "Atlante",
+        "Goals": 1,
+        "Shots": 8,
+        "Shots on Target": 2,
+        "Corners": 1,
+        "Fouls": 16,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 3
+      }
+    },
+    {
+      "id": "401876983",
+      "date": "2026-09-06",
+      "kickoff": "2026-09-06T23:00Z",
+      "home": {
+        "name": "Cruz Azul",
+        "Goals": 1,
+        "Shots": 25,
+        "Shots on Target": 8,
+        "Corners": 9,
+        "Fouls": 8,
+        "Yellow": 0,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 0
+      },
+      "away": {
+        "name": "Santos",
+        "Goals": 0,
+        "Shots": 11,
+        "Shots on Target": 1,
+        "Corners": 5,
+        "Fouls": 9,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876984",
+      "date": "2026-09-10",
+      "kickoff": "2026-09-11T03:05Z",
+      "home": {
+        "name": "Pumas UNAM",
+        "Goals": 3,
+        "Shots": 14,
+        "Shots on Target": 5,
+        "Corners": 8,
+        "Fouls": 13,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 2
+      },
+      "away": {
+        "name": "León",
+        "Goals": 1,
+        "Shots": 13,
+        "Shots on Target": 3,
+        "Corners": 2,
+        "Fouls": 5,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876980",
+      "date": "2026-09-11",
+      "kickoff": "2026-09-12T01:00Z",
+      "home": {
+        "name": "Necaxa",
+        "Goals": 0,
+        "Shots": 9,
+        "Shots on Target": 2,
+        "Corners": 8,
+        "Fouls": 11,
+        "Yellow": 1,
+        "Red": 1,
+        "Offsides": 1,
+        "Cards": 2
+      },
+      "away": {
+        "name": "Puebla",
+        "Goals": 1,
+        "Shots": 12,
+        "Shots on Target": 4,
+        "Corners": 5,
+        "Fouls": 12,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 3
+      }
+    },
+    {
+      "id": "401876979",
+      "date": "2026-09-11",
+      "kickoff": "2026-09-12T03:00Z",
+      "home": {
+        "name": "Atlante",
+        "Goals": 0,
+        "Shots": 32,
+        "Shots on Target": 5,
+        "Corners": 5,
+        "Fouls": 7,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 2
+      },
+      "away": {
+        "name": "Pachuca",
+        "Goals": 3,
+        "Shots": 21,
+        "Shots on Target": 8,
+        "Corners": 5,
+        "Fouls": 14,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 4
+      }
+    },
+    {
+      "id": "401876978",
+      "date": "2026-09-11",
+      "kickoff": "2026-09-12T03:10Z",
+      "home": {
+        "name": "Tijuana",
+        "Goals": 0,
+        "Shots": 24,
+        "Shots on Target": 4,
+        "Corners": 13,
+        "Fouls": 8,
+        "Yellow": 0,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 0
+      },
+      "away": {
+        "name": "Querétaro",
+        "Goals": 1,
+        "Shots": 8,
+        "Shots on Target": 4,
+        "Corners": 4,
+        "Fouls": 14,
+        "Yellow": 5,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 5
+      }
+    },
+    {
+      "id": "401876982",
+      "date": "2026-09-12",
+      "kickoff": "2026-09-12T23:05Z",
+      "home": {
+        "name": "Toluca",
+        "Goals": 5,
+        "Shots": 14,
+        "Shots on Target": 6,
+        "Corners": 6,
+        "Fouls": 11,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Atlas",
+        "Goals": 2,
+        "Shots": 10,
+        "Shots on Target": 2,
+        "Corners": 8,
+        "Fouls": 13,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 3
+      }
+    },
+    {
+      "id": "401876974",
+      "date": "2026-09-12",
+      "kickoff": "2026-09-13T01:10Z",
+      "home": {
+        "name": "Monterrey",
+        "Goals": 0,
+        "Shots": 18,
+        "Shots on Target": 6,
+        "Corners": 6,
+        "Fouls": 15,
+        "Yellow": 3,
+        "Red": 1,
+        "Offsides": 0,
+        "Cards": 4
+      },
+      "away": {
+        "name": "Tigres UANL",
+        "Goals": 0,
+        "Shots": 5,
+        "Shots on Target": 3,
+        "Corners": 0,
+        "Fouls": 16,
+        "Yellow": 3,
+        "Red": 1,
+        "Offsides": 1,
+        "Cards": 4
+      }
+    },
+    {
+      "id": "401876981",
+      "date": "2026-09-12",
+      "kickoff": "2026-09-13T03:15Z",
+      "home": {
+        "name": "Cruz Azul",
+        "Goals": 4,
+        "Shots": 16,
+        "Shots on Target": 10,
+        "Corners": 6,
+        "Fouls": 10,
+        "Yellow": 5,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 5
+      },
+      "away": {
+        "name": "América",
+        "Goals": 3,
+        "Shots": 28,
+        "Shots on Target": 10,
+        "Corners": 9,
+        "Fouls": 9,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876976",
+      "date": "2026-09-13",
+      "kickoff": "2026-09-14T01:00Z",
+      "home": {
+        "name": "Santos",
+        "Goals": 2,
+        "Shots": 25,
+        "Shots on Target": 10,
+        "Corners": 12,
+        "Fouls": 13,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 4
+      },
+      "away": {
+        "name": "FC Juarez",
+        "Goals": 1,
+        "Shots": 12,
+        "Shots on Target": 5,
+        "Corners": 6,
+        "Fouls": 14,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 4
+      }
+    },
+    {
+      "id": "401876975",
+      "date": "2026-09-13",
+      "kickoff": "2026-09-14T01:07Z",
+      "home": {
+        "name": "Guadalajara",
+        "Goals": 3,
+        "Shots": 8,
+        "Shots on Target": 5,
+        "Corners": 6,
+        "Fouls": 11,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Pumas UNAM",
+        "Goals": 0,
+        "Shots": 15,
+        "Shots on Target": 5,
+        "Corners": 4,
+        "Fouls": 12,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876977",
+      "date": "2026-09-14",
+      "kickoff": "2026-09-15T01:00Z",
+      "home": {
+        "name": "León",
+        "Goals": 2,
+        "Shots": 23,
+        "Shots on Target": 9,
+        "Corners": 6,
+        "Fouls": 11,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Atlético de San Luis",
+        "Goals": 0,
+        "Shots": 13,
+        "Shots on Target": 2,
+        "Corners": 2,
+        "Fouls": 8,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876991",
+      "date": "2026-09-15",
+      "kickoff": "2026-09-16T01:00Z",
+      "home": {
+        "name": "Puebla",
+        "Goals": 0,
+        "Shots": 14,
+        "Shots on Target": 2,
+        "Corners": 6,
+        "Fouls": 7,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Toluca",
+        "Goals": 1,
+        "Shots": 11,
+        "Shots on Target": 3,
+        "Corners": 5,
+        "Fouls": 14,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876973",
+      "date": "2026-09-18",
+      "kickoff": "2026-09-19T01:00Z",
+      "home": {
+        "name": "Puebla",
+        "Goals": 1,
+        "Shots": 12,
+        "Shots on Target": 4,
+        "Corners": 6,
+        "Fouls": 6,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Atlante",
+        "Goals": 1,
+        "Shots": 21,
+        "Shots on Target": 5,
+        "Corners": 11,
+        "Fouls": 10,
+        "Yellow": 0,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 0
+      }
+    },
+    {
+      "id": "401876972",
+      "date": "2026-09-18",
+      "kickoff": "2026-09-19T03:00Z",
+      "home": {
+        "name": "FC Juarez",
+        "Goals": 2,
+        "Shots": 14,
+        "Shots on Target": 5,
+        "Corners": 2,
+        "Fouls": 10,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Tigres UANL",
+        "Goals": 0,
+        "Shots": 13,
+        "Shots on Target": 5,
+        "Corners": 9,
+        "Fouls": 13,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 5,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876970",
+      "date": "2026-09-19",
+      "kickoff": "2026-09-19T23:00Z",
+      "home": {
+        "name": "Atlético de San Luis",
+        "Goals": 3,
+        "Shots": 12,
+        "Shots on Target": 5,
+        "Corners": 2,
+        "Fouls": 13,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Necaxa",
+        "Goals": 1,
+        "Shots": 10,
+        "Shots on Target": 3,
+        "Corners": 5,
+        "Fouls": 11,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876971",
+      "date": "2026-09-19",
+      "kickoff": "2026-09-19T23:00Z",
+      "home": {
+        "name": "Atlas",
+        "Goals": 1,
+        "Shots": 20,
+        "Shots on Target": 4,
+        "Corners": 8,
+        "Fouls": 7,
+        "Yellow": 0,
+        "Red": 0,
+        "Offsides": 4,
+        "Cards": 0
+      },
+      "away": {
+        "name": "Pumas UNAM",
+        "Goals": 1,
+        "Shots": 10,
+        "Shots on Target": 3,
+        "Corners": 6,
+        "Fouls": 8,
+        "Yellow": 0,
+        "Red": 1,
+        "Offsides": 1,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876969",
+      "date": "2026-09-19",
+      "kickoff": "2026-09-20T01:10Z",
+      "home": {
+        "name": "Monterrey",
+        "Goals": 1,
+        "Shots": 17,
+        "Shots on Target": 5,
+        "Corners": 6,
+        "Fouls": 13,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Cruz Azul",
+        "Goals": 0,
+        "Shots": 12,
+        "Shots on Target": 4,
+        "Corners": 4,
+        "Fouls": 14,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876968",
+      "date": "2026-09-19",
+      "kickoff": "2026-09-20T03:15Z",
+      "home": {
+        "name": "América",
+        "Goals": 2,
+        "Shots": 17,
+        "Shots on Target": 4,
+        "Corners": 4,
+        "Fouls": 16,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Guadalajara",
+        "Goals": 2,
+        "Shots": 9,
+        "Shots on Target": 5,
+        "Corners": 6,
+        "Fouls": 14,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 3
+      }
+    },
+    {
+      "id": "401876966",
+      "date": "2026-09-20",
+      "kickoff": "2026-09-21T00:00Z",
+      "home": {
+        "name": "Toluca",
+        "Goals": 2,
+        "Shots": 24,
+        "Shots on Target": 9,
+        "Corners": 6,
+        "Fouls": 9,
+        "Yellow": 1,
+        "Red": 1,
+        "Offsides": 3,
+        "Cards": 2
+      },
+      "away": {
+        "name": "Santos",
+        "Goals": 3,
+        "Shots": 22,
+        "Shots on Target": 6,
+        "Corners": 7,
+        "Fouls": 13,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876967",
+      "date": "2026-09-20",
+      "kickoff": "2026-09-21T00:00Z",
+      "home": {
+        "name": "Pachuca",
+        "Goals": 2,
+        "Shots": 29,
+        "Shots on Target": 11,
+        "Corners": 10,
+        "Fouls": 16,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Tijuana",
+        "Goals": 2,
+        "Shots": 8,
+        "Shots on Target": 5,
+        "Corners": 0,
+        "Fouls": 6,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 3
+      }
+    },
+    {
+      "id": "401876965",
+      "date": "2026-09-20",
+      "kickoff": "2026-09-21T02:10Z",
+      "home": {
+        "name": "Querétaro",
+        "Goals": 1,
+        "Shots": 19,
+        "Shots on Target": 4,
+        "Corners": 8,
+        "Fouls": 15,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 4
+      },
+      "away": {
+        "name": "León",
+        "Goals": 1,
+        "Shots": 14,
+        "Shots on Target": 7,
+        "Corners": 1,
+        "Fouls": 11,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 3
+      }
+    },
+    {
+      "id": "401876964",
+      "date": "2026-09-25",
+      "kickoff": "2026-09-26T01:00Z",
+      "home": {
+        "name": "Atlante",
+        "Goals": 4,
+        "Shots": 14,
+        "Shots on Target": 7,
+        "Corners": 2,
+        "Fouls": 8,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 2
+      },
+      "away": {
+        "name": "Monterrey",
+        "Goals": 2,
+        "Shots": 17,
+        "Shots on Target": 7,
+        "Corners": 6,
+        "Fouls": 10,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 4,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876963",
+      "date": "2026-09-25",
+      "kickoff": "2026-09-26T03:00Z",
+      "home": {
+        "name": "Tijuana",
+        "Goals": 2,
+        "Shots": 10,
+        "Shots on Target": 5,
+        "Corners": 5,
+        "Fouls": 10,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 2
+      },
+      "away": {
+        "name": "Atlas",
+        "Goals": 3,
+        "Shots": 21,
+        "Shots on Target": 7,
+        "Corners": 11,
+        "Fouls": 13,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876959",
+      "date": "2026-09-26",
+      "kickoff": "2026-09-26T22:50Z",
+      "home": {
+        "name": "Cruz Azul",
+        "Goals": 3,
+        "Shots": 17,
+        "Shots on Target": 7,
+        "Corners": 4,
+        "Fouls": 14,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 4
+      },
+      "away": {
+        "name": "Toluca",
+        "Goals": 3,
+        "Shots": 18,
+        "Shots on Target": 7,
+        "Corners": 5,
+        "Fouls": 16,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876962",
+      "date": "2026-09-26",
+      "kickoff": "2026-09-26T23:07Z",
+      "home": {
+        "name": "Guadalajara",
+        "Goals": 0,
+        "Shots": 26,
+        "Shots on Target": 5,
+        "Corners": 12,
+        "Fouls": 6,
+        "Yellow": 0,
+        "Red": 1,
+        "Offsides": 4,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Querétaro",
+        "Goals": 2,
+        "Shots": 13,
+        "Shots on Target": 6,
+        "Corners": 6,
+        "Fouls": 7,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876961",
+      "date": "2026-09-26",
+      "kickoff": "2026-09-27T03:05Z",
+      "home": {
+        "name": "Santos",
+        "Goals": 1,
+        "Shots": 17,
+        "Shots on Target": 9,
+        "Corners": 10,
+        "Fouls": 12,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 2
+      },
+      "away": {
+        "name": "Pachuca",
+        "Goals": 0,
+        "Shots": 11,
+        "Shots on Target": 0,
+        "Corners": 5,
+        "Fouls": 14,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 3
+      }
+    },
+    {
+      "id": "401876960",
+      "date": "2026-09-26",
+      "kickoff": "2026-09-27T03:10Z",
+      "home": {
+        "name": "Tigres UANL",
+        "Goals": 1,
+        "Shots": 12,
+        "Shots on Target": 4,
+        "Corners": 5,
+        "Fouls": 7,
+        "Yellow": 0,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 0
+      },
+      "away": {
+        "name": "Puebla",
+        "Goals": 0,
+        "Shots": 10,
+        "Shots on Target": 1,
+        "Corners": 0,
+        "Fouls": 9,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876958",
+      "date": "2026-09-27",
+      "kickoff": "2026-09-27T18:00Z",
+      "home": {
+        "name": "Pumas UNAM",
+        "Goals": 2,
+        "Shots": 15,
+        "Shots on Target": 6,
+        "Corners": 11,
+        "Fouls": 12,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 4,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Atlético de San Luis",
+        "Goals": 3,
+        "Shots": 11,
+        "Shots on Target": 7,
+        "Corners": 2,
+        "Fouls": 10,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876957",
+      "date": "2026-09-27",
+      "kickoff": "2026-09-28T01:00Z",
+      "home": {
+        "name": "León",
+        "Goals": 2,
+        "Shots": 7,
+        "Shots on Target": 3,
+        "Corners": 1,
+        "Fouls": 14,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 6,
+        "Cards": 2
+      },
+      "away": {
+        "name": "FC Juarez",
+        "Goals": 1,
+        "Shots": 9,
+        "Shots on Target": 1,
+        "Corners": 4,
+        "Fouls": 14,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876956",
+      "date": "2026-09-27",
+      "kickoff": "2026-09-28T03:10Z",
+      "home": {
+        "name": "Necaxa",
+        "Goals": 2,
+        "Shots": 15,
+        "Shots on Target": 6,
+        "Corners": 3,
+        "Fouls": 16,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 3
+      },
+      "away": {
+        "name": "América",
+        "Goals": 4,
+        "Shots": 20,
+        "Shots on Target": 9,
+        "Corners": 5,
+        "Fouls": 6,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 2
+      }
+    }
+  ],
+  "grades": [
+    {
+      "id": "p01",
+      "date": "2026-09-12",
+      "label": "Atlas U10.5 shots",
+      "actual": 10,
+      "result": "win",
+      "sourceEventId": "401876982"
+    },
+    {
+      "id": "p02",
+      "date": "2026-09-12",
+      "label": "Toluca O4.5 SOT",
+      "actual": 6,
+      "result": "win",
+      "sourceEventId": "401876982"
+    },
+    {
+      "id": "p03",
+      "date": "2026-09-12",
+      "label": "Toluca–Atlas O24.5 fouls",
+      "actual": 24,
+      "result": "loss",
+      "sourceEventId": "401876982"
+    },
+    {
+      "id": "p04",
+      "date": "2026-09-12",
+      "label": "Atlas U3.5 corners",
+      "actual": 8,
+      "result": "loss",
+      "sourceEventId": "401876982"
+    },
+    {
+      "id": "p05",
+      "date": "2026-09-12",
+      "label": "Monterrey O5.5 SOT",
+      "actual": 6,
+      "result": "win",
+      "sourceEventId": "401876974"
+    },
+    {
+      "id": "p06",
+      "date": "2026-09-12",
+      "label": "Tigres U14.5 shots",
+      "actual": 5,
+      "result": "win",
+      "sourceEventId": "401876974"
+    },
+    {
+      "id": "p07",
+      "date": "2026-09-12",
+      "label": "Tigres U1.5 goals",
+      "actual": 0,
+      "result": "win",
+      "sourceEventId": "401876974"
+    },
+    {
+      "id": "p08",
+      "date": "2026-09-12",
+      "label": "Monterrey–Tigres U3.5 offsides",
+      "actual": 1,
+      "result": "win",
+      "sourceEventId": "401876974"
+    },
+    {
+      "id": "p09",
+      "date": "2026-09-12",
+      "label": "Cruz Azul–América O23.5 fouls",
+      "actual": 19,
+      "result": "loss",
+      "sourceEventId": "401876981"
+    },
+    {
+      "id": "p10",
+      "date": "2026-09-12",
+      "label": "Cruz Azul–América U4.5 offsides",
+      "actual": 3,
+      "result": "win",
+      "sourceEventId": "401876981"
+    },
+    {
+      "id": "p11",
+      "date": "2026-09-12",
+      "label": "América U12.5 shots",
+      "actual": 28,
+      "result": "loss",
+      "sourceEventId": "401876981"
+    },
+    {
+      "id": "p12",
+      "date": "2026-09-12",
+      "label": "Cruz Azul–América O8.5 corners",
+      "actual": 15,
+      "result": "win",
+      "sourceEventId": "401876981"
+    },
+    {
+      "id": "p13",
+      "date": "2026-09-13",
+      "label": "Pumas U3.5 corners",
+      "actual": 4,
+      "result": "loss",
+      "sourceEventId": "401876975"
+    }
+  ],
+  "standings": {
+    "Toluca": [
+      20,
+      10,
+      23,
+      12
+    ],
+    "América": [
+      20,
+      9,
+      21,
+      10
+    ],
+    "Guadalajara": [
+      18,
+      10,
+      17,
+      10
+    ],
+    "Querétaro": [
+      17,
+      9,
+      13,
+      8
+    ],
+    "León": [
+      17,
+      10,
+      14,
+      11
+    ],
+    "Atlas": [
+      17,
+      10,
+      16,
+      17
+    ],
+    "Cruz Azul": [
+      16,
+      10,
+      19,
+      18
+    ],
+    "Tijuana": [
+      14,
+      9,
+      14,
+      13
+    ],
+    "Puebla": [
+      14,
+      10,
+      11,
+      12
+    ],
+    "Monterrey": [
+      13,
+      9,
+      16,
+      14
+    ],
+    "Pachuca": [
+      12,
+      10,
+      15,
+      11
+    ],
+    "Pumas UNAM": [
+      12,
+      10,
+      14,
+      16
+    ],
+    "Atlético de San Luis": [
+      12,
+      10,
+      14,
+      18
+    ],
+    "Atlante": [
+      11,
+      10,
+      12,
+      15
+    ],
+    "Tigres UANL": [
+      10,
+      10,
+      10,
+      13
+    ],
+    "Santos": [
+      10,
+      10,
+      10,
+      15
+    ],
+    "Necaxa": [
+      8,
+      10,
+      12,
+      20
+    ],
+    "FC Juarez": [
+      3,
+      10,
+      7,
+      25
+    ]
+  }
+}

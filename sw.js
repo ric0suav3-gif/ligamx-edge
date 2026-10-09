@@ -1,4 +1,4 @@
-const BUILD='ligamx-edge-v311-20260925';
+const BUILD='ligamx-edge-v32-20261009';
 self.addEventListener('install',()=>self.skipWaiting());
 self.addEventListener('activate',event=>{
   event.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
