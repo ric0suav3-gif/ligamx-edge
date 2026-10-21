@@ -635,7 +635,7 @@ const PM_CACHE={};
 function model1X2(home,away){
   const {h,a,r}=lambdas('Goals',home,away);
   const dh=dist(h,r), da=dist(a,r); let pH=0,pD=0;
-  for(let i=0;i<dh.length;i++){ let c=0; for(let j=0;j<i;j++) c+=da[j]; pH+=dh[i]*c; pD+=dh[i]*da[i]; }
+  for(let i=0;i<dh.length;i++){ let c=0; for(let j=0;j<Math.min(i,da.length);j++) c+=da[j]; pH+=dh[i]*c; pD+=dh[i]*(da[i]||0); }
   return {H:pH,D:pD,A:1-pH-pD};
 }
 async function polymarketOdds(home,away,date){
@@ -685,7 +685,7 @@ async function valueSection(home,away){
   const {h,a,r}=lambdas('Goals',home,away);
   const dh=dist(h,r), da=dist(a,r), dt=conv(dh,da);
   let pH=0,pD=0;
-  for(let i=0;i<dh.length;i++){ let c=0; for(let j=0;j<i;j++) c+=da[j]; pH+=dh[i]*c; pD+=dh[i]*da[i]; }
+  for(let i=0;i<dh.length;i++){ let c=0; for(let j=0;j<Math.min(i,da.length);j++) c+=da[j]; pH+=dh[i]*c; pD+=dh[i]*(da[i]||0); }
   let pA=1-pH-pD;
   try{ const pm=await polymarketOdds(home,away,(FIX.find(x=>String(x.id)===String(CUR_EVENT))||{}).date||dateInTZ('America/Mexico_City'));
     if(pm&&!pm.live){ const mo={H:pH,D:pD,A:pA}, w=pm.liq>=50000?0.70:0.50; pH=w*pm.H+(1-w)*mo.H; pD=w*pm.D+(1-w)*mo.D; pA=w*pm.A+(1-w)*mo.A; provider=(provider||'casa')+' · 1X2 mezclado con Polymarket'; } }catch(e){}
@@ -732,7 +732,7 @@ function collectPicks(home,away){
     }
     if(H2H_STATS.includes(s)){
       let pH=0,pT=0;
-      for(let i=0;i<dh.length;i++){ let c=0; for(let j=0;j<i;j++) c+=da[j]; pH+=dh[i]*c; pT+=dh[i]*da[i]; }
+      for(let i=0;i<dh.length;i++){ let c=0; for(let j=0;j<Math.min(i,da.length);j++) c+=da[j]; pH+=dh[i]*c; pT+=dh[i]*da[i]; }
       push(`H2H ${s.toLowerCase()}: ${short(home)}`,pH,fam);
       push(`H2H ${s.toLowerCase()}: ${short(away)}`,1-pH-pT,fam);
     }
