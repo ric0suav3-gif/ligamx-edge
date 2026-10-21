@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BASE_PATH = ROOT / "data" / "ligamx_base_v30.json"
 SNAPSHOT_PATH = ROOT / "data" / "ligamx_espn_latest.json"
 TZ = ZoneInfo("America/Mexico_City")
-ALPHAS = {"Goals": 0.15, "Shots": 0.15, "Shots on Target": 0.15, "Corners": 0.15, "Fouls": 0.15, "Offsides": 0.0539, "Yellow": 0.0539, "Red": 0.0539, "Cards": 0.0539}
+ALPHAS = {"Goals": 0.15, "Shots": 0.15, "Shots on Target": 0.15, "Corners": 0.15, "Fouls": 0.15, "Offsides": 0.15, "Yellow": 0.0539, "Red": 0.0539, "Cards": 0.0539}
 STATS = {
     "Shots": "totalShots",
     "Shots on Target": "shotsOnTarget",
@@ -40,6 +40,12 @@ ALIASES = {
     "queretaro": "Querétaro",
     "tijuana": "Tijuana",
 }
+# v33: running season-level bias correction, shrunk toward 1 with BIAS_N0 games of prior.
+# Walk-forward on the 58 Apertura 2026 games (scored from game 21 on) it lowered
+# log loss for these four stats and raised it for goals, offsides and cards, so
+# only these four use it.
+BIAS_STATS = ("Shots", "Shots on Target", "Corners", "Fouls")
+BIAS_N0 = 20
 PICKS = [
     ("p01", "2026-09-12", "Toluca", "Atlas", "away", "Shots", "under", 10.5, "Atlas U10.5 shots"),
     ("p02", "2026-09-12", "Toluca", "Atlas", "home", "Shots on Target", "over", 4.5, "Toluca O4.5 SOT"),
@@ -58,7 +64,7 @@ PICKS = [
 
 
 def fetch(url: str) -> dict:
-    request = urllib.request.Request(url, headers={"User-Agent": "ligamx-edge/32"})
+    request = urllib.request.Request(url, headers={"User-Agent": "ligamx-edge/33"})
     with urllib.request.urlopen(request, timeout=25) as response:
         return json.load(response)
 
@@ -134,6 +140,7 @@ def update_model(base: dict, matches: list[dict], today: str, grades: list[dict]
     model = deepcopy(base)
     cutoff = base["meta"]["date_range"][1]
     added = 0
+    bias = {stat: [0.0, 0.0] for stat in BIAS_STATS}
     for match in matches:
         if not (cutoff < match["date"] < today):
             continue
@@ -144,6 +151,13 @@ def update_model(base: dict, matches: list[dict], today: str, grades: list[dict]
             hv, av = home.get(stat), away.get(stat)
             if hv is None or av is None or stat not in hsplit or stat not in asplit:
                 continue
+            if stat in bias:
+                lg, w = model["league"][stat], model["shrinkage"].get(stat, 0.5)
+                adj = base.get("season_adj", {}).get(stat, 1)
+                hm = (w * hsplit[stat]["for"] * asplit[stat]["against"] / lg["home"] + (1 - w) * lg["home"]) * adj
+                am = (w * asplit[stat]["for"] * hsplit[stat]["against"] / lg["away"] + (1 - w) * lg["away"]) * adj
+                bias[stat][0] += hv + av
+                bias[stat][1] += hm + am
             alpha = ALPHAS[stat]
             for split, own, opp in ((hsplit, hv, av), (asplit, av, hv)):
                 split[stat]["for"] = (1 - alpha) * split[stat]["for"] + alpha * own
@@ -151,9 +165,16 @@ def update_model(base: dict, matches: list[dict], today: str, grades: list[dict]
         hsplit["n"] += 1
         asplit["n"] += 1
         added += 1
+    season_bias = {}
+    for stat, (actual, predicted) in bias.items():
+        if predicted > 0:
+            k = 1 + (actual / predicted - 1) * added / (added + BIAS_N0)
+            season_bias[stat] = {"actual_over_pred": round(actual / predicted, 4), "applied": round(k, 4), "games": added}
+            model.setdefault("season_adj", {})[stat] = round(base.get("season_adj", {}).get(stat, 1) * k, 4)
     meta = model["meta"]
+    meta["season_bias"] = season_bias
     meta.update({
-        "version": "v32-espn", "built": today, "ui_build": today,
+        "version": "v33-espn", "built": today, "ui_build": today,
         "matches": base["meta"]["matches"] + added,
         "date_range": [base["meta"]["date_range"][0], max((x["date"] for x in matches if x["date"] < today), default=cutoff)],
         "fixture_source": "ESPN public scoreboard", "stat_source": "ESPN match box scores",
@@ -195,21 +216,67 @@ def replace_embedded(model: dict, standings: dict) -> None:
         path.write_text(content, encoding="utf-8")
 
 
+def offline_data(path: Path, teams: dict, cutoff: str, today: str) -> tuple[list[dict], dict, list[dict]]:
+    """Merge the saved snapshot with a browser-fetched ESPN export (same match schema).
+
+    Used when this machine cannot reach site.api.espn.com directly. Matches are
+    keyed by ESPN event id, so overlapping exports never double-count a game.
+    """
+    export = json.loads(path.read_text(encoding="utf-8"))
+    by_id = {}
+    if SNAPSHOT_PATH.exists():
+        for m in json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))["matches"]:
+            by_id[m["id"]] = m
+    for ev in export["events"]:
+        home, away = dict(ev["home"]), dict(ev["away"])
+        home["name"], away["name"] = name(home["name"], teams), name(away["name"], teams)
+        if not home["name"] or not away["name"]:
+            continue
+        kick = ev["kickoff"]
+        date = datetime.fromisoformat(kick.replace("Z", "+00:00")).astimezone(TZ).date().isoformat()
+        by_id[ev["id"]] = {"id": ev["id"], "date": date, "kickoff": kick, "home": home, "away": away, "referee": ev.get("referee")}
+    matches = [m for m in by_id.values() if cutoff < m["date"] < today]
+    standings = {name(t, teams) or t: v for t, v in export["standings"].items()}
+    return matches, standings, export.get("fixtures", [])
+
+
 def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--offline", type=Path, help="browser-fetched ESPN export to use instead of calling ESPN")
+    parser.add_argument("--today", help="override today's Mexico City date (YYYY-MM-DD)")
+    args = parser.parse_args()
     base = load_base()
-    today = datetime.now(TZ).date().isoformat()
-    board = fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/mex.1/scoreboard?dates=2026&limit=500")
+    today = args.today or datetime.now(TZ).date().isoformat()
     cutoff = base["meta"]["date_range"][1]
-    events = [e for e in board["events"] if e["status"]["type"]["completed"] and cutoff < local_date(e) < today]
-    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
-        matches = [x for x in pool.map(lambda e: match_data(e, base["teams"]), events) if x]
+    fixtures: list[dict] = []
+    if args.offline:
+        matches, standings, fixtures = offline_data(args.offline, base["teams"], cutoff, today)
+    else:
+        board = fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/mex.1/scoreboard?dates=2026&limit=500")
+        events = [e for e in board["events"] if e["status"]["type"]["completed"] and cutoff < local_date(e) < today]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+            matches = [x for x in pool.map(lambda e: match_data(e, base["teams"]), events) if x]
+        standings = standings_data(base["teams"])
+        for e in board["events"]:
+            if e["status"]["type"]["completed"]:
+                continue
+            sides = {c["homeAway"]: name(c["team"]["displayName"], base["teams"]) for c in e["competitions"][0]["competitors"]}
+            if sides.get("home") and sides.get("away"):
+                fixtures.append({"kickoff": e["date"], "home": sides["home"], "away": sides["away"]})
     matches.sort(key=lambda x: (x["kickoff"], x["id"]))
     grades = grade(matches)
     model = update_model(base, matches, today, grades)
-    standings = standings_data(base["teams"])
-    SNAPSHOT_PATH.write_text(json.dumps({"source": "ESPN", "generatedAt": datetime.now(timezone.utc).isoformat(), "todayMexico": today, "matches": matches, "grades": grades, "standings": standings}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    from liguilla_stakes import attach_stakes
+
+    attach_stakes(model, standings, fixtures, today)
+    SNAPSHOT_PATH.write_text(json.dumps({"source": "ESPN", "generatedAt": datetime.now(timezone.utc).isoformat(), "todayMexico": today, "matches": matches, "grades": grades, "standings": standings, "fixtures": fixtures, "stakes": model.get("stakes")}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     replace_embedded(model, standings)
     print(f"Updated {len(matches)} completed Liga MX matches through {model['meta']['date_range'][1]}")
+    st = model.get("stakes", {}).get("teams", {})
+    for team, v in sorted(st.items(), key=lambda kv: -kv[1]["p_top8"]):
+        print(f"  {team:22} pts={v['pts']:2} top8={v['p_top8']:.2f} leverage={v['leverage']:.2f} motivation={v['motivation']:.2f}")
     print(f"Saved September picks: {sum(x['result']=='win' for x in grades)}W-{sum(x['result']=='loss' for x in grades)}L-{sum(x['result']=='na' for x in grades)}NA")
     for x in grades:
         print(f"{x['id']} {x['result']:4} actual={x['actual']!s:>3} {x['label']}")

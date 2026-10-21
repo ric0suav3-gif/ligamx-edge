@@ -1,6 +1,12 @@
-"""Print current no-key model means and fair prices for the two Friday games."""
+"""Print model means and fair prices for one or more games.
+
+    python scripts/preview_ligamx.py "Tigres UANL" "León" "Toluca" "Tijuana"
+
+(No liguilla motivation shift here; scripts/edge_card.py applies it.)
+"""
 
 import json
+import sys
 import math
 import re
 from pathlib import Path
@@ -47,7 +53,8 @@ def total_dist(a, b):
     return out
 
 
-for home, away in (("Puebla", "León"), ("Tigres UANL", "Toluca")):
+_args = sys.argv[1:] or ["Tigres UANL", "León"]
+for home, away in zip(_args[0::2], _args[1::2]):
     print(f"\n{home} vs {away}")
     for stat in ("Goals", "Shots", "Shots on Target", "Corners", "Fouls", "Cards", "Offsides"):
         h, a, r = rates(stat, home, away)

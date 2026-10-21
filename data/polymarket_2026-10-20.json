@@ -1,0 +1,22 @@
+{
+  "source": "Polymarket Gamma API (gamma-api.polymarket.com/events), outcome mid prices",
+  "pulledAtMexico": "2026-10-20T20:20",
+  "note": "Prices for GDL-NCX, ASL-QRO, JUA-ATL were in-play at pull time and are excluded from pre-match use.",
+  "games": [
+    {"date":"2026-10-20","home":"Tigres UANL","away":"León","slug":"mex-tig-leo-2026-10-20","H":0.465,"D":0.275,"A":0.265,"volume":38673,"liquidity":464208},
+    {"date":"2026-10-21","home":"Atlas","away":"América","slug":"mex-atl-ame-2026-10-21","H":0.275,"D":0.255,"A":0.465,"volume":11,"liquidity":128930},
+    {"date":"2026-10-21","home":"Puebla","away":"Monterrey","slug":"mex-pue-mon1-2026-10-21","H":0.235,"D":0.260,"A":0.515,"volume":2794,"liquidity":118858},
+    {"date":"2026-10-21","home":"Toluca","away":"Tijuana","slug":"mex-tol-tij-2026-10-21","H":0.705,"D":0.175,"A":0.135,"volume":3872,"liquidity":138331},
+    {"date":"2026-10-21","home":"Pachuca","away":"Cruz Azul","slug":"mex-pac-caz-2026-10-21","H":0.325,"D":0.260,"A":0.420,"volume":117,"liquidity":106162},
+    {"date":"2026-10-21","home":"Santos","away":"Pumas UNAM","slug":"mex-san-pum-2026-10-21","H":0.425,"D":0.265,"A":0.315,"volume":130,"liquidity":120720},
+    {"date":"2026-10-23","home":"Necaxa","away":"FC Juarez","slug":"mex-nec-jua-2026-10-23","H":0.555,"D":0.235,"A":0.210,"volume":73,"liquidity":36593},
+    {"date":"2026-10-23","home":"Atlante","away":"Atlético de San Luis","slug":"mex-atla-asl-2026-10-23","H":0.430,"D":0.260,"A":0.320,"volume":30,"liquidity":33951},
+    {"date":"2026-10-24","home":"León","away":"Toluca","slug":"mex-leo-tol-2026-10-24","H":0.285,"D":0.245,"A":0.445,"volume":245,"liquidity":17793},
+    {"date":"2026-10-24","home":"Monterrey","away":"Guadalajara","slug":"mex-mon1-gua-2026-10-24","H":0.375,"D":0.270,"A":0.365,"volume":8,"liquidity":16417},
+    {"date":"2026-10-24","home":"Pumas UNAM","away":"Tigres UANL","slug":"mex-pum-tig-2026-10-24","H":0.325,"D":0.280,"A":0.405,"volume":401,"liquidity":17498},
+    {"date":"2026-10-25","home":"Atlas","away":"Puebla","slug":"mex-atl-pue-2026-10-25","H":0.555,"D":0.245,"A":0.210,"volume":134,"liquidity":14268},
+    {"date":"2026-10-25","home":"Querétaro","away":"Cruz Azul","slug":"mex-que-caz-2026-10-25","H":0.280,"D":0.245,"A":0.450,"volume":0,"liquidity":14171},
+    {"date":"2026-10-25","home":"América","away":"Pachuca","slug":"mex-ame-pac-2026-10-25","H":0.580,"D":0.220,"A":0.190,"volume":0,"liquidity":14572},
+    {"date":"2026-10-25","home":"Tijuana","away":"Santos","slug":"mex-tij-san-2026-10-25","H":0.490,"D":0.250,"A":0.260,"volume":0,"liquidity":14434}
+  ]
+}
