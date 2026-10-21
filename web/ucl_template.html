@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b1210">
+<title>UCL Edge V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1210;--surface:#121b18;--surface2:#18241f;--line:#22322b;--text:#e8efe9;--muted:#8fa39a;--amber:#f5b53f;--amber-dim:#8a6a2a;--home:#7fd1a8;--away:#9db4e8;--green:#4ade80;--red:#f87171;--radius:14px;font-size:16px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;min-height:100vh;padding-bottom:90px;max-width:640px;margin:0 auto}
+.cond{font-family:'Barlow Condensed',system-ui,sans-serif}
+header{padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 10px;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+header h1{font-family:'Barlow Condensed';font-weight:700;font-size:1.5rem;letter-spacing:.04em;text-transform:uppercase}
+header h1 span{color:var(--amber)}
+.tag{font-size:.62rem;border:1px solid var(--amber-dim);border-radius:6px;padding:2px 5px;vertical-align:middle}
+#dataDate{font-size:.7rem;color:var(--muted);text-align:right}
+.board{margin:6px 12px 12px;background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+.sel{width:100%;appearance:none;background:var(--bg);color:var(--text);border:1px solid var(--line);border-bottom:3px solid var(--amber-dim);border-radius:10px;padding:12px 10px;font-family:'Barlow Condensed';font-weight:600;font-size:1.05rem;letter-spacing:.02em;text-align:center}
+.teams{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-top:10px;text-align:center;font-family:'Barlow Condensed';font-weight:700;font-size:1.15rem;letter-spacing:.03em;text-transform:uppercase}
+.teams .h{color:var(--home)}.teams .a{color:var(--away)}.teams .v{color:var(--muted);font-size:.9rem}
+.venueNote{margin-top:6px;text-align:center;font-size:.7rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.tabs{display:flex;gap:6px;margin:0 12px 10px;overflow-x:auto}
+.tab{flex:1;min-width:56px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:10px;padding:10px 4px;font-family:'Barlow Condensed';font-weight:600;font-size:.9rem;letter-spacing:.05em;text-transform:uppercase}
+.tab.on{background:var(--amber);color:#1a1408;border-color:var(--amber)}
+#markets,#ctx{padding:0 12px;display:flex;flex-direction:column;gap:10px}
+#ctx{margin-bottom:10px}
+.ticket{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+.tHead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:8px}
+.tName{font-family:'Barlow Condensed';font-weight:600;font-size:1.05rem;letter-spacing:.03em;text-transform:uppercase}
+.tLam{font-size:.72rem;color:var(--muted);line-height:1.45}
+.tLam b{color:var(--text);font-weight:600}
+.lineRow{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;align-items:stretch}
+.stepper{display:flex;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stepper button{background:none;border:none;color:var(--amber);font-size:1.25rem;width:34px;height:100%;font-weight:600}
+.stepper .val{min-width:44px;text-align:center;font-family:'Barlow Condensed';font-weight:700;font-size:1.2rem}
+.odd{border-radius:10px;border:1px solid var(--line);background:var(--surface2);padding:6px 4px;text-align:center}
+.odd .lab{font-size:.62rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.odd .px{font-family:'Barlow Condensed';font-weight:700;font-size:1.35rem;line-height:1.15}
+.odd .pc{font-size:.62rem;color:var(--muted)}
+.odd.fav .px{color:var(--amber)}
+.h3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:4px}
+table.mk{width:100%;border-collapse:collapse;font-size:.78rem}
+table.mk th,table.mk td{padding:5px 4px;border-bottom:1px solid var(--line);text-align:right}
+table.mk th:first-child,table.mk td:first-child{text-align:left;color:var(--muted)}
+table.mk th{font-size:.62rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+table.mk tr.bl td{color:var(--amber);font-weight:600}
+.pill{display:inline-block;font-size:.62rem;border-radius:999px;padding:2px 7px;border:1px solid var(--line);color:var(--muted)}
+.pill.live{border-color:var(--green);color:var(--green)}.pill.warn{border-color:var(--amber);color:var(--amber)}
+.pickRow{display:grid;grid-template-columns:auto 1fr auto;gap:8px;margin-top:6px;align-items:center}
+.plus{background:var(--surface2);border:1px solid var(--line);color:var(--amber);border-radius:8px;width:34px;height:34px;font-size:1.1rem;font-weight:700}
+.btn{background:var(--amber);color:#1a1408;border:none;border-radius:10px;padding:12px;font-family:'Barlow Condensed';font-weight:700;font-size:1rem;letter-spacing:.05em;text-transform:uppercase}
+.btn.ghost{background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+.view{display:none;padding:0 12px;flex-direction:column;gap:10px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(11,18,16,.95);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:8px 0 calc(env(safe-area-inset-bottom,0px) + 8px)}
+nav button{flex:1;background:none;border:none;color:var(--muted);font-family:'Barlow Condensed';font-weight:600;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;padding:8px 0}
+nav button.on{color:var(--amber)}
+.note{margin:14px 12px 0;font-size:.68rem;color:var(--muted);line-height:1.5;text-align:center}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:3px}.bar i{display:block;height:100%;background:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>UCL <span>Edge</span> <span class="tag">V2</span></h1>
+  <div id="dataDate"></div>
+</header>
+
+<div id="mainView">
+  <div class="board">
+    <select id="fixSel" class="sel"></select>
+    <div class="teams"><div class="h" id="tH"></div><div class="v">VS</div><div class="a" id="tA"></div></div>
+    <div class="venueNote" id="venue"></div>
+  </div>
+  <div id="ctx"></div>
+  <div class="tabs">
+    <button class="tab on" data-mode="picks">Picks</button>
+    <button class="tab" data-mode="total">Totales</button>
+    <button class="tab" data-mode="team">Equipo</button>
+    <button class="tab" data-mode="h2h">H2H</button>
+    <button class="tab" data-mode="goles">Goles</button>
+  </div>
+  <div id="markets"></div>
+  <p class="note">Cuotas justas sin margen. Solo hay valor si tu casa paga MÁS que la justa (idealmente 5%+ en props).<br>Fuerza del partido = mercado (DraftKings vía ESPN + Polymarket). Estilo de cada equipo = su liga local en ESPN. Ajustado sobre partidos de UCL con momios desde ago-2025.</p>
+</div>
+<div id="regView" class="view"></div>
+<div id="dataView" class="view"></div>
+
+<nav>
+  <button class="on" data-view="mainView">Mercados</button>
+  <button data-view="regView">Registro</button>
+  <button data-view="dataView">Datos</button>
+</nav>
+
+<script>
+/*__MODEL_JS__*/
+</script>
+<script>
+const UCL = /*__DATA__*/;
+const LAB={Goals:'Goles',Shots:'Tiros','Shots on Target':'Tiros a puerta',Corners:'Córners',Fouls:'Faltas',Cards:'Tarjetas',Offsides:'Fueras de juego'};
+const SHORT={Goals:'goles',Shots:'tiros','Shots on Target':'SOT',Corners:'córners',Fouls:'faltas',Cards:'tarjetas',Offsides:'offsides'};
+const ORDER=['Goals','Shots','Shots on Target','Corners','Fouls','Cards','Offsides'];
+const $=id=>document.getElementById(id);
+const pct=x=>(x*100).toFixed(0)+'%';
+const fair=p=>p>0.001?(1/p).toFixed(2):'—';
+const am=x=>x==null?'—':(x>0?'+':'')+x;
+const amDec=x=>x==null?null:(x>0?1+x/100:1+100/(-x));
+const mainLine=m=>Math.max(0.5,Math.round(m-0.5)+0.5);
+const tz='America/Mexico_City';
+const iso=x=>x.replace(/T(\d\d:\d\d)Z$/,'T$1:00Z');
+const hhmm=x=>new Date(iso(x)).toLocaleTimeString('es-MX',{timeZone:tz,hour:'numeric',minute:'2-digit'});
+let FI=0, MODE='picks', LINES={}, LIVE={};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+function fx(){ return UCL.fixtures[FI]; }
+function calc(f){
+  const mk=UCLM.blendMarket(f,0.5); if(!mk) return null;
+  const mu=UCLM.means(UCL,f,mk), D={};
+  for(const s of ORDER){ const m=mu[s]; if(!m) continue; const dh=UCLM.dist(m.home,m.r), da=UCLM.dist(m.away,m.r); D[s]={m,dh,da,dt:UCLM.conv(dh,da)}; }
+  return {mk,D};
+}
+function odd(lab,p,best){ return `<div class="odd ${best?'fav':''}"><div class="lab">${lab}</div><div class="px cond">${fair(p)}</div><div class="pc">${(p*100).toFixed(1)}%</div></div>`; }
+function stepTicket(key,name,sub,d,dflt){
+  if(!(key in LINES)) LINES[key]=dflt;
+  const L=LINES[key], po=UCLM.pOver(d,L), pu=1-po;
+  return `<div class="ticket"><div class="tHead"><div class="tName">${name}</div><div class="tLam">${sub}</div></div>
+   <div class="lineRow"><div class="stepper"><button onclick="bump('${key}',-1)">−</button><div class="val cond">${L}</div><button onclick="bump('${key}',1)">+</button></div>
+   ${odd('Más de',po,po>pu)}${odd('Menos de',pu,pu>=po)}</div></div>`;
+}
+function bump(k,d){ LINES[k]=Math.max(0.5,LINES[k]+d); render(); }
+function two(name,sub,cells){ const b=Math.max(...cells.map(c=>c[1])); return `<div class="ticket"><div class="tHead"><div class="tName">${name}</div><div class="tLam">${sub||''}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${cells.map(c=>odd(c[0],c[1],c[1]===b)).join('')}</div></div>`; }
+function three(name,sub,cells){ const b=Math.max(...cells.map(c=>c[1])); return `<div class="ticket"><div class="tHead"><div class="tName">${name}</div><div class="tLam">${sub||''}</div></div><div class="h3col">${cells.map(c=>odd(c[0],c[1],c[1]===b)).join('')}</div></div>`; }
+
+function context(f,C){
+  const mk=C.mk, pmT=f.pm?f.pm.H+f.pm.D+f.pm.A:1, live=LIVE[f.id]||{};
+  const rows=[];
+  if(f.dk) rows.push(`<tr><td>DraftKings ${f.dk.ml.map(am).join(' / ')}</td><td>${pct(f.dk.H)}</td><td>${pct(f.dk.D)}</td><td>${pct(f.dk.A)}</td></tr>`);
+  if(f.pm) rows.push(`<tr><td>Polymarket · $${(f.pm.liq/1e6).toFixed(1)}M</td><td>${pct(f.pm.H/pmT)}</td><td>${pct(f.pm.D/pmT)}</td><td>${pct(f.pm.A/pmT)}</td></tr>`);
+  rows.push(`<tr class="bl"><td>Mezcla → justa</td><td>${pct(mk.H)} · ${fair(mk.H)}</td><td>${pct(mk.D)} · ${fair(mk.D)}</td><td>${pct(mk.A)} · ${fair(mk.A)}</td></tr>`);
+  if(f.public) rows.push(`<tr><td>Público boletos / dinero</td><td>${f.public.ml.H[0]}% / ${f.public.ml.H[1]}%</td><td>${f.public.ml.D[0]}% / ${f.public.ml.D[1]}%</td><td>${f.public.ml.A[0]}% / ${f.public.ml.A[1]}%</td></tr>`);
+  const pt=f.public?`Público en el total: <b>${f.public.tot.O[0]}%</b> de boletos al over ${f.public.tot.line} (dinero ${f.public.tot.O[1]}%).`:'';
+  const notes=[];
+  for(const s of ['Shots','Shots on Target','Corners','Fouls','Cards']){ const st=f.style[s]; if(!st) continue;
+    for(const [side,nm] of [['home',f.home],['away',f.away]]){ const [a,d,ok]=st[side]; if(!ok) continue;
+      if(Math.abs(a)>=0.12) notes.push(`${nm} ${a>0?'genera más':'genera menos'} ${SHORT[s]} de lo que su nivel indica (${a>0?'+':''}${(a*100).toFixed(0)}%)`);
+      if(Math.abs(d)>=0.12) notes.push(`${nm} ${d>0?'concede más':'concede menos'} ${SHORT[s]} (${d>0?'+':''}${(d*100).toFixed(0)}%)`); } }
+  if(!f.info.home.league) notes.push(`${f.home}: sin box scores de su liga en ESPN, estilo neutral`);
+  if(!f.info.away.league) notes.push(`${f.away}: sin box scores de su liga en ESPN (Ucrania), estilo neutral`);
+  const st=live.state==='in'?'<span class="pill warn">EN JUEGO · precios pre-partido</span>':live.state==='post'?'<span class="pill warn">TERMINADO</span>':live.ok?'<span class="pill live">momios en vivo</span>':'<span class="pill">snapshot '+hhmm(UCL.meta.built.slice(0,16)+'Z')+'</span>';
+  return `<div class="ticket"><div class="tHead"><div class="tName">Mercado 1X2</div>${st}</div>
+   <table class="mk"><tr><th></th><th>${f.homeAbbr}</th><th>Empate</th><th>${f.awayAbbr}</th></tr>${rows.join('')}</table>
+   <div class="tLam" style="margin-top:8px">Goles esperados <b>${mk.lh.toFixed(2)} – ${mk.la.toFixed(2)}</b> (total ${(mk.lh+mk.la).toFixed(2)}). ${pt}</div>
+   ${notes.length?`<div class="tLam" style="margin-top:6px">Estilo: ${notes.join('; ')}.</div>`:''}</div>`;
+}
+
+function candidates(f,C){
+  const out=[], add=(name,p,fam)=>{ if(p>0.02&&p<0.98) out.push({name,p,fair:1/p,fam}); };
+  for(const s of ORDER){ const X=C.D[s]; if(!X) continue; const tot=X.m.home+X.m.away;
+    for(let L=Math.max(0.5,Math.floor(tot)-3.5);L<=tot+3.5;L++){ const po=UCLM.pOver(X.dt,L); add(`${LAB[s]} más de ${L}`,po,s); add(`${LAB[s]} menos de ${L}`,1-po,s); }
+    for(const [side,nm,m,d] of [['h',f.home,X.m.home,X.dh],['a',f.away,X.m.away,X.da]]){
+      for(let L=Math.max(0.5,Math.floor(m)-2.5);L<=m+2.5;L++){ const po=UCLM.pOver(d,L); add(`${nm} ${SHORT[s]} más de ${L}`,po,s); add(`${nm} ${SHORT[s]} menos de ${L}`,1-po,s); } }
+  }
+  return out;
+}
+function pickCard(title,sub,items,note){
+  const rows=items.length?items.map(it=>`<div class="pickRow"><button class="plus" onclick='savePick(${JSON.stringify(it.name)},${it.fair.toFixed(3)},${it.p.toFixed(4)})'>＋</button>
+    <div style="font-size:.85rem">${it.name} <span class="tLam">· ${SHORT[it.fam]||''}</span></div>
+    <div class="odd fav" style="min-width:84px"><div class="px cond">${it.fair.toFixed(2)}</div><div class="pc">${(it.p*100).toFixed(0)}%</div></div></div>`).join('')
+    :'<div class="tLam" style="margin-top:6px">Sin candidatos en este rango.</div>';
+  return `<div class="ticket"><div class="tHead"><div class="tName">${title}</div><div class="tLam">${sub}</div></div>${rows}${note?`<div class="tLam" style="margin-top:8px">${note}</div>`:''}</div>`;
+}
+function valueVsBook(f,C){
+  if(!f.dk) return '';
+  const mk=C.mk, rows=[], add=(name,p,dec)=>{ if(!dec) return; const e=dec*p-1; rows.push({name:`${name} — DK ${dec.toFixed(2)}${e>0.02?' 🟢':''}`,p,fair:1/p,fam:'Goals',edge:e}); };
+  add(`Gana ${f.home}`,mk.H,amDec(f.dk.ml[0])); add('Empate',mk.D,amDec(f.dk.ml[1])); add(`Gana ${f.away}`,mk.A,amDec(f.dk.ml[2]));
+  if(f.dk.line!=null&&f.dk.ouOdds){ const po=UCLM.pOver(C.D.Goals.dt,f.dk.line); add(`Más de ${f.dk.line} goles`,po,amDec(f.dk.ouOdds[0])); add(`Menos de ${f.dk.line} goles`,1-po,amDec(f.dk.ouOdds[1])); }
+  return pickCard('Valor vs DraftKings','justa vs precio real',rows.map(r=>({...r,name:r.name+` · ${(r.edge*100).toFixed(1)}%`})),'🟢 = la casa paga más que la justa (edge > 2%). En 1X2 la justa es casi el propio mercado, así que rara vez habrá valor aquí: el edge está en los props.');
+}
+
+function render(){
+  const f=fx(), C=calc(f);
+  $('tH').textContent=f.home; $('tA').textContent=f.away;
+  $('venue').textContent=`${hhmm(f.kickoff)} CDMX · ${f.venue}`;
+  if(!C){ $('ctx').innerHTML='<div class="ticket">Sin momios para este partido.</div>'; $('markets').innerHTML=''; return; }
+  $('ctx').innerHTML=context(f,C);
+  let h='';
+  if(MODE==='total'){
+    for(const s of ORDER){ const X=C.D[s]; if(!X) continue; const tot=X.m.home+X.m.away;
+      const dflt=s==='Goals'&&f.dk&&f.dk.line?f.dk.line:mainLine(tot);
+      h+=stepTicket(`T|${f.id}|${s}`,LAB[s],`esp: <b>${tot.toFixed(2)}</b> (${X.m.home.toFixed(1)} + ${X.m.away.toFixed(1)})${s==='Offsides'?' · sin estilo local':''}`,X.dt,dflt); }
+  } else if(MODE==='team'){
+    for(const s of ORDER){ const X=C.D[s]; if(!X) continue;
+      h+=stepTicket(`H|${f.id}|${s}`,`${f.home} · ${LAB[s]}`,`esp: <b>${X.m.home.toFixed(2)}</b>`,X.dh,mainLine(X.m.home));
+      h+=stepTicket(`A|${f.id}|${s}`,`${f.away} · ${LAB[s]}`,`esp: <b>${X.m.away.toFixed(2)}</b>`,X.da,mainLine(X.m.away)); }
+  } else if(MODE==='h2h'){
+    for(const s of ['Shots','Shots on Target','Corners','Fouls','Cards','Offsides']){ const X=C.D[s]; if(!X) continue; const r=UCLM.h2h(X.dh,X.da);
+      h+=three(`Más ${LAB[s].toLowerCase()}`,`${X.m.home.toFixed(1)} vs ${X.m.away.toFixed(1)}`,[[f.homeAbbr,r.H],['Empate',r.T],[f.awayAbbr,r.A]]); }
+    const X=C.D.Corners, fav=X.m.home>=X.m.away;
+    for(const m of [0,1,2,3]){ const p=fav?UCLM.margin(X.dh,X.da,m):UCLM.margin(X.da,X.dh,m);
+      h+=two(`Hándicap córners ${fav?f.homeAbbr:f.awayAbbr} −${m+0.5}`,'',[['Cubre',p],['No cubre',1-p]]); }
+  } else if(MODE==='goles'){
+    const X=C.D.Goals, mk=C.mk;
+    h+=three('1X2 (mezcla)',`goles esp ${mk.lh.toFixed(2)}–${mk.la.toFixed(2)}`,[[f.homeAbbr,mk.H],['Empate',mk.D],[f.awayAbbr,mk.A]]);
+    h+=three('Doble oportunidad','',[['1X',mk.H+mk.D],['12',mk.H+mk.A],['X2',mk.D+mk.A]]);
+    h+=two('Empate no apuesta','',[[f.homeAbbr,mk.H/(mk.H+mk.A)],[f.awayAbbr,mk.A/(mk.H+mk.A)]]);
+    const btts=(1-X.dh[0])*(1-X.da[0]); h+=two('Ambos anotan','',[['Sí',btts],['No',1-btts]]);
+    h+=stepTicket(`G|${f.id}`,'Total de goles',`esp: <b>${(mk.lh+mk.la).toFixed(2)}</b>`,X.dt,f.dk&&f.dk.line?f.dk.line:mainLine(mk.lh+mk.la));
+    h+=valueVsBook(f,C);
+  } else {
+    const all=candidates(f,C), band=(lo,hi,fam)=>all.filter(c=>c.fair>=lo&&c.fair<=hi&&(!fam||fam(c.fam))).sort((a,b)=>b.p-a.p);
+    const props=c=>c!=='Goals';
+    h+=pickCard('Safe pick','cuota justa 1.50–1.65',band(1.50,1.65,props).slice(0,2),'Apuesta solo si tu casa paga MÁS que la justa mostrada.');
+    h+=pickCard('Alto valor','cuota justa 1.75–2.05',band(1.75,2.05,props).filter((c,i,a)=>a.findIndex(x=>x.name.split(' más')[0].split(' menos')[0]===c.name.split(' más')[0].split(' menos')[0])===i).slice(0,4),'~50–57%: pagan bien pero fallan casi la mitad de las veces.');
+    h+=pickCard('Línea principal de goles','mercado',[['más',UCLM.pOver(C.D.Goals.dt,f.dk&&f.dk.line||2.5)],['menos',1-UCLM.pOver(C.D.Goals.dt,f.dk&&f.dk.line||2.5)]].map(([w,p])=>({name:`Goles ${w} de ${f.dk&&f.dk.line||2.5}`,p,fair:1/p,fam:'Goals'})),'Goles = mercado; sirve de referencia, no de edge.');
+  }
+  $('markets').innerHTML=h;
+}
+
+function savePick(name,fairPx,p){ const f=fx(); const R=store.get('uclPicks',[]); R.unshift({id:Date.now(),date:UCL.meta.today,match:`${f.home} vs ${f.away}`,name,fair:fairPx,p,price:null,res:null}); store.set('uclPicks',R); renderReg(); }
+function renderReg(){
+  const R=store.get('uclPicks',[]), done=R.filter(r=>r.res==='W'||r.res==='L'), w=done.filter(r=>r.res==='W').length;
+  let h=`<div class="ticket"><div class="tName">Registro</div><div class="tLam">${R.length} picks guardados · ${w}-${done.length-w} calificados. Se guarda solo en este teléfono.</div></div>`;
+  h+=R.map(r=>`<div class="ticket"><div class="tLam">${r.date} · ${r.match}</div><div style="margin:4px 0 8px">${r.name} <span class="tLam">· justa ${(+r.fair).toFixed(2)}</span></div>
+    <div class="h3col"><button class="btn ${r.res==='W'?'':'ghost'}" onclick="mark(${r.id},'W')">Ganó</button><button class="btn ${r.res==='L'?'':'ghost'}" onclick="mark(${r.id},'L')">Perdió</button><button class="btn ghost" onclick="del(${r.id})">Borrar</button></div></div>`).join('');
+  $('regView').innerHTML=h;
+}
+function mark(id,res){ const R=store.get('uclPicks',[]); const r=R.find(x=>x.id===id); if(r) r.res=r.res===res?null:res; store.set('uclPicks',R); renderReg(); }
+function del(id){ store.set('uclPicks',store.get('uclPicks',[]).filter(x=>x.id!==id)); renderReg(); }
+
+function renderData(){
+  const b=UCL.backtest, m=UCL.meta;
+  const row=s=>`<tr><td>${LAB[s]}</td><td>${b[s].m0.nll.toFixed(3)}</td><td>${b[s].m1.nll.toFixed(3)}</td><td>${b[s].m2?b[s].m2.nll.toFixed(3):'—'}</td></tr>`;
+  $('dataView').innerHTML=`<div class="ticket"><div class="tName">Cómo funciona</div><div class="tLam" style="margin-top:6px">
+  <b>1. Fuerza del partido = mercado.</b> Los momios 1X2 y el total de DraftKings (vía ESPN), mezclados 50/50 con Polymarket, se convierten en goles esperados. De ahí salen la superioridad y el ritmo del partido.<br>
+  <b>2. Estilo = liga local.</b> Con ${m.domesticLeagues.length} ligas de ESPN se calculan ratings de ataque y defensa por estadística, ajustados por rival y con decaimiento temporal (vida media ${m.halfLife} días). A cada rating se le quita la parte que explica el nivel del equipo; lo que queda es estilo (p. ej. "más córners de lo que su nivel indica").<br>
+  <b>3. Capa UCL.</b> Regresión Poisson por estadística sobre ${m.uclRows} partidos de UCL con momios (ago-2025 a hoy): base local/visita + superioridad + ritmo + estilo. Dispersión binomial negativa estimada de los residuos.<br>
+  <b>Límites:</b> no hay datos de la liga ucraniana (Shakhtar = estilo neutral); los fueras de juego no tienen dato local; no hay ajuste por árbitro ni alineaciones.</div></div>
+  <div class="ticket"><div class="tName">Backtest</div><div class="tLam" style="margin:6px 0">Ajustado con ${m.train} partidos antes de jul-2026; evaluado en los ${m.test} de la fase de liga 2026-27. Log loss medio por equipo-partido (menor = mejor).</div>
+  <table class="mk"><tr><th>Stat</th><th>Promedio UCL</th><th>Solo mercado</th><th>Mercado + estilo</th></tr>${['Shots','Shots on Target','Corners','Fouls','Cards','Offsides'].map(row).join('')}</table>
+  <div class="tLam" style="margin-top:6px">El estilo ayuda sobre todo en tiros y tiros a puerta; en córners, faltas y tarjetas la mejora es pequeña. Goles: log loss del mercado ${b.Goals.mkt.toFixed(3)}.</div></div>
+  <div class="ticket"><div class="tName">Fuentes</div><div class="tLam" style="margin-top:6px">ESPN (marcadores, box scores, momios DraftKings) · Polymarket (Gamma API) · Action Network (% público, snapshot ${m.public_source?m.public_source.split('pulled ')[1]:''}). Modelo construido ${m.built.slice(0,16).replace('T',' ')} UTC.</div>
+  <button class="btn" style="margin-top:10px;width:100%" onclick="refreshAll()">Actualizar momios</button></div>`;
+}
+
+async function refreshFixture(f){
+  try{
+    const s=await (await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/summary?event='+f.id)).json();
+    const state=s.header?.competitions?.[0]?.status?.type?.state; LIVE[f.id]={state};
+    if(state==='pre'){ const dk=UCLM.marketFromPick((s.pickcenter||[])[0]); if(dk){ f.dk=dk; LIVE[f.id].ok=true; } }
+  }catch(e){}
+  try{
+    if(f.pm&&f.pm.slug&&(LIVE[f.id]||{}).state!=='in'){
+      const e=(await (await fetch('https://gamma-api.polymarket.com/events?slug='+f.pm.slug)).json())[0];
+      const ms=(e.markets||[]).map(m=>({t:m.groupItemTitle||'',p:+JSON.parse(m.outcomePrices||'[0]')[0]})), d=ms.find(m=>/^draw/i.test(m.t)), sd=ms.filter(m=>m!==d);
+      if(d&&sd.length===2&&(LIVE[f.id]||{}).state==='pre') Object.assign(f.pm,{H:sd[0].p,D:d.p,A:sd[1].p,liq:+e.liquidity||f.pm.liq});
+    }
+  }catch(e){}
+}
+async function refreshAll(){ await Promise.all(UCL.fixtures.map(refreshFixture)); render(); }
+
+function init(){
+  $('dataDate').innerHTML=`${UCL.meta.today}<br>${UCL.meta.version}`;
+  const sel=$('fixSel');
+  sel.innerHTML=UCL.fixtures.map((f,i)=>`<option value="${i}">${hhmm(f.kickoff)} · ${f.home} vs ${f.away}</option>`).join('');
+  sel.onchange=()=>{ FI=+sel.value; render(); };
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); b.classList.add('on'); MODE=b.dataset.mode; render(); });
+  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    for(const v of ['mainView','regView','dataView']) $(v).style.display=v===b.dataset.view?(v==='mainView'?'block':'flex'):'none'; });
+  const next=UCL.fixtures.findIndex(f=>Date.parse(iso(f.kickoff))>Date.now()-100*60e3); FI=next<0?0:next; sel.value=FI;
+  render(); renderReg(); renderData(); refreshAll();
+}
+init();
+</script>
+</body>
+</html>

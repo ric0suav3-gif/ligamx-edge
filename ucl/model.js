@@ -308,6 +308,35 @@
     return { meta: { built: new Date().toISOString(), today, version: 'ucl-edge-v2-espn', uclRows: ucl.length, train: train.length, test: test.length, domesticLeagues: DOMESTIC.filter(l => (dom[l] || []).length), halfLife: HALF_LIFE, kPrior: K_PRIOR }, coefs, slopes, backtest, fixtures };
   }
 
+
+  // ---------- market blend + count distributions (shared by page and card) ----------
+  function blendMarket(fx, wPM) {
+    const dk = fx.dk, pm = fx.pm;
+    let H, D, A;
+    if (pm && dk) { const t = pm.H + pm.D + pm.A, w = wPM == null ? 0.5 : wPM; H = w * pm.H / t + (1 - w) * dk.H; D = w * pm.D / t + (1 - w) * dk.D; A = w * pm.A / t + (1 - w) * dk.A; }
+    else if (dk) { H = dk.H; D = dk.D; A = dk.A; }
+    else if (pm) { const t = pm.H + pm.D + pm.A; H = pm.H / t; D = pm.D / t; A = pm.A / t; }
+    else return null;
+    const m = { H, D, A };
+    if (dk && dk.line != null) { m.line = dk.line; m.pOver = dk.pOver; }
+    const lam = solveLambda(m);
+    return { ...m, lh: lam.lh, la: lam.la, fitErr: lam.fitErr };
+  }
+  function dist(mean, r) {
+    const sd = Math.sqrt(r == null ? mean : mean + mean * mean / r), top = Math.max(12, Math.ceil(mean + 8 * sd)), out = [];
+    for (let k = 0; k <= top; k++) {
+      let p;
+      if (r == null) p = Math.exp(-mean + k * Math.log(mean) - lgamma(k + 1));
+      else { const pp = r / (r + mean); p = Math.exp(lgamma(k + r) - lgamma(r) - lgamma(k + 1) + r * Math.log(pp) + k * Math.log(1 - pp)); }
+      out.push(p);
+    }
+    const s = out.reduce((a, b) => a + b, 0); return out.map(x => x / s);
+  }
+  function conv(a, b) { const o = new Array(a.length + b.length - 1).fill(0); for (let i = 0; i < a.length; i++) for (let j = 0; j < b.length; j++) o[i + j] += a[i] * b[j]; return o; }
+  function pOver(d, line) { let s = 0; for (let k = Math.floor(line) + 1; k < d.length; k++) s += d[k]; return s; }
+  function h2h(dh, da) { let H = 0, T = 0, A = 0; for (let i = 0; i < dh.length; i++) for (let j = 0; j < da.length; j++) { const p = dh[i] * da[j]; if (i > j) H += p; else if (i === j) T += p; else A += p; } return { H, T, A }; }
+  function margin(dh, da, m) { let p = 0; for (let i = 0; i < dh.length; i++) for (let j = 0; j < da.length; j++) if (i - j > m) p += dh[i] * da[j]; return p; }
+
   // Means for one fixture given a market (lh, la). Used by the page and the builder.
   function means(model, fx, lam) {
     const out = { Goals: { home: lam.lh, away: lam.la, r: null } };
@@ -320,5 +349,5 @@
     return out;
   }
 
-  root.UCLM = { build, means, solveLambda, outcome, marketFromPick, fitLeague, nll };
+  root.UCLM = { build, means, solveLambda, outcome, marketFromPick, fitLeague, nll, blendMarket, dist, conv, pOver, h2h, margin, USTATS };
 })(typeof window !== 'undefined' ? window : globalThis);

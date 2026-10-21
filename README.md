@@ -37,4 +37,29 @@ python -m pytest -q tests
 
 Model prices are fair-price estimates, not sportsbook quotes or guaranteed edges. Check the exact line and price at your book before betting.
 
-The older [Today Edge](today-edge.html) is a separate UEFA card that still uses API-Football. Its builder has not been migrated by this Liga MX update.
+## UCL Edge V2 (October 21)
+
+[`ucl.html`](ucl.html) is the Champions League page, built the same way as Liga MX Edge but with no API key:
+
+- **Match strength from the market.** DraftKings 1X2 + total (from ESPN) blended 50/50 with Polymarket, converted to expected goals.
+- **Team style from domestic leagues.** Opponent-adjusted attack/defence ratings per stat from 15 ESPN leagues. The part explained by team strength is removed, and what is left (e.g. "Villa concede more cards than their level") carries into the UCL.
+- **UCL layer.** Poisson regression per stat on UCL games since Aug 2025 that have odds (supremacy, tempo, style), negative-binomial dispersion.
+- **Backtest** on the 45 games of the 2026-27 league phase: market + style beat market-only for every stat, mostly for shots and shots on target. Offsides have no domestic feed.
+- The page refreshes DraftKings and Polymarket prices live before kickoff. Public betting % (Action Network) is a snapshot from build time.
+
+Rebuild on match day (the fetches run in a browser, because ESPN is blocked from Claude's sandbox):
+
+```js
+// in a browser tab on site.api.espn.com
+eval(await (await fetch('https://raw.githubusercontent.com/ric0suav3-gif/ligamx-edge/main/ucl/model.js')).text());
+const M = await UCLM.build({today: '2026-10-28'});
+```
+
+Save the export as `data/ucl_model_<date>.json`, then:
+
+```powershell
+python ucl/build_page.py data/ucl_model_<date>.json
+node ucl/card.js data/ucl_model_<date>.json > tracking/ucl-edge-card-<date>.md
+```
+
+The September API-Football UCL page is kept in [`archive/`](archive/ucl-edge-2026-09-10.html). The older [Today Edge](today-edge.html) still uses API-Football.

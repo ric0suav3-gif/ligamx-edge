@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b1210">
+<title>UCL Edge V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1210;--surface:#121b18;--surface2:#18241f;--line:#22322b;--text:#e8efe9;--muted:#8fa39a;--amber:#f5b53f;--amber-dim:#8a6a2a;--home:#7fd1a8;--away:#9db4e8;--green:#4ade80;--red:#f87171;--radius:14px;font-size:16px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;min-height:100vh;padding-bottom:90px;max-width:640px;margin:0 auto}
+.cond{font-family:'Barlow Condensed',system-ui,sans-serif}
+header{padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 10px;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+header h1{font-family:'Barlow Condensed';font-weight:700;font-size:1.5rem;letter-spacing:.04em;text-transform:uppercase}
+header h1 span{color:var(--amber)}
+.tag{font-size:.62rem;border:1px solid var(--amber-dim);border-radius:6px;padding:2px 5px;vertical-align:middle}
+#dataDate{font-size:.7rem;color:var(--muted);text-align:right}
+.board{margin:6px 12px 12px;background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+.sel{width:100%;appearance:none;background:var(--bg);color:var(--text);border:1px solid var(--line);border-bottom:3px solid var(--amber-dim);border-radius:10px;padding:12px 10px;font-family:'Barlow Condensed';font-weight:600;font-size:1.05rem;letter-spacing:.02em;text-align:center}
+.teams{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-top:10px;text-align:center;font-family:'Barlow Condensed';font-weight:700;font-size:1.15rem;letter-spacing:.03em;text-transform:uppercase}
+.teams .h{color:var(--home)}.teams .a{color:var(--away)}.teams .v{color:var(--muted);font-size:.9rem}
+.venueNote{margin-top:6px;text-align:center;font-size:.7rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.tabs{display:flex;gap:6px;margin:0 12px 10px;overflow-x:auto}
+.tab{flex:1;min-width:56px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:10px;padding:10px 4px;font-family:'Barlow Condensed';font-weight:600;font-size:.9rem;letter-spacing:.05em;text-transform:uppercase}
+.tab.on{background:var(--amber);color:#1a1408;border-color:var(--amber)}
+#markets,#ctx{padding:0 12px;display:flex;flex-direction:column;gap:10px}
+#ctx{margin-bottom:10px}
+.ticket{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+.tHead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:8px}
+.tName{font-family:'Barlow Condensed';font-weight:600;font-size:1.05rem;letter-spacing:.03em;text-transform:uppercase}
+.tLam{font-size:.72rem;color:var(--muted);line-height:1.45}
+.tLam b{color:var(--text);font-weight:600}
+.lineRow{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;align-items:stretch}
+.stepper{display:flex;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stepper button{background:none;border:none;color:var(--amber);font-size:1.25rem;width:34px;height:100%;font-weight:600}
+.stepper .val{min-width:44px;text-align:center;font-family:'Barlow Condensed';font-weight:700;font-size:1.2rem}
+.odd{border-radius:10px;border:1px solid var(--line);background:var(--surface2);padding:6px 4px;text-align:center}
+.odd .lab{font-size:.62rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.odd .px{font-family:'Barlow Condensed';font-weight:700;font-size:1.35rem;line-height:1.15}
+.odd .pc{font-size:.62rem;color:var(--muted)}
+.odd.fav .px{color:var(--amber)}
+.h3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:4px}
+table.mk{width:100%;border-collapse:collapse;font-size:.78rem}
+table.mk th,table.mk td{padding:5px 4px;border-bottom:1px solid var(--line);text-align:right}
+table.mk th:first-child,table.mk td:first-child{text-align:left;color:var(--muted)}
+table.mk th{font-size:.62rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+table.mk tr.bl td{color:var(--amber);font-weight:600}
+.pill{display:inline-block;font-size:.62rem;border-radius:999px;padding:2px 7px;border:1px solid var(--line);color:var(--muted)}
+.pill.live{border-color:var(--green);color:var(--green)}.pill.warn{border-color:var(--amber);color:var(--amber)}
+.pickRow{display:grid;grid-template-columns:auto 1fr auto;gap:8px;margin-top:6px;align-items:center}
+.plus{background:var(--surface2);border:1px solid var(--line);color:var(--amber);border-radius:8px;width:34px;height:34px;font-size:1.1rem;font-weight:700}
+.btn{background:var(--amber);color:#1a1408;border:none;border-radius:10px;padding:12px;font-family:'Barlow Condensed';font-weight:700;font-size:1rem;letter-spacing:.05em;text-transform:uppercase}
+.btn.ghost{background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+.view{display:none;padding:0 12px;flex-direction:column;gap:10px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(11,18,16,.95);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:8px 0 calc(env(safe-area-inset-bottom,0px) + 8px)}
+nav button{flex:1;background:none;border:none;color:var(--muted);font-family:'Barlow Condensed';font-weight:600;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;padding:8px 0}
+nav button.on{color:var(--amber)}
+.note{margin:14px 12px 0;font-size:.68rem;color:var(--muted);line-height:1.5;text-align:center}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:3px}.bar i{display:block;height:100%;background:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>UCL <span>Edge</span> <span class="tag">V2</span></h1>
+  <div id="dataDate"></div>
+</header>
+
+<div id="mainView">
+  <div class="board">
+    <select id="fixSel" class="sel"></select>
+    <div class="teams"><div class="h" id="tH"></div><div class="v">VS</div><div class="a" id="tA"></div></div>
+    <div class="venueNote" id="venue"></div>
+  </div>
+  <div id="ctx"></div>
+  <div class="tabs">
+    <button class="tab on" data-mode="picks">Picks</button>
+    <button class="tab" data-mode="total">Totales</button>
+    <button class="tab" data-mode="team">Equipo</button>
+    <button class="tab" data-mode="h2h">H2H</button>
+    <button class="tab" data-mode="goles">Goles</button>
+  </div>
+  <div id="markets"></div>
+  <p class="note">Cuotas justas sin margen. Solo hay valor si tu casa paga MÁS que la justa (idealmente 5%+ en props).<br>Fuerza del partido = mercado (DraftKings vía ESPN + Polymarket). Estilo de cada equipo = su liga local en ESPN. Ajustado sobre partidos de UCL con momios desde ago-2025.</p>
+</div>
+<div id="regView" class="view"></div>
+<div id="dataView" class="view"></div>
+
+<nav>
+  <button class="on" data-view="mainView">Mercados</button>
+  <button data-view="regView">Registro</button>
+  <button data-view="dataView">Datos</button>
+</nav>
+
+<script>
+// UCL Edge model v2 (ESPN public feeds, no API key). Runs in a browser tab.
+//
+//   const M = await UCLM.build({today:'2026-10-21'});   // fetch, fit, backtest, predict
+//
+// Method
+// 1. Domestic ratings: for every league ESPN carries box scores for, fit
+//    multiplicative attack/defence ratings per stat (goals, shots, SOT,
+//    corners, fouls, cards) with opponent adjustment, time decay
+//    (half-life 150 days) and a 5-game prior toward league average.
+// 2. Style vs strength: a team's domestic strength z = mean of its goal and
+//    SOT log-ratios. Each stat rating is split into the part explained by
+//    strength (pooled slope across leagues) and a style residual
+//    (e.g. "Villa takes more corners than a team of its strength").
+// 3. Cross-league strength comes from the market, not from domestic
+//    ratings: the bookmaker 1X2 + total is converted to expected goals
+//    (lambda_home, lambda_away). Supremacy S = ln(lh/la), tempo T = ln(lh+la).
+// 4. UCL layer, fitted on UCL games since Aug 2025 with ESPN/DraftKings odds:
+//      ln E[stat_home] = a_home + g*S + t*T + rho*(style_att_home + style_def_away)
+//      ln E[stat_away] = a_away - g*S + t*T + rho*(style_att_away + style_def_home)
+//    Poisson regression per stat; negative-binomial dispersion from residuals.
+//    Offsides have no domestic feed, so they use the market terms only.
+// 5. Backtest: fit on games before 2026-07-01, score the 2026-27 league phase.
+(function (root) {
+  'use strict';
+  const BASE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/';
+  const DOMESTIC = ['eng.1', 'esp.1', 'ita.1', 'ger.1', 'fra.1', 'por.1', 'ned.1', 'bel.1', 'tur.1', 'aut.1', 'nor.1', 'sco.1', 'gre.1', 'den.1', 'swe.1'];
+  const DSTATS = ['Goals', 'Shots', 'Shots on Target', 'Corners', 'Fouls', 'Cards'];
+  const USTATS = ['Shots', 'Shots on Target', 'Corners', 'Fouls', 'Cards', 'Offsides'];
+  const SBKEY = { Shots: 'totalShots', 'Shots on Target': 'shotsOnTarget', Corners: 'wonCorners', Fouls: 'foulsCommitted' };
+  const DAY = 864e5, HALF_LIFE = 150, WINDOW = 400, K_PRIOR = 5;
+  const TRAIN_FROM = Date.parse('2025-08-01'), TEST_FROM = Date.parse('2026-07-01');
+
+  async function getJSON(u) {
+    for (let i = 0; i < 3; i++) {
+      try { const r = await fetch(u); if (r.ok) return await r.json(); } catch (e) { /* retry */ }
+      await new Promise(r => setTimeout(r, 400 * (i + 1)));
+    }
+    throw new Error('fetch failed ' + u);
+  }
+  async function pool(items, n, fn) {
+    const out = new Array(items.length); let i = 0;
+    await Promise.all(Array.from({ length: n }, async () => { while (i < items.length) { const k = i++; try { out[k] = await fn(items[k]); } catch (e) { out[k] = null; } } }));
+    return out;
+  }
+
+  // ---------- rows ----------
+  function domesticRow(e, league) {
+    const c = e.competitions && e.competitions[0];
+    if (!c || !e.status || !e.status.type || !e.status.type.completed) return null;
+    const S = {};
+    for (const x of c.competitors) {
+      const sm = {}; for (const s of x.statistics || []) sm[s.name] = +s.displayValue;
+      const o = { id: String(x.team.id), name: x.team.displayName, Goals: +x.score, Cards: 0 };
+      for (const [k, v] of Object.entries(SBKEY)) o[k] = Number.isFinite(sm[v]) ? sm[v] : null;
+      S[x.homeAway] = o;
+    }
+    if (!S.home || !S.away) return null;
+    let cardEvents = 0;
+    for (const d of c.details || []) {
+      const t = (d.type && d.type.text) || '';
+      if (!/yellow card|red card/i.test(t)) continue;
+      cardEvents++;
+      const id = d.team && String(d.team.id);
+      if (id === S.home.id) S.home.Cards++; else if (id === S.away.id) S.away.Cards++;
+    }
+    const has = S.home.Shots != null && S.away.Shots != null && S.home.Shots + S.away.Shots > 0;
+    return { id: e.id, league, t: Date.parse(e.date), h: S.home, a: S.away, has, cardEvents };
+  }
+
+  const amToProb = m => (m == null || !isFinite(m) || m === 0) ? null : (m > 0 ? 100 / (m + 100) : -m / (-m + 100));
+  function marketFromPick(pc) {
+    if (!pc || !pc.homeTeamOdds || !pc.awayTeamOdds || !pc.drawOdds) return null;
+    const raw = [amToProb(+pc.homeTeamOdds.moneyLine), amToProb(+pc.drawOdds.moneyLine), amToProb(+pc.awayTeamOdds.moneyLine)];
+    if (raw.some(x => x == null)) return null;
+    const s = raw[0] + raw[1] + raw[2];
+    const m = { H: raw[0] / s, D: raw[1] / s, A: raw[2] / s, overround: s, provider: pc.provider && pc.provider.name, ml: [+pc.homeTeamOdds.moneyLine, +pc.drawOdds.moneyLine, +pc.awayTeamOdds.moneyLine] };
+    const line = +pc.overUnder, po = amToProb(+pc.overOdds), pu = amToProb(+pc.underOdds);
+    if (isFinite(line) && line % 1 === 0.5 && po && pu) { m.line = line; m.pOver = po / (po + pu); m.ouOdds = [+pc.overOdds, +pc.underOdds]; }
+    return m;
+  }
+
+  function uclRow(e, sum) {
+    const c = e.competitions[0], S = {};
+    for (const x of c.competitors) S[x.homeAway] = { id: String(x.team.id), name: x.team.displayName, Goals: +x.score };
+    for (const t of (sum && sum.boxscore && sum.boxscore.teams) || []) {
+      const id = String(t.team.id), side = id === S.home.id ? 'home' : id === S.away.id ? 'away' : null;
+      if (!side) continue;
+      const sm = {}; for (const s of t.statistics || []) sm[s.name] = +s.displayValue;
+      Object.assign(S[side], { Shots: sm.totalShots, 'Shots on Target': sm.shotsOnTarget, Corners: sm.wonCorners, Fouls: sm.foulsCommitted, Cards: (sm.yellowCards || 0) + (sm.redCards || 0), Offsides: sm.offsides });
+    }
+    const st = (e.status.type.name || '') + ' ' + (e.status.type.shortDetail || '');
+    return { id: e.id, t: Date.parse(e.date), date: e.date, h: S.home, a: S.away, mkt: marketFromPick(((sum && sum.pickcenter) || [])[0]), extra: /AET|PEN|EXTRA|ET/i.test(st) && !/FULL_TIME/.test(st) };
+  }
+
+  // ---------- goals from market ----------
+  function pois(l, n) { const p = [Math.exp(-l)]; for (let k = 1; k <= n; k++) p.push(p[k - 1] * l / k); return p; }
+  function outcome(lh, la, line) {
+    const ph = pois(lh, 14), pa = pois(la, 14); let H = 0, D = 0, A = 0, O = 0;
+    for (let i = 0; i < ph.length; i++) for (let j = 0; j < pa.length; j++) {
+      const p = ph[i] * pa[j];
+      if (i > j) H += p; else if (i === j) D += p; else A += p;
+      if (line != null && i + j > line) O += p;
+    }
+    return { H, D, A, O };
+  }
+  function solveLambda(m) {
+    const line = m.line != null ? m.line : null, pOver = m.pOver != null ? m.pOver : null;
+    const loss = (lh, la) => { const o = outcome(lh, la, line); let L = (o.H - m.H) ** 2 + (o.D - m.D) ** 2 + (o.A - m.A) ** 2; if (pOver != null) L += (o.O - pOver) ** 2; return L; };
+    let best = null;
+    for (let i = 3; i <= 90; i++) for (let j = 3; j <= 90; j++) { const lh = i * 0.05, la = j * 0.05, L = loss(lh, la); if (!best || L < best.L) best = { lh, la, L }; }
+    for (const step of [0.01, 0.002]) {
+      const b = { ...best };
+      for (let i = -6; i <= 6; i++) for (let j = -6; j <= 6; j++) { const lh = b.lh + i * step, la = b.la + j * step; if (lh <= 0.05 || la <= 0.05) continue; const L = loss(lh, la); if (L < best.L) best = { lh, la, L }; }
+    }
+    return { lh: best.lh, la: best.la, fitErr: Math.sqrt(best.L / 4) };
+  }
+
+  // ---------- domestic ratings ----------
+  function fitLeague(rows, T) {
+    const R = rows.filter(r => r.has && r.t < T && r.t > T - WINDOW * DAY);
+    if (R.length < 60) return null;
+    const W = R.map(r => Math.pow(0.5, (T - r.t) / DAY / HALF_LIFE));
+    const teams = [...new Set(R.flatMap(r => [r.h.id, r.a.id]))];
+    const fit = { n: {}, names: {}, stats: {}, z: {}, nRows: R.length };
+    R.forEach((r, k) => { for (const x of [r.h, r.a]) { fit.n[x.id] = (fit.n[x.id] || 0) + W[k]; fit.names[x.id] = x.name; } });
+    const cardsOk = R.filter(r => r.cardEvents > 0).length / R.length > 0.6;
+    for (const s of DSTATS) {
+      if (s === 'Cards' && !cardsOk) continue;
+      let sw = 0, sh = 0, sa = 0;
+      R.forEach((r, k) => { sw += W[k]; sh += W[k] * r.h[s]; sa += W[k] * r.a[s]; });
+      const mu = { home: sh / sw, away: sa / sw }, m = (mu.home + mu.away) / 2;
+      const att = {}, def = {}; teams.forEach(t => { att[t] = 1; def[t] = 1; });
+      for (let it = 0; it < 10; it++) {
+        const na = {}, da = {}, nd = {}, dd = {};
+        teams.forEach(t => { na[t] = da[t] = nd[t] = dd[t] = K_PRIOR * m; });
+        R.forEach((r, k) => {
+          const w = W[k], h = r.h.id, a = r.a.id;
+          na[h] += w * r.h[s]; da[h] += w * mu.home * def[a];
+          na[a] += w * r.a[s]; da[a] += w * mu.away * def[h];
+          nd[h] += w * r.a[s]; dd[h] += w * mu.away * att[a];
+          nd[a] += w * r.h[s]; dd[a] += w * mu.home * att[h];
+        });
+        teams.forEach(t => { att[t] = na[t] / da[t]; def[t] = nd[t] / dd[t]; });
+        const ga = Math.exp(teams.reduce((x, t) => x + Math.log(att[t]), 0) / teams.length);
+        const gd = Math.exp(teams.reduce((x, t) => x + Math.log(def[t]), 0) / teams.length);
+        teams.forEach(t => { att[t] /= ga; def[t] /= gd; });
+      }
+      fit.stats[s] = { mu, att, def };
+    }
+    const G = fit.stats.Goals, O = fit.stats['Shots on Target'];
+    teams.forEach(t => { fit.z[t] = 0.5 * ((Math.log(G.att[t]) - Math.log(G.def[t])) + (Math.log(O.att[t]) - Math.log(O.def[t]))); });
+    return fit;
+  }
+
+  function styleSlopes(fits) {
+    const out = {};
+    for (const s of DSTATS) for (const side of ['att', 'def']) {
+      let sxy = 0, sxx = 0;
+      for (const f of fits) {
+        if (!f || !f.stats[s]) continue;
+        for (const t of Object.keys(f.z)) { const w = Math.min(f.n[t], 20), x = f.z[t]; sxy += w * x * Math.log(f.stats[s][side][t]); sxx += w * x * x; }
+      }
+      out[s + '|' + side] = sxx > 0 ? sxy / sxx : 0;
+    }
+    return out;
+  }
+
+  function style(fit, slopes, id, s) {
+    if (!fit || !fit.stats[s] || fit.z[id] == null || (fit.n[id] || 0) < 3) return { att: 0, def: 0, ok: false };
+    const z = fit.z[id];
+    return { att: Math.log(fit.stats[s].att[id]) - slopes[s + '|att'] * z, def: Math.log(fit.stats[s].def[id]) - slopes[s + '|def'] * z, ok: true };
+  }
+
+  // ---------- Poisson regression + NB dispersion ----------
+  function solve(A, b) {
+    const n = b.length, M = A.map((r, i) => [...r, b[i]]);
+    for (let i = 0; i < n; i++) {
+      let p = i; for (let k = i + 1; k < n; k++) if (Math.abs(M[k][i]) > Math.abs(M[p][i])) p = k;
+      [M[i], M[p]] = [M[p], M[i]];
+      for (let k = i + 1; k < n; k++) { const f = M[k][i] / M[i][i]; for (let j = i; j <= n; j++) M[k][j] -= f * M[i][j]; }
+    }
+    const x = new Array(n).fill(0);
+    for (let i = n - 1; i >= 0; i--) { let s = M[i][n]; for (let j = i + 1; j < n; j++) s -= M[i][j] * x[j]; x[i] = s / M[i][i]; }
+    return x;
+  }
+  function poissonFit(X, y) {
+    const p = X[0].length, ybar = y.reduce((a, b) => a + b, 0) / y.length;
+    let b = new Array(p).fill(0); b[0] = b[1] = Math.log(Math.max(ybar, 0.1));
+    for (let it = 0; it < 30; it++) {
+      const A = Array.from({ length: p }, () => new Array(p).fill(0)), v = new Array(p).fill(0);
+      for (let i = 0; i < y.length; i++) {
+        const eta = X[i].reduce((s, x, j) => s + x * b[j], 0), mu = Math.exp(eta), z = eta + (y[i] - mu) / mu;
+        for (let j = 0; j < p; j++) { v[j] += X[i][j] * mu * z; for (let k = 0; k < p; k++) A[j][k] += X[i][j] * mu * X[i][k]; }
+      }
+      for (let j = 0; j < p; j++) A[j][j] += 1e-6;
+      const nb = solve(A, v), d = Math.max(...nb.map((x, j) => Math.abs(x - b[j])));
+      b = nb; if (d < 1e-8) break;
+    }
+    return b;
+  }
+  const predict = (b, x) => Math.exp(x.reduce((s, v, j) => s + v * b[j], 0));
+  function dispersion(mus, ys) {
+    let num = 0, den = 0; mus.forEach((m, i) => { num += m * m; den += (ys[i] - m) ** 2 - m; });
+    const r = num / den; return den > 0 && r < 400 ? r : null;
+  }
+  function lgamma(z) {
+    const g = 7, c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lgamma(1 - z);
+    z -= 1; let x = c[0]; for (let i = 1; i < g + 2; i++) x += c[i] / (z + i);
+    const t = z + g + 0.5; return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+  function nll(k, mu, r) {
+    if (r == null) return mu - k * Math.log(mu) + lgamma(k + 1);
+    const p = r / (r + mu);
+    return -(lgamma(k + r) - lgamma(r) - lgamma(k + 1) + r * Math.log(p) + k * Math.log(1 - p));
+  }
+
+  // ---------- design ----------
+  function features(s, lam, stH, stA, side, variant) {
+    const S = Math.log(lam.lh / lam.la), T = Math.log(lam.lh + lam.la);
+    const sgn = side === 'home' ? 1 : -1;
+    const sty = side === 'home' ? stH.att + stA.def : stA.att + stH.def;
+    const base = [side === 'home' ? 1 : 0, side === 'home' ? 0 : 1];
+    if (variant === 0) return base;
+    if (variant === 1 || s === 'Offsides') return [...base, sgn * S, T];
+    return [...base, sgn * S, T, sty];
+  }
+
+  async function build(opts = {}) {
+    const today = opts.today || new Date().toISOString().slice(0, 10);
+    const log = opts.log || (() => {});
+    const NOW = opts.asOf ? Date.parse(opts.asOf) : Date.now();
+    // domestic
+    const dom = {};
+    await pool(DOMESTIC.flatMap(l => ['2025', '2026'].map(y => [l, y])), 6, async ([l, y]) => {
+      const j = await getJSON(`${BASE}${l}/scoreboard?dates=${y}&limit=600`);
+      const rows = (j.events || []).map(e => domesticRow(e, l)).filter(Boolean);
+      (dom[l] = dom[l] || []).push(...rows);
+    });
+    const teamLeague = {};
+    for (const [l, rows] of Object.entries(dom)) {
+      const seen = {}; rows.sort((a, b) => a.t - b.t);
+      for (const r of rows) for (const x of [r.h, r.a]) seen[x.id] = r.t;
+      for (const [id, t] of Object.entries(seen)) if (!teamLeague[id] || teamLeague[id].t < t) teamLeague[id] = { league: l, t };
+    }
+    log('domestic rows ' + Object.values(dom).reduce((a, r) => a + r.length, 0));
+    // UCL history
+    const evs = [];
+    for (const y of ['2025', '2026']) {
+      const j = await getJSON(`${BASE}uefa.champions/scoreboard?dates=${y}&limit=600`);
+      evs.push(...(j.events || []));
+    }
+    const done = evs.filter(e => e.status.type.completed && Date.parse(e.date) >= TRAIN_FROM && Date.parse(e.date) < NOW);
+    const sums = await pool(done, 6, e => getJSON(`${BASE}uefa.champions/summary?event=${e.id}`));
+    const ucl = done.map((e, i) => sums[i] ? uclRow(e, sums[i]) : null).filter(r => r && !r.extra && r.mkt && r.h.Shots != null && r.a.Shots != null);
+    log('UCL rows with odds ' + ucl.length + ' of ' + done.length);
+    // fixtures today
+    const tj = await getJSON(`${BASE}uefa.champions/scoreboard?dates=${today.replace(/-/g, '')}`);
+    const todayEv = (tj.events || []).filter(e => !e.status.type.completed);
+    const tsums = await pool(todayEv, 6, e => getJSON(`${BASE}uefa.champions/summary?event=${e.id}`));
+
+    // domestic fit cache
+    const cache = {};
+    const fitAt = (league, t) => { const d = Math.floor(t / DAY), k = league + '|' + d; if (!(k in cache)) cache[k] = fitLeague(dom[league] || [], d * DAY); return cache[k]; };
+    const now = Date.parse(today + 'T00:00:00Z');
+    const nowFits = DOMESTIC.map(l => fitAt(l, now));
+    const slopes = styleSlopes(nowFits.filter(Boolean));
+    const styleFor = (id, s, t) => { const tl = teamLeague[id]; if (!tl || s === 'Offsides') return { att: 0, def: 0, ok: false }; return style(fitAt(tl.league, t), slopes, id, s); };
+
+    for (const r of ucl) { r.lam = solveLambda(r.mkt); }
+    const fitStat = (rows, s, variant) => {
+      const X = [], y = [];
+      for (const r of rows) {
+        if (r.h[s] == null || r.a[s] == null || !isFinite(r.h[s]) || !isFinite(r.a[s])) continue;
+        const sh = styleFor(r.h.id, s, r.t), sa = styleFor(r.a.id, s, r.t);
+        X.push(features(s, r.lam, sh, sa, 'home', variant)); y.push(r.h[s]);
+        X.push(features(s, r.lam, sh, sa, 'away', variant)); y.push(r.a[s]);
+      }
+      return { X, y };
+    };
+    const coefs = {}, backtest = {};
+    const train = ucl.filter(r => r.t < TEST_FROM), test = ucl.filter(r => r.t >= TEST_FROM);
+    for (const s of USTATS) {
+      backtest[s] = {};
+      for (const v of [0, 1, 2]) {
+        if (s === 'Offsides' && v === 2) continue;
+        const tr = fitStat(train, s, v), te = fitStat(test, s, v);
+        if (!tr.y.length || !te.y.length) continue;
+        const b = poissonFit(tr.X, tr.y), mus = tr.X.map(x => predict(b, x)), r = dispersion(mus, tr.y);
+        const pm = te.X.map(x => predict(b, x));
+        backtest[s]['m' + v] = { nll: te.y.reduce((a, k, i) => a + nll(k, pm[i], r), 0) / te.y.length, bias: te.y.reduce((a, k) => a + k, 0) / pm.reduce((a, k) => a + k, 0), n: te.y.length / 2 };
+      }
+      const v = s === 'Offsides' ? 1 : 2, all = fitStat(ucl, s, v), b = poissonFit(all.X, all.y);
+      coefs[s] = { b, r: dispersion(all.X.map(x => predict(b, x)), all.y), n: all.y.length / 2, variant: v };
+    }
+    // goals: market only; record calibration of market lambda on test set
+    backtest.Goals = { mkt: test.reduce((a, r) => a + nll(r.h.Goals, r.lam.lh, null) + nll(r.a.Goals, r.lam.la, null), 0) / (2 * test.length), n: test.length };
+
+    // predictions
+    const fixtures = todayEv.map((e, i) => {
+      const c = e.competitions[0], H = c.competitors.find(x => x.homeAway === 'home'), A = c.competitors.find(x => x.homeAway === 'away');
+      const mkt = marketFromPick(((tsums[i] && tsums[i].pickcenter) || [])[0]);
+      const hid = String(H.team.id), aid = String(A.team.id);
+      const info = id => { const tl = teamLeague[id]; const f = tl && fitAt(tl.league, now); return { league: tl ? tl.league : null, games: f ? +(f.n[id] || 0).toFixed(1) : 0, z: f && f.z[id] != null ? +f.z[id].toFixed(3) : null }; };
+      return { id: e.id, kickoff: e.date, home: H.team.displayName, away: A.team.displayName, homeId: hid, awayId: aid, homeAbbr: H.team.abbreviation, awayAbbr: A.team.abbreviation, venue: (c.venue || {}).fullName || '', dk: mkt, info: { home: info(hid), away: info(aid) },
+        style: Object.fromEntries(USTATS.filter(s => s !== 'Offsides').map(s => { const a = styleFor(hid, s, now), b = styleFor(aid, s, now); return [s, { home: [+a.att.toFixed(3), +a.def.toFixed(3), a.ok], away: [+b.att.toFixed(3), +b.def.toFixed(3), b.ok] }]; })) };
+    });
+    return { meta: { built: new Date().toISOString(), today, version: 'ucl-edge-v2-espn', uclRows: ucl.length, train: train.length, test: test.length, domesticLeagues: DOMESTIC.filter(l => (dom[l] || []).length), halfLife: HALF_LIFE, kPrior: K_PRIOR }, coefs, slopes, backtest, fixtures };
+  }
+
+
+  // ---------- market blend + count distributions (shared by page and card) ----------
+  function blendMarket(fx, wPM) {
+    const dk = fx.dk, pm = fx.pm;
+    let H, D, A;
+    if (pm && dk) { const t = pm.H + pm.D + pm.A, w = wPM == null ? 0.5 : wPM; H = w * pm.H / t + (1 - w) * dk.H; D = w * pm.D / t + (1 - w) * dk.D; A = w * pm.A / t + (1 - w) * dk.A; }
+    else if (dk) { H = dk.H; D = dk.D; A = dk.A; }
+    else if (pm) { const t = pm.H + pm.D + pm.A; H = pm.H / t; D = pm.D / t; A = pm.A / t; }
+    else return null;
+    const m = { H, D, A };
+    if (dk && dk.line != null) { m.line = dk.line; m.pOver = dk.pOver; }
+    const lam = solveLambda(m);
+    return { ...m, lh: lam.lh, la: lam.la, fitErr: lam.fitErr };
+  }
+  function dist(mean, r) {
+    const sd = Math.sqrt(r == null ? mean : mean + mean * mean / r), top = Math.max(12, Math.ceil(mean + 8 * sd)), out = [];
+    for (let k = 0; k <= top; k++) {
+      let p;
+      if (r == null) p = Math.exp(-mean + k * Math.log(mean) - lgamma(k + 1));
+      else { const pp = r / (r + mean); p = Math.exp(lgamma(k + r) - lgamma(r) - lgamma(k + 1) + r * Math.log(pp) + k * Math.log(1 - pp)); }
+      out.push(p);
+    }
+    const s = out.reduce((a, b) => a + b, 0); return out.map(x => x / s);
+  }
+  function conv(a, b) { const o = new Array(a.length + b.length - 1).fill(0); for (let i = 0; i < a.length; i++) for (let j = 0; j < b.length; j++) o[i + j] += a[i] * b[j]; return o; }
+  function pOver(d, line) { let s = 0; for (let k = Math.floor(line) + 1; k < d.length; k++) s += d[k]; return s; }
+  function h2h(dh, da) { let H = 0, T = 0, A = 0; for (let i = 0; i < dh.length; i++) for (let j = 0; j < da.length; j++) { const p = dh[i] * da[j]; if (i > j) H += p; else if (i === j) T += p; else A += p; } return { H, T, A }; }
+  function margin(dh, da, m) { let p = 0; for (let i = 0; i < dh.length; i++) for (let j = 0; j < da.length; j++) if (i - j > m) p += dh[i] * da[j]; return p; }
+
+  // Means for one fixture given a market (lh, la). Used by the page and the builder.
+  function means(model, fx, lam) {
+    const out = { Goals: { home: lam.lh, away: lam.la, r: null } };
+    for (const s of USTATS) {
+      const c = model.coefs[s]; if (!c) continue;
+      const st = fx.style[s] || { home: [0, 0], away: [0, 0] };
+      const sh = { att: st.home[0], def: st.home[1] }, sa = { att: st.away[0], def: st.away[1] };
+      out[s] = { home: predict(c.b, features(s, lam, sh, sa, 'home', c.variant)), away: predict(c.b, features(s, lam, sh, sa, 'away', c.variant)), r: c.r };
+    }
+    return out;
+  }
+
+  root.UCLM = { build, means, solveLambda, outcome, marketFromPick, fitLeague, nll, blendMarket, dist, conv, pOver, h2h, margin, USTATS };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+const UCL = {"meta":{"built":"2026-10-21T15:42:50.318Z","today":"2026-10-21","version":"ucl-edge-v2-espn","uclRows":141,"train":96,"test":45,"domesticLeagues":["eng.1","esp.1","ita.1","ger.1","fra.1","por.1","ned.1","bel.1","tur.1","aut.1","nor.1","sco.1","gre.1","den.1","swe.1"],"halfLife":150,"kPrior":5,"public_source":"Action Network public betting (tickets %, money %), pulled 2026-10-21 09:50 CDMX","polymarket_source":"Polymarket Gamma API mid prices, pulled 2026-10-21 09:44 CDMX"},"coefs":{"Shots":{"b":[2.2648,2.2298,0.3469,0.295,0.9488],"r":33.7422,"n":141,"variant":2},"Shots on Target":{"b":[1.022,1.0476,0.3844,0.4887,0.8031],"r":50.0403,"n":141,"variant":2},"Corners":{"b":[1.1127,1.1851,0.3912,0.3208,0.2647],"r":11.4805,"n":141,"variant":2},"Fouls":{"b":[2.9013,2.9355,0.0087,-0.4387,0.3376],"r":null,"n":141,"variant":2},"Cards":{"b":[0.9826,1.1914,-0.1272,-0.4715,0.2192],"r":null,"n":141,"variant":2},"Offsides":{"b":[0.0441,-0.0597,-0.0194,0.4748],"r":2.4425,"n":141,"variant":1}},"slopes":{"Goals|att":0.661,"Goals|def":-0.5128,"Shots|att":0.3403,"Shots|def":-0.2897,"Shots on Target|att":0.4589,"Shots on Target|def":-0.3673,"Corners|att":0.325,"Corners|def":-0.3416,"Fouls|att":-0.0778,"Fouls|def":-0.0151,"Cards|att":-0.1486,"Cards|def":0.1511},"backtest":{"Shots":{"m0":{"nll":3.3042,"bias":1.1106,"n":45},"m1":{"nll":3.0751,"bias":1.0575,"n":45},"m2":{"nll":3.0105,"bias":1.0581,"n":45}},"Shots on Target":{"m0":{"nll":2.5164,"bias":1.0763,"n":45},"m1":{"nll":2.2827,"bias":1.0078,"n":45},"m2":{"nll":2.2674,"bias":1.0162,"n":45}},"Corners":{"m0":{"nll":2.4692,"bias":1.0114,"n":45},"m1":{"nll":2.39,"bias":0.9696,"n":45},"m2":{"nll":2.3876,"bias":0.9712,"n":45}},"Fouls":{"m0":{"nll":2.6315,"bias":1.0557,"n":45},"m1":{"nll":2.6106,"bias":1.092,"n":45},"m2":{"nll":2.5975,"bias":1.0754,"n":45}},"Cards":{"m0":{"nll":1.5768,"bias":1.0433,"n":45},"m1":{"nll":1.5563,"bias":1.0582,"n":45},"m2":{"nll":1.5538,"bias":1.0497,"n":45}},"Offsides":{"m0":{"nll":1.9508,"bias":1.329,"n":45},"m1":{"nll":1.9422,"bias":1.2983,"n":45}},"Goals":{"mkt":1.6299,"n":45}},"fixtures":[{"id":"401915395","kickoff":"2026-10-21T16:45Z","home":"Como","away":"Manchester United","homeId":"2572","awayId":"360","homeAbbr":"COMO","awayAbbr":"MAN","venue":"Giuseppe Sinigaglia","dk":{"H":0.3879,"D":0.2534,"A":0.3586,"overround":1.0522,"provider":"DraftKings","ml":[145,275,165],"line":3.5,"pOver":0.414,"ouOdds":[130,-160]},"info":{"home":{"league":"ita.1","games":16.6,"z":0.519},"away":{"league":"eng.1","games":16.1,"z":0.254}},"style":{"Shots":{"home":[0.046,-0.009,true],"away":[0.127,-0.01,true]},"Shots on Target":{"home":[0.004,-0.026,true],"away":[0.084,0.033,true]},"Corners":{"home":[0.039,-0.001,true],"away":[-0.003,0.004,true]},"Fouls":{"home":[-0.005,0.016,true],"away":[-0.048,0.004,true]},"Cards":{"home":[0.076,0.134,true],"away":[-0.017,0.089,true]}},"pm":{"slug":"ucl-com-mnu-2026-10-21","H":0.405,"D":0.255,"A":0.355,"liq":1336521,"vol":700017,"pulled":"2026-10-21T15:44:50.126Z"},"public":{"ml":{"H":[53,48],"D":[5,7],"A":[42,45]},"tot":{"line":3.5,"O":[91,89],"U":[9,11]}}},{"id":"401915396","kickoff":"2026-10-21T16:45Z","home":"Lille","away":"Galatasaray","homeId":"166","awayId":"432","homeAbbr":"LILL","awayAbbr":"GAL","venue":"Decathlon Arena - Stade Pierre-Mauroy","dk":{"H":0.4067,"D":0.2692,"A":0.324,"overround":1.0462,"provider":"DraftKings","ml":[135,255,195],"line":2.5,"pOver":0.569,"ouOdds":[-150,120]},"info":{"home":{"league":"fra.1","games":15,"z":0.26},"away":{"league":"tur.1","games":15.5,"z":0.46}},"style":{"Shots":{"home":[-0.115,-0.05,true],"away":[0.106,0.001,true]},"Shots on Target":{"home":[-0.08,-0.118,true],"away":[0.08,0.03,true]},"Corners":{"home":[-0.096,-0.016,true],"away":[0.093,-0.106,true]},"Fouls":{"home":[-0.053,0.115,true],"away":[-0.009,-0.092,true]},"Cards":{"home":[0.107,-0.006,true],"away":[0.048,-0.057,true]}},"pm":{"slug":"ucl-lil-gal-2026-10-21","H":0.405,"D":0.265,"A":0.325,"liq":1137328,"vol":204938,"pulled":"2026-10-21T15:44:50.129Z"},"public":{"ml":{"H":[43,34],"D":[5,6],"A":[52,60]},"tot":{"line":2.5,"O":[93,89],"U":[7,11]}}},{"id":"401915394","kickoff":"2026-10-21T19:00Z","home":"Aston Villa","away":"Viking FK","homeId":"362","awayId":"510","homeAbbr":"AVL","awayAbbr":"VFK","venue":"Villa Park","dk":{"H":0.7591,"D":0.146,"A":0.0949,"overround":1.0538,"provider":"DraftKings","ml":[-400,550,900],"line":3.5,"pOver":0.5656,"ouOdds":[-145,120]},"info":{"home":{"league":"eng.1","games":16.1,"z":0.008},"away":{"league":"nor.1","games":16,"z":0.54}},"style":{"Shots":{"home":[0.007,0.047,true],"away":[-0.108,0.14,true]},"Shots on Target":{"home":[0.01,0.043,true],"away":[-0.122,-0.022,true]},"Corners":{"home":[-0.067,-0.045,true],"away":[0.018,0.183,true]},"Fouls":{"home":[-0.07,0.116,true],"away":[0.087,0.05,true]},"Cards":{"home":[-0.098,0.247,true],"away":[0.165,0.124,true]}},"pm":{"slug":"ucl-ast-vf-2026-10-21","H":0.785,"D":0.135,"A":0.095,"liq":1286212,"vol":812792,"pulled":"2026-10-21T15:44:50.133Z"},"public":{"ml":{"H":[97,93],"D":[1,2],"A":[2,5]},"tot":{"line":3.5,"O":[92,94],"U":[8,6]}}},{"id":"401915312","kickoff":"2026-10-21T19:00Z","home":"Bayern Munich","away":"Arsenal","homeId":"132","awayId":"359","homeAbbr":"MUN","awayAbbr":"ARS","venue":"Allianz Arena","dk":{"H":0.4325,"D":0.2504,"A":0.3171,"overround":1.051,"provider":"DraftKings","ml":[120,280,200],"line":3.5,"pOver":0.406,"ouOdds":[135,-165]},"info":{"home":{"league":"ger.1","games":14.5,"z":0.834},"away":{"league":"eng.1","games":16.1,"z":0.517}},"style":{"Shots":{"home":[0.027,0.008,true],"away":[-0.134,-0.092,true]},"Shots on Target":{"home":[0.089,0.025,true],"away":[-0.158,-0.158,true]},"Corners":{"home":[0.047,-0.022,true],"away":[-0.101,-0.022,true]},"Fouls":{"home":[-0.049,-0.118,true],"away":[-0.024,0.142,true]},"Cards":{"home":[-0.116,-0.131,true],"away":[-0.206,0.125,true]}},"pm":{"slug":"ucl-bay-ars-2026-10-21","H":0.435,"D":0.255,"A":0.315,"liq":2028430,"vol":1908869,"pulled":"2026-10-21T15:44:50.136Z"},"public":{"ml":{"H":[70,65],"D":[4,6],"A":[26,29]},"tot":{"line":3.5,"O":[94,92],"U":[6,8]}}},{"id":"401915388","kickoff":"2026-10-21T19:00Z","home":"Club Brugge","away":"Lens","homeId":"570","awayId":"175","homeAbbr":"BRU","awayAbbr":"RCL","venue":"Jan Breydel Stadium","dk":{"H":0.5116,"D":0.2333,"A":0.2551,"overround":1.0455,"provider":"DraftKings","ml":[-115,310,275],"line":3.5,"pOver":0.4783,"ouOdds":[100,-120]},"info":{"home":{"league":"bel.1","games":17.1,"z":0.643},"away":{"league":"fra.1","games":15,"z":0.321}},"style":{"Shots":{"home":[0.038,0.173,true],"away":[0.074,-0.012,true]},"Shots on Target":{"home":[0.03,0.091,true],"away":[0.057,0.044,true]},"Corners":{"home":[0.054,0.081,true],"away":[0.131,-0.009,true]},"Fouls":{"home":[-0.079,-0.011,true],"away":[0.033,0.007,true]},"Cards":{"home":[-0.102,0.033,true],"away":[0.106,-0.032,true]}},"pm":{"slug":"ucl-bru-rcl-2026-10-21","H":0.515,"D":0.225,"A":0.255,"liq":1111583,"vol":70225,"pulled":"2026-10-21T15:44:50.140Z"},"public":{"ml":{"H":[88,92],"D":[2,2],"A":[9,6]},"tot":{"line":3.5,"O":[90,86],"U":[10,14]}}},{"id":"401915390","kickoff":"2026-10-21T19:00Z","home":"Internazionale","away":"Shakhtar Donetsk","homeId":"110","awayId":"493","homeAbbr":"INT","awayAbbr":"SHK","venue":"San Siro","dk":{"H":0.7727,"D":0.1364,"A":0.0909,"overround":1.0476,"provider":"DraftKings","ml":[-425,600,950],"line":3.5,"pOver":0.4948,"ouOdds":[-110,-115]},"info":{"home":{"league":"ita.1","games":16.5,"z":0.64},"away":{"league":null,"games":0,"z":null}},"style":{"Shots":{"home":[0.057,0.001,true],"away":[0,0,false]},"Shots on Target":{"home":[0.04,0.019,true],"away":[0,0,false]},"Corners":{"home":[0.002,-0.058,true],"away":[0,0,false]},"Fouls":{"home":[-0.015,-0.083,true],"away":[0,0,false]},"Cards":{"home":[0.037,-0.057,true],"away":[0,0,false]}},"pm":{"slug":"ucl-int-shd-2026-10-21","H":0.795,"D":0.135,"A":0.075,"liq":894049,"vol":75716,"pulled":"2026-10-21T15:44:50.143Z"},"public":{"ml":{"H":[99,97],"D":[0,1],"A":[1,2]},"tot":{"line":3.5,"O":[88,83],"U":[12,17]}}},{"id":"401915389","kickoff":"2026-10-21T19:00Z","home":"Real Betis","away":"Feyenoord Rotterdam","homeId":"244","awayId":"142","homeAbbr":"BET","awayAbbr":"FEY","venue":"Estadio La Cartuja","dk":{"H":0.586,"D":0.207,"A":0.207,"overround":1.0502,"provider":"DraftKings","ml":[-160,360,360],"line":3.5,"pOver":0.5108,"ouOdds":[-115,-105]},"info":{"home":{"league":"esp.1","games":17.9,"z":0.134},"away":{"league":"ned.1","games":16.2,"z":0.52}},"style":{"Shots":{"home":[0.089,0.087,true],"away":[0.028,-0.017,true]},"Shots on Target":{"home":[0.13,0.184,true],"away":[0.024,-0.013,true]},"Corners":{"home":[-0.079,0.147,true],"away":[0.063,-0.043,true]},"Fouls":{"home":[-0.121,-0.015,true],"away":[-0.065,0.095,true]},"Cards":{"home":[-0.134,0.071,true],"away":[0.035,-0.052,true]}},"pm":{"slug":"ucl-bet-fey-2026-10-21","H":0.595,"D":0.205,"A":0.205,"liq":1059077,"vol":69462,"pulled":"2026-10-21T15:44:50.148Z"},"public":{"ml":{"H":[92,90],"D":[2,2],"A":[7,8]},"tot":{"line":3.5,"O":[90,89],"U":[10,11]}}},{"id":"401915313","kickoff":"2026-10-21T19:00Z","home":"Real Madrid","away":"RB Leipzig","homeId":"86","awayId":"11420","homeAbbr":"RMA","awayAbbr":"RBL","venue":"Santiago Bernabéu","dk":{"H":0.7849,"D":0.1279,"A":0.0872,"overround":1.0424,"provider":"DraftKings","ml":[-450,650,1000],"line":4.5,"pOver":0.4632,"ouOdds":[105,-130]},"info":{"home":{"league":"esp.1","games":18,"z":0.559},"away":{"league":"ger.1","games":14.5,"z":0.217}},"style":{"Shots":{"home":[0.035,0.098,true],"away":[0.057,0.041,true]},"Shots on Target":{"home":[0.071,0.074,true],"away":[0.088,0.119,true]},"Corners":{"home":[0.04,-0.015,true],"away":[-0.005,0.088,true]},"Fouls":{"home":[-0.154,0.126,true],"away":[-0.067,0.05,true]},"Cards":{"home":[0.045,-0.023,true],"away":[-0.191,-0.205,true]}},"pm":{"slug":"ucl-rma-rbl-2026-10-21","H":0.805,"D":0.125,"A":0.085,"liq":1676496,"vol":199125,"pulled":"2026-10-21T15:44:50.152Z"},"public":{"ml":{"H":[99,99],"D":[0,1],"A":[1,1]},"tot":{"line":4.5,"O":[87,89],"U":[13,11]}}},{"id":"401915391","kickoff":"2026-10-21T19:00Z","home":"Sporting CP","away":"LASK Linz","homeId":"2250","awayId":"4411","homeAbbr":"SCP","awayAbbr":"LAS","venue":"Estádio José Alvalade","dk":{"H":0.7582,"D":0.1466,"A":0.0953,"overround":1.0498,"provider":"DraftKings","ml":[-390,550,900],"line":3.5,"pOver":0.5325,"ouOdds":[-125,105]},"info":{"home":{"league":"por.1","games":15.4,"z":0.635},"away":{"league":"aut.1","games":11.8,"z":0.604}},"style":{"Shots":{"home":[-0.041,0.005,true],"away":[0.049,-0.007,true]},"Shots on Target":{"home":[0.03,0.033,true],"away":[0.043,-0.012,true]},"Corners":{"home":[-0.029,-0.049,true],"away":[-0.057,-0.006,true]},"Fouls":{"home":[-0.019,0.031,true],"away":[0.037,-0.004,true]},"Cards":{"home":[0.035,-0.015,true],"away":[-0.126,-0.017,true]}},"pm":{"slug":"ucl-spo-lin2-2026-10-21","H":0.775,"D":0.135,"A":0.085,"liq":940369,"vol":172247,"pulled":"2026-10-21T15:44:50.155Z"},"public":{"ml":{"H":[99,98],"D":[0,1],"A":[1,1]},"tot":{"line":3.5,"O":[91,94],"U":[9,6]}}}]};
+const LAB={Goals:'Goles',Shots:'Tiros','Shots on Target':'Tiros a puerta',Corners:'Córners',Fouls:'Faltas',Cards:'Tarjetas',Offsides:'Fueras de juego'};
+const SHORT={Goals:'goles',Shots:'tiros','Shots on Target':'SOT',Corners:'córners',Fouls:'faltas',Cards:'tarjetas',Offsides:'offsides'};
+const ORDER=['Goals','Shots','Shots on Target','Corners','Fouls','Cards','Offsides'];
+const $=id=>document.getElementById(id);
+const pct=x=>(x*100).toFixed(0)+'%';
+const fair=p=>p>0.001?(1/p).toFixed(2):'—';
+const am=x=>x==null?'—':(x>0?'+':'')+x;
+const amDec=x=>x==null?null:(x>0?1+x/100:1+100/(-x));
+const mainLine=m=>Math.max(0.5,Math.round(m-0.5)+0.5);
+const tz='America/Mexico_City';
+const iso=x=>x.replace(/T(\d\d:\d\d)Z$/,'T$1:00Z');
+const hhmm=x=>new Date(iso(x)).toLocaleTimeString('es-MX',{timeZone:tz,hour:'numeric',minute:'2-digit'});
+let FI=0, MODE='picks', LINES={}, LIVE={};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+function fx(){ return UCL.fixtures[FI]; }
+function calc(f){
+  const mk=UCLM.blendMarket(f,0.5); if(!mk) return null;
+  const mu=UCLM.means(UCL,f,mk), D={};
+  for(const s of ORDER){ const m=mu[s]; if(!m) continue; const dh=UCLM.dist(m.home,m.r), da=UCLM.dist(m.away,m.r); D[s]={m,dh,da,dt:UCLM.conv(dh,da)}; }
+  return {mk,D};
+}
+function odd(lab,p,best){ return `<div class="odd ${best?'fav':''}"><div class="lab">${lab}</div><div class="px cond">${fair(p)}</div><div class="pc">${(p*100).toFixed(1)}%</div></div>`; }
+function stepTicket(key,name,sub,d,dflt){
+  if(!(key in LINES)) LINES[key]=dflt;
+  const L=LINES[key], po=UCLM.pOver(d,L), pu=1-po;
+  return `<div class="ticket"><div class="tHead"><div class="tName">${name}</div><div class="tLam">${sub}</div></div>
+   <div class="lineRow"><div class="stepper"><button onclick="bump('${key}',-1)">−</button><div class="val cond">${L}</div><button onclick="bump('${key}',1)">+</button></div>
+   ${odd('Más de',po,po>pu)}${odd('Menos de',pu,pu>=po)}</div></div>`;
+}
+function bump(k,d){ LINES[k]=Math.max(0.5,LINES[k]+d); render(); }
+function two(name,sub,cells){ const b=Math.max(...cells.map(c=>c[1])); return `<div class="ticket"><div class="tHead"><div class="tName">${name}</div><div class="tLam">${sub||''}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${cells.map(c=>odd(c[0],c[1],c[1]===b)).join('')}</div></div>`; }
+function three(name,sub,cells){ const b=Math.max(...cells.map(c=>c[1])); return `<div class="ticket"><div class="tHead"><div class="tName">${name}</div><div class="tLam">${sub||''}</div></div><div class="h3col">${cells.map(c=>odd(c[0],c[1],c[1]===b)).join('')}</div></div>`; }
+
+function context(f,C){
+  const mk=C.mk, pmT=f.pm?f.pm.H+f.pm.D+f.pm.A:1, live=LIVE[f.id]||{};
+  const rows=[];
+  if(f.dk) rows.push(`<tr><td>DraftKings ${f.dk.ml.map(am).join(' / ')}</td><td>${pct(f.dk.H)}</td><td>${pct(f.dk.D)}</td><td>${pct(f.dk.A)}</td></tr>`);
+  if(f.pm) rows.push(`<tr><td>Polymarket · $${(f.pm.liq/1e6).toFixed(1)}M</td><td>${pct(f.pm.H/pmT)}</td><td>${pct(f.pm.D/pmT)}</td><td>${pct(f.pm.A/pmT)}</td></tr>`);
+  rows.push(`<tr class="bl"><td>Mezcla → justa</td><td>${pct(mk.H)} · ${fair(mk.H)}</td><td>${pct(mk.D)} · ${fair(mk.D)}</td><td>${pct(mk.A)} · ${fair(mk.A)}</td></tr>`);
+  if(f.public) rows.push(`<tr><td>Público boletos / dinero</td><td>${f.public.ml.H[0]}% / ${f.public.ml.H[1]}%</td><td>${f.public.ml.D[0]}% / ${f.public.ml.D[1]}%</td><td>${f.public.ml.A[0]}% / ${f.public.ml.A[1]}%</td></tr>`);
+  const pt=f.public?`Público en el total: <b>${f.public.tot.O[0]}%</b> de boletos al over ${f.public.tot.line} (dinero ${f.public.tot.O[1]}%).`:'';
+  const notes=[];
+  for(const s of ['Shots','Shots on Target','Corners','Fouls','Cards']){ const st=f.style[s]; if(!st) continue;
+    for(const [side,nm] of [['home',f.home],['away',f.away]]){ const [a,d,ok]=st[side]; if(!ok) continue;
+      if(Math.abs(a)>=0.12) notes.push(`${nm} ${a>0?'genera más':'genera menos'} ${SHORT[s]} de lo que su nivel indica (${a>0?'+':''}${(a*100).toFixed(0)}%)`);
+      if(Math.abs(d)>=0.12) notes.push(`${nm} ${d>0?'concede más':'concede menos'} ${SHORT[s]} (${d>0?'+':''}${(d*100).toFixed(0)}%)`); } }
+  if(!f.info.home.league) notes.push(`${f.home}: sin box scores de su liga en ESPN, estilo neutral`);
+  if(!f.info.away.league) notes.push(`${f.away}: sin box scores de su liga en ESPN (Ucrania), estilo neutral`);
+  const st=live.state==='in'?'<span class="pill warn">EN JUEGO · precios pre-partido</span>':live.state==='post'?'<span class="pill warn">TERMINADO</span>':live.ok?'<span class="pill live">momios en vivo</span>':'<span class="pill">snapshot '+hhmm(UCL.meta.built.slice(0,16)+'Z')+'</span>';
+  return `<div class="ticket"><div class="tHead"><div class="tName">Mercado 1X2</div>${st}</div>
+   <table class="mk"><tr><th></th><th>${f.homeAbbr}</th><th>Empate</th><th>${f.awayAbbr}</th></tr>${rows.join('')}</table>
+   <div class="tLam" style="margin-top:8px">Goles esperados <b>${mk.lh.toFixed(2)} – ${mk.la.toFixed(2)}</b> (total ${(mk.lh+mk.la).toFixed(2)}). ${pt}</div>
+   ${notes.length?`<div class="tLam" style="margin-top:6px">Estilo: ${notes.join('; ')}.</div>`:''}</div>`;
+}
+
+function candidates(f,C){
+  const out=[], add=(name,p,fam)=>{ if(p>0.02&&p<0.98) out.push({name,p,fair:1/p,fam}); };
+  for(const s of ORDER){ const X=C.D[s]; if(!X) continue; const tot=X.m.home+X.m.away;
+    for(let L=Math.max(0.5,Math.floor(tot)-3.5);L<=tot+3.5;L++){ const po=UCLM.pOver(X.dt,L); add(`${LAB[s]} más de ${L}`,po,s); add(`${LAB[s]} menos de ${L}`,1-po,s); }
+    for(const [side,nm,m,d] of [['h',f.home,X.m.home,X.dh],['a',f.away,X.m.away,X.da]]){
+      for(let L=Math.max(0.5,Math.floor(m)-2.5);L<=m+2.5;L++){ const po=UCLM.pOver(d,L); add(`${nm} ${SHORT[s]} más de ${L}`,po,s); add(`${nm} ${SHORT[s]} menos de ${L}`,1-po,s); } }
+  }
+  return out;
+}
+function pickCard(title,sub,items,note){
+  const rows=items.length?items.map(it=>`<div class="pickRow"><button class="plus" onclick='savePick(${JSON.stringify(it.name)},${it.fair.toFixed(3)},${it.p.toFixed(4)})'>＋</button>
+    <div style="font-size:.85rem">${it.name} <span class="tLam">· ${SHORT[it.fam]||''}</span></div>
+    <div class="odd fav" style="min-width:84px"><div class="px cond">${it.fair.toFixed(2)}</div><div class="pc">${(it.p*100).toFixed(0)}%</div></div></div>`).join('')
+    :'<div class="tLam" style="margin-top:6px">Sin candidatos en este rango.</div>';
+  return `<div class="ticket"><div class="tHead"><div class="tName">${title}</div><div class="tLam">${sub}</div></div>${rows}${note?`<div class="tLam" style="margin-top:8px">${note}</div>`:''}</div>`;
+}
+function valueVsBook(f,C){
+  if(!f.dk) return '';
+  const mk=C.mk, rows=[], add=(name,p,dec)=>{ if(!dec) return; const e=dec*p-1; rows.push({name:`${name} — DK ${dec.toFixed(2)}${e>0.02?' 🟢':''}`,p,fair:1/p,fam:'Goals',edge:e}); };
+  add(`Gana ${f.home}`,mk.H,amDec(f.dk.ml[0])); add('Empate',mk.D,amDec(f.dk.ml[1])); add(`Gana ${f.away}`,mk.A,amDec(f.dk.ml[2]));
+  if(f.dk.line!=null&&f.dk.ouOdds){ const po=UCLM.pOver(C.D.Goals.dt,f.dk.line); add(`Más de ${f.dk.line} goles`,po,amDec(f.dk.ouOdds[0])); add(`Menos de ${f.dk.line} goles`,1-po,amDec(f.dk.ouOdds[1])); }
+  return pickCard('Valor vs DraftKings','justa vs precio real',rows.map(r=>({...r,name:r.name+` · ${(r.edge*100).toFixed(1)}%`})),'🟢 = la casa paga más que la justa (edge > 2%). En 1X2 la justa es casi el propio mercado, así que rara vez habrá valor aquí: el edge está en los props.');
+}
+
+function render(){
+  const f=fx(), C=calc(f);
+  $('tH').textContent=f.home; $('tA').textContent=f.away;
+  $('venue').textContent=`${hhmm(f.kickoff)} CDMX · ${f.venue}`;
+  if(!C){ $('ctx').innerHTML='<div class="ticket">Sin momios para este partido.</div>'; $('markets').innerHTML=''; return; }
+  $('ctx').innerHTML=context(f,C);
+  let h='';
+  if(MODE==='total'){
+    for(const s of ORDER){ const X=C.D[s]; if(!X) continue; const tot=X.m.home+X.m.away;
+      const dflt=s==='Goals'&&f.dk&&f.dk.line?f.dk.line:mainLine(tot);
+      h+=stepTicket(`T|${f.id}|${s}`,LAB[s],`esp: <b>${tot.toFixed(2)}</b> (${X.m.home.toFixed(1)} + ${X.m.away.toFixed(1)})${s==='Offsides'?' · sin estilo local':''}`,X.dt,dflt); }
+  } else if(MODE==='team'){
+    for(const s of ORDER){ const X=C.D[s]; if(!X) continue;
+      h+=stepTicket(`H|${f.id}|${s}`,`${f.home} · ${LAB[s]}`,`esp: <b>${X.m.home.toFixed(2)}</b>`,X.dh,mainLine(X.m.home));
+      h+=stepTicket(`A|${f.id}|${s}`,`${f.away} · ${LAB[s]}`,`esp: <b>${X.m.away.toFixed(2)}</b>`,X.da,mainLine(X.m.away)); }
+  } else if(MODE==='h2h'){
+    for(const s of ['Shots','Shots on Target','Corners','Fouls','Cards','Offsides']){ const X=C.D[s]; if(!X) continue; const r=UCLM.h2h(X.dh,X.da);
+      h+=three(`Más ${LAB[s].toLowerCase()}`,`${X.m.home.toFixed(1)} vs ${X.m.away.toFixed(1)}`,[[f.homeAbbr,r.H],['Empate',r.T],[f.awayAbbr,r.A]]); }
+    const X=C.D.Corners, fav=X.m.home>=X.m.away;
+    for(const m of [0,1,2,3]){ const p=fav?UCLM.margin(X.dh,X.da,m):UCLM.margin(X.da,X.dh,m);
+      h+=two(`Hándicap córners ${fav?f.homeAbbr:f.awayAbbr} −${m+0.5}`,'',[['Cubre',p],['No cubre',1-p]]); }
+  } else if(MODE==='goles'){
+    const X=C.D.Goals, mk=C.mk;
+    h+=three('1X2 (mezcla)',`goles esp ${mk.lh.toFixed(2)}–${mk.la.toFixed(2)}`,[[f.homeAbbr,mk.H],['Empate',mk.D],[f.awayAbbr,mk.A]]);
+    h+=three('Doble oportunidad','',[['1X',mk.H+mk.D],['12',mk.H+mk.A],['X2',mk.D+mk.A]]);
+    h+=two('Empate no apuesta','',[[f.homeAbbr,mk.H/(mk.H+mk.A)],[f.awayAbbr,mk.A/(mk.H+mk.A)]]);
+    const btts=(1-X.dh[0])*(1-X.da[0]); h+=two('Ambos anotan','',[['Sí',btts],['No',1-btts]]);
+    h+=stepTicket(`G|${f.id}`,'Total de goles',`esp: <b>${(mk.lh+mk.la).toFixed(2)}</b>`,X.dt,f.dk&&f.dk.line?f.dk.line:mainLine(mk.lh+mk.la));
+    h+=valueVsBook(f,C);
+  } else {
+    const all=candidates(f,C), band=(lo,hi,fam)=>all.filter(c=>c.fair>=lo&&c.fair<=hi&&(!fam||fam(c.fam))).sort((a,b)=>b.p-a.p);
+    const props=c=>c!=='Goals';
+    h+=pickCard('Safe pick','cuota justa 1.50–1.65',band(1.50,1.65,props).slice(0,2),'Apuesta solo si tu casa paga MÁS que la justa mostrada.');
+    h+=pickCard('Alto valor','cuota justa 1.75–2.05',band(1.75,2.05,props).filter((c,i,a)=>a.findIndex(x=>x.name.split(' más')[0].split(' menos')[0]===c.name.split(' más')[0].split(' menos')[0])===i).slice(0,4),'~50–57%: pagan bien pero fallan casi la mitad de las veces.');
+    h+=pickCard('Línea principal de goles','mercado',[['más',UCLM.pOver(C.D.Goals.dt,f.dk&&f.dk.line||2.5)],['menos',1-UCLM.pOver(C.D.Goals.dt,f.dk&&f.dk.line||2.5)]].map(([w,p])=>({name:`Goles ${w} de ${f.dk&&f.dk.line||2.5}`,p,fair:1/p,fam:'Goals'})),'Goles = mercado; sirve de referencia, no de edge.');
+  }
+  $('markets').innerHTML=h;
+}
+
+function savePick(name,fairPx,p){ const f=fx(); const R=store.get('uclPicks',[]); R.unshift({id:Date.now(),date:UCL.meta.today,match:`${f.home} vs ${f.away}`,name,fair:fairPx,p,price:null,res:null}); store.set('uclPicks',R); renderReg(); }
+function renderReg(){
+  const R=store.get('uclPicks',[]), done=R.filter(r=>r.res==='W'||r.res==='L'), w=done.filter(r=>r.res==='W').length;
+  let h=`<div class="ticket"><div class="tName">Registro</div><div class="tLam">${R.length} picks guardados · ${w}-${done.length-w} calificados. Se guarda solo en este teléfono.</div></div>`;
+  h+=R.map(r=>`<div class="ticket"><div class="tLam">${r.date} · ${r.match}</div><div style="margin:4px 0 8px">${r.name} <span class="tLam">· justa ${(+r.fair).toFixed(2)}</span></div>
+    <div class="h3col"><button class="btn ${r.res==='W'?'':'ghost'}" onclick="mark(${r.id},'W')">Ganó</button><button class="btn ${r.res==='L'?'':'ghost'}" onclick="mark(${r.id},'L')">Perdió</button><button class="btn ghost" onclick="del(${r.id})">Borrar</button></div></div>`).join('');
+  $('regView').innerHTML=h;
+}
+function mark(id,res){ const R=store.get('uclPicks',[]); const r=R.find(x=>x.id===id); if(r) r.res=r.res===res?null:res; store.set('uclPicks',R); renderReg(); }
+function del(id){ store.set('uclPicks',store.get('uclPicks',[]).filter(x=>x.id!==id)); renderReg(); }
+
+function renderData(){
+  const b=UCL.backtest, m=UCL.meta;
+  const row=s=>`<tr><td>${LAB[s]}</td><td>${b[s].m0.nll.toFixed(3)}</td><td>${b[s].m1.nll.toFixed(3)}</td><td>${b[s].m2?b[s].m2.nll.toFixed(3):'—'}</td></tr>`;
+  $('dataView').innerHTML=`<div class="ticket"><div class="tName">Cómo funciona</div><div class="tLam" style="margin-top:6px">
+  <b>1. Fuerza del partido = mercado.</b> Los momios 1X2 y el total de DraftKings (vía ESPN), mezclados 50/50 con Polymarket, se convierten en goles esperados. De ahí salen la superioridad y el ritmo del partido.<br>
+  <b>2. Estilo = liga local.</b> Con ${m.domesticLeagues.length} ligas de ESPN se calculan ratings de ataque y defensa por estadística, ajustados por rival y con decaimiento temporal (vida media ${m.halfLife} días). A cada rating se le quita la parte que explica el nivel del equipo; lo que queda es estilo (p. ej. "más córners de lo que su nivel indica").<br>
+  <b>3. Capa UCL.</b> Regresión Poisson por estadística sobre ${m.uclRows} partidos de UCL con momios (ago-2025 a hoy): base local/visita + superioridad + ritmo + estilo. Dispersión binomial negativa estimada de los residuos.<br>
+  <b>Límites:</b> no hay datos de la liga ucraniana (Shakhtar = estilo neutral); los fueras de juego no tienen dato local; no hay ajuste por árbitro ni alineaciones.</div></div>
+  <div class="ticket"><div class="tName">Backtest</div><div class="tLam" style="margin:6px 0">Ajustado con ${m.train} partidos antes de jul-2026; evaluado en los ${m.test} de la fase de liga 2026-27. Log loss medio por equipo-partido (menor = mejor).</div>
+  <table class="mk"><tr><th>Stat</th><th>Promedio UCL</th><th>Solo mercado</th><th>Mercado + estilo</th></tr>${['Shots','Shots on Target','Corners','Fouls','Cards','Offsides'].map(row).join('')}</table>
+  <div class="tLam" style="margin-top:6px">El estilo ayuda sobre todo en tiros y tiros a puerta; en córners, faltas y tarjetas la mejora es pequeña. Goles: log loss del mercado ${b.Goals.mkt.toFixed(3)}.</div></div>
+  <div class="ticket"><div class="tName">Fuentes</div><div class="tLam" style="margin-top:6px">ESPN (marcadores, box scores, momios DraftKings) · Polymarket (Gamma API) · Action Network (% público, snapshot ${m.public_source?m.public_source.split('pulled ')[1]:''}). Modelo construido ${m.built.slice(0,16).replace('T',' ')} UTC.</div>
+  <button class="btn" style="margin-top:10px;width:100%" onclick="refreshAll()">Actualizar momios</button></div>`;
+}
+
+async function refreshFixture(f){
+  try{
+    const s=await (await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/summary?event='+f.id)).json();
+    const state=s.header?.competitions?.[0]?.status?.type?.state; LIVE[f.id]={state};
+    if(state==='pre'){ const dk=UCLM.marketFromPick((s.pickcenter||[])[0]); if(dk){ f.dk=dk; LIVE[f.id].ok=true; } }
+  }catch(e){}
+  try{
+    if(f.pm&&f.pm.slug&&(LIVE[f.id]||{}).state!=='in'){
+      const e=(await (await fetch('https://gamma-api.polymarket.com/events?slug='+f.pm.slug)).json())[0];
+      const ms=(e.markets||[]).map(m=>({t:m.groupItemTitle||'',p:+JSON.parse(m.outcomePrices||'[0]')[0]})), d=ms.find(m=>/^draw/i.test(m.t)), sd=ms.filter(m=>m!==d);
+      if(d&&sd.length===2&&(LIVE[f.id]||{}).state==='pre') Object.assign(f.pm,{H:sd[0].p,D:d.p,A:sd[1].p,liq:+e.liquidity||f.pm.liq});
+    }
+  }catch(e){}
+}
+async function refreshAll(){ await Promise.all(UCL.fixtures.map(refreshFixture)); render(); }
+
+function init(){
+  $('dataDate').innerHTML=`${UCL.meta.today}<br>${UCL.meta.version}`;
+  const sel=$('fixSel');
+  sel.innerHTML=UCL.fixtures.map((f,i)=>`<option value="${i}">${hhmm(f.kickoff)} · ${f.home} vs ${f.away}</option>`).join('');
+  sel.onchange=()=>{ FI=+sel.value; render(); };
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); b.classList.add('on'); MODE=b.dataset.mode; render(); });
+  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    for(const v of ['mainView','regView','dataView']) $(v).style.display=v===b.dataset.view?(v==='mainView'?'block':'flex'):'none'; });
+  const next=UCL.fixtures.findIndex(f=>Date.parse(iso(f.kickoff))>Date.now()-100*60e3); FI=next<0?0:next; sel.value=FI;
+  render(); renderReg(); renderData(); refreshAll();
+}
+init();
+</script>
+</body>
+</html>
