@@ -686,7 +686,7 @@ async function valueSection(home,away){
   const dh=dist(h,r), da=dist(a,r), dt=conv(dh,da);
   let pH=0,pD=0;
   for(let i=0;i<dh.length;i++){ let c=0; for(let j=0;j<Math.min(i,da.length);j++) c+=da[j]; pH+=dh[i]*c; pD+=dh[i]*(da[i]||0); }
-  let pA=1-pH-pD;
+  let pA=1-pH-pD; const pHmodel=pH;
   try{ const pm=await polymarketOdds(home,away,(FIX.find(x=>String(x.id)===String(CUR_EVENT))||{}).date||dateInTZ('America/Mexico_City'));
     if(pm&&!pm.live){ const mo={H:pH,D:pD,A:pA}, w=pm.liq>=50000?0.70:0.50; pH=w*pm.H+(1-w)*mo.H; pD=w*pm.D+(1-w)*mo.D; pA=w*pm.A+(1-w)*mo.A; provider=(provider||'casa')+' · 1X2 mezclado con Polymarket'; } }catch(e){}
   const rows=[];
@@ -704,6 +704,8 @@ async function valueSection(home,away){
   if(odds.spread){
     const sp=Math.abs(parseFloat(odds.spread)); // home favored negative
     let pCov=0; for(let i=0;i<dh.length;i++) for(let j=0;j<da.length;j++) if(i-j>sp) pCov+=dh[i]*da[j];
+    // v33: keep handicaps consistent with the (Polymarket-blended) win probability
+    if(sp===0.5) pCov=pH; else if(pHmodel>0) pCov=Math.min(0.99,pCov*pH/pHmodel);
     add(`${short(home)} ${odds.spread}`, pCov, amToDec(ho.spreadOdds));
     add(`${short(away)} +${sp}`, 1-pCov, amToDec(ao.spreadOdds));
   }
