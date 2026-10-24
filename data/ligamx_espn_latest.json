@@ -1,7 +1,7 @@
 {
   "source": "ESPN",
-  "generatedAt": "2026-10-24T00:47:03.676233+00:00",
-  "todayMexico": "2026-10-23",
+  "generatedAt": "2026-10-24T22:36:16.362091+00:00",
+  "todayMexico": "2026-10-24",
   "matches": [
     {
       "id": "401876996",
@@ -2157,9 +2157,9 @@
       22
     ],
     "Atlético de San Luis": [
-      16,
-      13,
-      18,
+      19,
+      14,
+      19,
       22
     ],
     "Puebla": [
@@ -2176,9 +2176,9 @@
     ],
     "Atlante": [
       14,
-      13,
       14,
-      19
+      14,
+      20
     ],
     "Pachuca": [
       13,
@@ -2187,29 +2187,19 @@
       18
     ],
     "Necaxa": [
-      9,
-      13,
-      15,
-      26
+      10,
+      14,
+      16,
+      27
     ],
     "FC Juarez": [
-      4,
-      13,
-      8,
-      32
+      5,
+      14,
+      9,
+      33
     ]
   },
   "fixtures": [
-    {
-      "kickoff": "2026-10-24T01:00Z",
-      "home": "Necaxa",
-      "away": "FC Juarez"
-    },
-    {
-      "kickoff": "2026-10-24T03:00Z",
-      "home": "Atlante",
-      "away": "Atlético de San Luis"
-    },
     {
       "kickoff": "2026-10-24T23:00Z",
       "home": "León",
@@ -2392,10 +2382,10 @@
     }
   ],
   "stakes": {
-    "as_of": "2026-10-23",
+    "as_of": "2026-10-24",
     "format": "Apertura 2026: 17 jornadas, top 8 directo a cuartos, sin play-in",
     "sims": 20000,
-    "remaining_fixtures": 38,
+    "remaining_fixtures": 36,
     "k_goals": 0.06,
     "leverage_full": 0.35,
     "teams": {
@@ -2403,7 +2393,7 @@
         "pts": 27,
         "gp": 12,
         "p_top8": 1.0,
-        "p_top4": 0.9942,
+        "p_top4": 0.994,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
@@ -2413,189 +2403,189 @@
       "Guadalajara": {
         "pts": 23,
         "gp": 13,
-        "p_top8": 0.9519,
-        "p_top4": 0.6377,
-        "p_top8_if_win": 0.9981,
-        "p_top8_if_loss": 0.9054,
-        "leverage": 0.0926,
-        "motivation": 0.265,
+        "p_top8": 0.9486,
+        "p_top4": 0.6438,
+        "p_top8_if_win": 0.9985,
+        "p_top8_if_loss": 0.8988,
+        "leverage": 0.0997,
+        "motivation": 0.285,
         "next": "@ Monterrey"
       },
       "Cruz Azul": {
         "pts": 23,
         "gp": 13,
-        "p_top8": 0.9386,
-        "p_top4": 0.583,
-        "p_top8_if_win": 0.9971,
-        "p_top8_if_loss": 0.8792,
-        "leverage": 0.1179,
-        "motivation": 0.337,
+        "p_top8": 0.9347,
+        "p_top4": 0.5804,
+        "p_top8_if_win": 0.9961,
+        "p_top8_if_loss": 0.8706,
+        "leverage": 0.1256,
+        "motivation": 0.359,
         "next": "@ Querétaro"
       },
       "Toluca": {
         "pts": 22,
         "gp": 13,
-        "p_top8": 0.8853,
-        "p_top4": 0.4814,
-        "p_top8_if_win": 0.9914,
-        "p_top8_if_loss": 0.7695,
-        "leverage": 0.2219,
-        "motivation": 0.634,
+        "p_top8": 0.8779,
+        "p_top4": 0.4745,
+        "p_top8_if_win": 0.9891,
+        "p_top8_if_loss": 0.7563,
+        "leverage": 0.2328,
+        "motivation": 0.665,
         "next": "@ León"
       },
       "León": {
         "pts": 21,
         "gp": 13,
-        "p_top8": 0.569,
-        "p_top4": 0.1494,
-        "p_top8_if_win": 0.8141,
-        "p_top8_if_loss": 0.3649,
-        "leverage": 0.4492,
+        "p_top8": 0.5441,
+        "p_top4": 0.1457,
+        "p_top8_if_win": 0.8003,
+        "p_top8_if_loss": 0.3307,
+        "leverage": 0.4696,
         "motivation": 1.0,
         "next": "vs Toluca"
       },
       "Atlas": {
         "pts": 21,
         "gp": 13,
-        "p_top8": 0.6614,
-        "p_top4": 0.1861,
-        "p_top8_if_win": 0.8545,
-        "p_top8_if_loss": 0.4333,
-        "leverage": 0.4212,
+        "p_top8": 0.6347,
+        "p_top4": 0.1822,
+        "p_top8_if_win": 0.8351,
+        "p_top8_if_loss": 0.4026,
+        "leverage": 0.4325,
         "motivation": 1.0,
         "next": "vs Puebla"
       },
       "Monterrey": {
         "pts": 20,
         "gp": 12,
-        "p_top8": 0.7868,
-        "p_top4": 0.3669,
-        "p_top8_if_win": 0.9214,
-        "p_top8_if_loss": 0.6433,
-        "leverage": 0.2781,
-        "motivation": 0.795,
+        "p_top8": 0.7784,
+        "p_top4": 0.3634,
+        "p_top8_if_win": 0.9159,
+        "p_top8_if_loss": 0.6311,
+        "leverage": 0.2848,
+        "motivation": 0.814,
         "next": "vs Guadalajara"
       },
       "Querétaro": {
         "pts": 20,
         "gp": 12,
-        "p_top8": 0.8128,
-        "p_top4": 0.3831,
-        "p_top8_if_win": 0.939,
-        "p_top8_if_loss": 0.683,
-        "leverage": 0.256,
-        "motivation": 0.731,
+        "p_top8": 0.7987,
+        "p_top4": 0.3801,
+        "p_top8_if_win": 0.9369,
+        "p_top8_if_loss": 0.6553,
+        "leverage": 0.2816,
+        "motivation": 0.805,
         "next": "vs Cruz Azul"
       },
       "Santos": {
         "pts": 19,
         "gp": 13,
-        "p_top8": 0.5984,
-        "p_top4": 0.129,
-        "p_top8_if_win": 0.8556,
-        "p_top8_if_loss": 0.4379,
-        "leverage": 0.4178,
+        "p_top8": 0.5837,
+        "p_top4": 0.1316,
+        "p_top8_if_win": 0.8528,
+        "p_top8_if_loss": 0.4173,
+        "leverage": 0.4354,
         "motivation": 1.0,
         "next": "@ Tijuana"
       },
       "Tijuana": {
         "pts": 17,
         "gp": 12,
-        "p_top8": 0.3755,
-        "p_top4": 0.0679,
-        "p_top8_if_win": 0.5534,
-        "p_top8_if_loss": 0.1549,
-        "leverage": 0.3985,
+        "p_top8": 0.3628,
+        "p_top4": 0.0687,
+        "p_top8_if_win": 0.5384,
+        "p_top8_if_loss": 0.1429,
+        "leverage": 0.3955,
         "motivation": 1.0,
         "next": "vs Santos"
       },
       "Pumas UNAM": {
         "pts": 16,
         "gp": 13,
-        "p_top8": 0.1196,
+        "p_top8": 0.111,
         "p_top4": 0.0066,
-        "p_top8_if_win": 0.2102,
-        "p_top8_if_loss": 0.0271,
-        "leverage": 0.1831,
-        "motivation": 0.523,
+        "p_top8_if_win": 0.1967,
+        "p_top8_if_loss": 0.0218,
+        "leverage": 0.1749,
+        "motivation": 0.5,
         "next": "vs Tigres UANL"
       },
       "Atlético de San Luis": {
-        "pts": 16,
-        "gp": 13,
-        "p_top8": 0.2003,
-        "p_top4": 0.0123,
-        "p_top8_if_win": 0.3562,
-        "p_top8_if_loss": 0.0626,
-        "leverage": 0.2936,
-        "motivation": 0.839,
-        "next": "@ Atlante"
+        "pts": 19,
+        "gp": 14,
+        "p_top8": 0.3409,
+        "p_top4": 0.0264,
+        "p_top8_if_win": 0.6017,
+        "p_top8_if_loss": 0.0961,
+        "leverage": 0.5056,
+        "motivation": 1.0,
+        "next": "vs Atlas"
       },
       "Puebla": {
         "pts": 16,
         "gp": 13,
-        "p_top8": 0.0503,
-        "p_top4": 0.0024,
-        "p_top8_if_win": 0.1321,
-        "p_top8_if_loss": 0.0084,
-        "leverage": 0.1238,
-        "motivation": 0.354,
+        "p_top8": 0.0514,
+        "p_top4": 0.0025,
+        "p_top8_if_win": 0.1368,
+        "p_top8_if_loss": 0.0077,
+        "leverage": 0.1291,
+        "motivation": 0.369,
         "next": "@ Atlas"
       },
       "Tigres UANL": {
         "pts": 14,
         "gp": 13,
-        "p_top8": 0.0169,
-        "p_top4": 0.0,
-        "p_top8_if_win": 0.0526,
-        "p_top8_if_loss": 0.0002,
-        "leverage": 0.0524,
-        "motivation": 0.15,
+        "p_top8": 0.0165,
+        "p_top4": 0.0001,
+        "p_top8_if_win": 0.0499,
+        "p_top8_if_loss": 0.0004,
+        "leverage": 0.0494,
+        "motivation": 0.141,
         "next": "@ Pumas UNAM"
       },
       "Atlante": {
         "pts": 14,
-        "gp": 13,
-        "p_top8": 0.0137,
-        "p_top4": 0.0001,
-        "p_top8_if_win": 0.0356,
-        "p_top8_if_loss": 0.0002,
-        "leverage": 0.0353,
-        "motivation": 0.101,
-        "next": "vs Atlético de San Luis"
+        "gp": 14,
+        "p_top8": 0.0003,
+        "p_top4": 0.0,
+        "p_top8_if_win": 0.0013,
+        "p_top8_if_loss": 0.0,
+        "leverage": 0.0013,
+        "motivation": 0.004,
+        "next": "@ Guadalajara"
       },
       "Pachuca": {
         "pts": 13,
         "gp": 13,
-        "p_top8": 0.0196,
-        "p_top4": 0.0001,
-        "p_top8_if_win": 0.0626,
-        "p_top8_if_loss": 0.0001,
-        "leverage": 0.0625,
-        "motivation": 0.179,
+        "p_top8": 0.0163,
+        "p_top4": 0.0,
+        "p_top8_if_win": 0.0536,
+        "p_top8_if_loss": 0.0,
+        "leverage": 0.0536,
+        "motivation": 0.153,
         "next": "@ América"
       },
       "Necaxa": {
-        "pts": 9,
-        "gp": 13,
+        "pts": 10,
+        "gp": 14,
         "p_top8": 0.0,
         "p_top4": 0.0,
         "p_top8_if_win": 0.0,
         "p_top8_if_loss": 0.0,
         "leverage": 0.0,
         "motivation": 0.0,
-        "next": "vs FC Juarez"
+        "next": "@ Santos"
       },
       "FC Juarez": {
-        "pts": 4,
-        "gp": 13,
+        "pts": 5,
+        "gp": 14,
         "p_top8": 0.0,
         "p_top4": 0.0,
         "p_top8_if_win": 0.0,
         "p_top8_if_loss": 0.0,
         "leverage": 0.0,
         "motivation": 0.0,
-        "next": "@ Necaxa"
+        "next": "vs Querétaro"
       }
     }
   }

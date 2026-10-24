@@ -1,0 +1,296 @@
+{
+ "source": "standings updated by hand from Oct 23 final scores; no new box scores (ESPN unreachable from this session)",
+ "events": [],
+ "fixtures": [
+  {
+   "kickoff": "2026-10-24T23:00Z",
+   "home": "León",
+   "away": "Toluca"
+  },
+  {
+   "kickoff": "2026-10-25T01:00Z",
+   "home": "Monterrey",
+   "away": "Guadalajara"
+  },
+  {
+   "kickoff": "2026-10-25T03:10Z",
+   "home": "Pumas UNAM",
+   "away": "Tigres UANL"
+  },
+  {
+   "kickoff": "2026-10-25T23:00Z",
+   "home": "Atlas",
+   "away": "Puebla"
+  },
+  {
+   "kickoff": "2026-10-26T01:00Z",
+   "home": "Querétaro",
+   "away": "Cruz Azul"
+  },
+  {
+   "kickoff": "2026-10-26T01:05Z",
+   "home": "América",
+   "away": "Pachuca"
+  },
+  {
+   "kickoff": "2026-10-26T03:10Z",
+   "home": "Tijuana",
+   "away": "Santos"
+  },
+  {
+   "kickoff": "2026-10-29T03:00Z",
+   "home": "América",
+   "away": "Tijuana"
+  },
+  {
+   "kickoff": "2026-10-31T01:00Z",
+   "home": "Atlético de San Luis",
+   "away": "Atlas"
+  },
+  {
+   "kickoff": "2026-10-31T01:00Z",
+   "home": "FC Juarez",
+   "away": "Querétaro"
+  },
+  {
+   "kickoff": "2026-10-31T03:00Z",
+   "home": "Puebla",
+   "away": "Pumas UNAM"
+  },
+  {
+   "kickoff": "2026-10-31T23:00Z",
+   "home": "Pachuca",
+   "away": "Tigres UANL"
+  },
+  {
+   "kickoff": "2026-11-01T01:00Z",
+   "home": "Monterrey",
+   "away": "Tijuana"
+  },
+  {
+   "kickoff": "2026-11-01T01:07Z",
+   "home": "Guadalajara",
+   "away": "Atlante"
+  },
+  {
+   "kickoff": "2026-11-01T03:00Z",
+   "home": "América",
+   "away": "Toluca"
+  },
+  {
+   "kickoff": "2026-11-01T23:00Z",
+   "home": "Santos",
+   "away": "Necaxa"
+  },
+  {
+   "kickoff": "2026-11-02T01:00Z",
+   "home": "Cruz Azul",
+   "away": "León"
+  },
+  {
+   "kickoff": "2026-11-07T01:00Z",
+   "home": "Atlético de San Luis",
+   "away": "FC Juarez"
+  },
+  {
+   "kickoff": "2026-11-07T01:00Z",
+   "home": "Necaxa",
+   "away": "Tijuana"
+  },
+  {
+   "kickoff": "2026-11-07T03:00Z",
+   "home": "Atlante",
+   "away": "Santos"
+  },
+  {
+   "kickoff": "2026-11-07T23:00Z",
+   "home": "Atlas",
+   "away": "Pachuca"
+  },
+  {
+   "kickoff": "2026-11-07T23:00Z",
+   "home": "Tigres UANL",
+   "away": "Cruz Azul"
+  },
+  {
+   "kickoff": "2026-11-08T01:00Z",
+   "home": "Toluca",
+   "away": "Monterrey"
+  },
+  {
+   "kickoff": "2026-11-08T03:00Z",
+   "home": "Pumas UNAM",
+   "away": "América"
+  },
+  {
+   "kickoff": "2026-11-09T00:00Z",
+   "home": "Querétaro",
+   "away": "Puebla"
+  },
+  {
+   "kickoff": "2026-11-09T02:00Z",
+   "home": "León",
+   "away": "Guadalajara"
+  },
+  {
+   "kickoff": "2026-11-14T23:00Z",
+   "home": "Querétaro",
+   "away": "Monterrey"
+  },
+  {
+   "kickoff": "2026-11-21T01:00Z",
+   "home": "Puebla",
+   "away": "Atlético de San Luis"
+  },
+  {
+   "kickoff": "2026-11-21T03:00Z",
+   "home": "FC Juarez",
+   "away": "Atlas"
+  },
+  {
+   "kickoff": "2026-11-21T03:00Z",
+   "home": "Tijuana",
+   "away": "Atlante"
+  },
+  {
+   "kickoff": "2026-11-21T23:00Z",
+   "home": "Pachuca",
+   "away": "Toluca"
+  },
+  {
+   "kickoff": "2026-11-21T23:00Z",
+   "home": "Santos",
+   "away": "León"
+  },
+  {
+   "kickoff": "2026-11-22T01:00Z",
+   "home": "Pumas UNAM",
+   "away": "Monterrey"
+  },
+  {
+   "kickoff": "2026-11-22T03:00Z",
+   "home": "Tigres UANL",
+   "away": "América"
+  },
+  {
+   "kickoff": "2026-11-22T23:07Z",
+   "home": "Guadalajara",
+   "away": "Cruz Azul"
+  },
+  {
+   "kickoff": "2026-11-23T01:00Z",
+   "home": "Querétaro",
+   "away": "Necaxa"
+  }
+ ],
+ "standings": {
+  "América": [
+   27,
+   12,
+   32,
+   16
+  ],
+  "Guadalajara": [
+   23,
+   13,
+   20,
+   12
+  ],
+  "Cruz Azul": [
+   23,
+   13,
+   29,
+   22
+  ],
+  "Toluca": [
+   22,
+   13,
+   28,
+   18
+  ],
+  "León": [
+   21,
+   13,
+   20,
+   17
+  ],
+  "Atlas": [
+   21,
+   13,
+   21,
+   23
+  ],
+  "Monterrey": [
+   20,
+   12,
+   23,
+   17
+  ],
+  "Querétaro": [
+   20,
+   12,
+   16,
+   15
+  ],
+  "Santos": [
+   19,
+   13,
+   19,
+   16
+  ],
+  "Tijuana": [
+   17,
+   12,
+   17,
+   16
+  ],
+  "Pumas UNAM": [
+   16,
+   13,
+   19,
+   22
+  ],
+  "Atlético de San Luis": [
+   19,
+   14,
+   19,
+   22
+  ],
+  "Puebla": [
+   16,
+   13,
+   13,
+   17
+  ],
+  "Tigres UANL": [
+   14,
+   13,
+   14,
+   18
+  ],
+  "Atlante": [
+   14,
+   14,
+   14,
+   20
+  ],
+  "Pachuca": [
+   13,
+   13,
+   20,
+   18
+  ],
+  "Necaxa": [
+   10,
+   14,
+   16,
+   27
+  ],
+  "FC Juarez": [
+   5,
+   14,
+   9,
+   33
+  ]
+ }
+}

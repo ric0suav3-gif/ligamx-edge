@@ -1,0 +1,39 @@
+{
+ "source": "Polymarket Gamma API mid prices",
+ "pulledAtMexico": "2026-10-24T16:30",
+ "games": [
+  {
+   "date": "2026-10-24",
+   "home": "León",
+   "away": "Toluca",
+   "slug": "mex-leo-tol-2026-10-24",
+   "H": 0.235,
+   "D": 0.245,
+   "A": 0.525,
+   "liquidity": 318456,
+   "volume": 11886
+  },
+  {
+   "date": "2026-10-24",
+   "home": "Monterrey",
+   "away": "Guadalajara",
+   "slug": "mex-mon1-gua-2026-10-24",
+   "H": 0.415,
+   "D": 0.285,
+   "A": 0.305,
+   "liquidity": 150611,
+   "volume": 5212
+  },
+  {
+   "date": "2026-10-24",
+   "home": "Pumas UNAM",
+   "away": "Tigres UANL",
+   "slug": "mex-pum-tig-2026-10-24",
+   "H": 0.395,
+   "D": 0.275,
+   "A": 0.325,
+   "liquidity": 324916,
+   "volume": 23610
+  }
+ ]
+}
