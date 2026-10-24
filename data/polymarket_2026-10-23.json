@@ -1,0 +1,54 @@
+{
+ "source": "Polymarket Gamma API mid prices + DraftKings via ESPN",
+ "pulledAtMexico": "2026-10-23T18:47",
+ "games": [
+  {
+   "date": "2026-10-23",
+   "home": "Necaxa",
+   "away": "FC Juarez",
+   "slug": "mex-nec-jua-2026-10-23",
+   "H": 0.565,
+   "D": 0.235,
+   "A": 0.205,
+   "liquidity": 243357,
+   "volume": 6175,
+   "pm_over_1_5": 0.795,
+   "dk": {
+    "ml": [
+     -140,
+     295,
+     350
+    ],
+    "ou": 2.5,
+    "ouOdds": [
+     -145,
+     110
+    ]
+   }
+  },
+  {
+   "date": "2026-10-23",
+   "home": "Atlante",
+   "away": "Atlético de San Luis",
+   "slug": "mex-atla-asl-2026-10-23",
+   "H": 0.435,
+   "D": 0.275,
+   "A": 0.295,
+   "liquidity": 190777,
+   "volume": 7490,
+   "pm_over_1_5": 0.775,
+   "dk": {
+    "ml": [
+     120,
+     245,
+     210
+    ],
+    "ou": 2.5,
+    "ouOdds": [
+     -125,
+     -105
+    ]
+   }
+  }
+ ]
+}
