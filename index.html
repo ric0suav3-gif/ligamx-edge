@@ -144,6 +144,15 @@ nav button.on{color:var(--amber)}
 
 <div id="regView" style="padding:0 12px;display:none;flex-direction:column;gap:10px"></div>
 <div id="dataView">
+  <div style="border:1px solid var(--amber-dim);border-radius:12px;padding:12px;margin-bottom:12px">
+    <div style="font-family:'Barlow Condensed';font-weight:700;letter-spacing:.05em;color:var(--amber);margin-bottom:6px">API-FOOTBALL</div>
+    <div class="tLam" id="afKeyStatus" style="margin-bottom:8px"></div>
+    <input id="afKeyInp" type="password" autocomplete="off" placeholder="Pega tu API key de API-Football" style="width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:.9rem">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+      <button class="btn" onclick="(function(){const i=document.getElementById('afKeyInp');const v=i.value.trim();if(!v)return;try{localStorage.setItem('lmxApiFootballKey',v)}catch(e){}i.value='';afKeyPaint();})()">Guardar key</button>
+      <button class="btn ghost" onclick="(function(){try{localStorage.removeItem('lmxApiFootballKey')}catch(e){}afKeyPaint();})()">Borrar key</button>
+    </div>
+  </div>
   <div style="border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px">
     <div style="font-family:'Barlow Condensed';font-weight:700;letter-spacing:.05em;color:var(--amber);margin-bottom:6px">CLASIFICACIÓN (YA CARGADA)</div>
     <div class="tLam" style="margin-bottom:10px">Puntos, PJ, GF y GA del Apertura 2026 de ESPN, actualizados al último partido terminado. El <b>ESTADO</b> es contexto orientativo, no criterio de apuesta. Puedes editar si cambia; "Borrar todo" restaura la tabla incluida en esta versión.</div>
@@ -1391,6 +1400,10 @@ async function initEspnV32(){
 }
 initEspnV32();
 // ================= end V31 API-Football mobile sync =================
+</script>
+<script>
+function afKeyPaint(){let ok=false;try{ok=!!localStorage.getItem('lmxApiFootballKey')}catch(e){}const el=document.getElementById('afKeyStatus');if(el)el.innerHTML=ok?'✔ Key guardada en este dispositivo. Se usa solo para llamar a v3.football.api-sports.io.':'Sin key. Se guarda solo en este dispositivo (localStorage), nunca en el repo.';}
+afKeyPaint();
 </script>
 </body>
 </html>
