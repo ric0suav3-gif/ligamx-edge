@@ -148,9 +148,20 @@
     const groups = {};
     for (const x of P.lines) {
       const po = prob(x.stat, x.side, x.line); if (po == null) continue;
-      const pb = nv(x.over, x.under); x.pm = po; x.po = mix(po, pb);
+      x.pb = nv(x.over, x.under); x.pm = po; x.po = mix(po, x.pb);
       (groups[x.stat + '|' + x.side] = groups[x.stat + '|' + x.side] || []).push(x);
+    }
+    // Guard: at Playdoit's main line (no-vig closest to 50%), if the model is 20+ points away the
+    // model is probably wrong about this market (lineups, style, liguilla) — show it, don't list it.
+    const far = {};
+    for (const [k, g] of Object.entries(groups)) {
+      const main = g.filter(x => x.pb != null).sort((a, b) => Math.abs(a.pb - 0.5) - Math.abs(b.pb - 0.5))[0];
+      if (main && Math.abs(main.pm - main.pb) >= 0.20) far[k] = main;
+    }
+    for (const x of P.lines) {
+      if (x.po == null || far[x.stat + '|' + x.side]) continue;
       const lab = `${names[x.side]} · ${LAB[x.stat] || x.stat}`;
+      const po = x.pm;
       if (x.over && x.po * x.over - 1 >= min) value.push({ lab: `${lab} más de ${x.line}`, odds: x.over, p: x.po, pm: po });
       if (x.under && (1 - x.po) * x.under - 1 >= min) value.push({ lab: `${lab} menos de ${x.line}`, odds: x.under, p: 1 - x.po, pm: 1 - po });
     }
@@ -174,7 +185,8 @@
     const keys = Object.keys(groups).sort((a, b) => order.indexOf(a.split('|')[0]) - order.indexOf(b.split('|')[0]) || 'tha'.indexOf(a.split('|')[1]) - 'tha'.indexOf(b.split('|')[1]));
     for (const k of keys) {
       const [stat, side] = k.split('|');
-      h += `<div class="ticket"><div class="tName">${names[side]} · ${LAB[stat] || stat}</div><table class="mk" style="width:100%;margin-top:6px"><tr><th>Línea</th><th>Más de</th><th>Menos de</th></tr>` +
+      const fz = far[k];
+      h += `<div class="ticket"><div class="tName">${names[side]} · ${LAB[stat] || stat}</div>${fz ? `<div class="tLam" style="color:#f5b53f;margin-top:4px">⚠ El modelo está muy lejos de Playdoit en la línea ${fz.line} (modelo ${pc(fz.pm)} más vs mercado ${pc(fz.pb)}). Probablemente el modelo se equivoca aquí: no entra en "Valor".</div>` : ''}<table class="mk" style="width:100%;margin-top:6px"><tr><th>Línea</th><th>Más de</th><th>Menos de</th></tr>` +
         groups[k].map(x => `<tr><td style="text-align:center">${x.line}</td>${cell(x.over, x.po, min)}${cell(x.under, 1 - x.po, min)}</tr>`).join('') + '</table></div>';
     }
     return h;
