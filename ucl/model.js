@@ -269,9 +269,12 @@
     });
     for (const T of Object.values(teamUcl)) for (const k of ['for', 'against']) for (const s in T[k]) T[k][s] = +(T[k][s] / T.n).toFixed(2);
     // fixtures today
-    const days = opts.days || 1, endDay = new Date(Date.parse(today + 'T12:00:00Z') + (days - 1) * DAY).toISOString().slice(0, 10);
-    const tj = await getJSON(`${BASE}uefa.champions/scoreboard?dates=${today.replace(/-/g, '')}${days > 1 ? '-' + endDay.replace(/-/g, '') : ''}&limit=100`);
-    const todayEv = (tj.events || []).filter(e => !e.status.type.completed);
+    // ESPN rejects date ranges on this endpoint, so fetch day by day
+    const days = opts.days || 1, dayList = Array.from({ length: days }, (_, i) => new Date(Date.parse(today + 'T12:00:00Z') + i * DAY).toISOString().slice(0, 10).replace(/-/g, ''));
+    const boards = await pool(dayList, 4, d => getJSON(`${BASE}uefa.champions/scoreboard?dates=${d}`));
+    const seenEv = new Set(), todayEv = [];
+    for (const b of boards) for (const e of (b && b.events) || []) if (!e.status.type.completed && !seenEv.has(e.id)) { seenEv.add(e.id); todayEv.push(e); }
+    todayEv.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
     const tsums = await pool(todayEv, 6, e => getJSON(`${BASE}uefa.champions/summary?event=${e.id}`));
 
     // domestic fit cache
