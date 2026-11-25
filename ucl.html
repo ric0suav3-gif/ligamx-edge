@@ -65,7 +65,7 @@ nav button.on{color:var(--amber)}
 </head>
 <body>
 <header>
-  <h1>UCL <span>Edge</span> <span class="tag">V2</span></h1>
+  <h1>UCL <span>Edge</span> <span class="tag">V3</span></h1>
   <div id="dataDate"></div>
 </header>
 
@@ -77,7 +77,8 @@ nav button.on{color:var(--amber)}
   </div>
   <div id="ctx"></div>
   <div class="tabs">
-    <button class="tab on" data-mode="picks">Picks</button>
+    <button class="tab on" data-mode="pd">Playdoit</button>
+    <button class="tab" data-mode="picks">Picks</button>
     <button class="tab" data-mode="total">Totales</button>
     <button class="tab" data-mode="team">Equipo</button>
     <button class="tab" data-mode="h2h">H2H</button>
@@ -352,8 +353,23 @@ nav button.on{color:var(--amber)}
     const sums = await pool(done, 6, e => getJSON(`${BASE}uefa.champions/summary?event=${e.id}`));
     const ucl = done.map((e, i) => sums[i] ? uclRow(e, sums[i]) : null).filter(r => r && !r.extra && r.mkt && r.h.Shots != null && r.a.Shots != null);
     log('UCL rows with odds ' + ucl.length + ' of ' + done.length);
+    const teamUcl = {};
+    done.forEach((e, i) => {
+      const r = sums[i] ? uclRow(e, sums[i]) : null;
+      if (!r || r.t < TEST_FROM || r.h.Shots == null || r.a.Shots == null) return;
+      for (const [me, op] of [[r.h, r.a], [r.a, r.h]]) {
+        const T = teamUcl[me.id] = teamUcl[me.id] || { name: me.name, n: 0, for: {}, against: {} };
+        T.n++;
+        for (const s of ['Shots', 'Shots on Target', 'Corners', 'Offsides']) {
+          if (me[s] != null && isFinite(me[s])) T.for[s] = (T.for[s] || 0) + me[s];
+          if (op[s] != null && isFinite(op[s])) T.against[s] = (T.against[s] || 0) + op[s];
+        }
+      }
+    });
+    for (const T of Object.values(teamUcl)) for (const k of ['for', 'against']) for (const s in T[k]) T[k][s] = +(T[k][s] / T.n).toFixed(2);
     // fixtures today
-    const tj = await getJSON(`${BASE}uefa.champions/scoreboard?dates=${today.replace(/-/g, '')}`);
+    const days = opts.days || 1, endDay = new Date(Date.parse(today + 'T12:00:00Z') + (days - 1) * DAY).toISOString().slice(0, 10);
+    const tj = await getJSON(`${BASE}uefa.champions/scoreboard?dates=${today.replace(/-/g, '')}${days > 1 ? '-' + endDay.replace(/-/g, '') : ''}&limit=100`);
     const todayEv = (tj.events || []).filter(e => !e.status.type.completed);
     const tsums = await pool(todayEv, 6, e => getJSON(`${BASE}uefa.champions/summary?event=${e.id}`));
 
@@ -403,7 +419,10 @@ nav button.on{color:var(--amber)}
       return { id: e.id, kickoff: e.date, home: H.team.displayName, away: A.team.displayName, homeId: hid, awayId: aid, homeAbbr: H.team.abbreviation, awayAbbr: A.team.abbreviation, venue: (c.venue || {}).fullName || '', dk: mkt, info: { home: info(hid), away: info(aid) },
         style: Object.fromEntries(USTATS.filter(s => s !== 'Offsides').map(s => { const a = styleFor(hid, s, now), b = styleFor(aid, s, now); return [s, { home: [+a.att.toFixed(3), +a.def.toFixed(3), a.ok], away: [+b.att.toFixed(3), +b.def.toFixed(3), b.ok] }]; })) };
     });
-    return { meta: { built: new Date().toISOString(), today, version: 'ucl-edge-v2-espn', uclRows: ucl.length, train: train.length, test: test.length, domesticLeagues: DOMESTIC.filter(l => (dom[l] || []).length), halfLife: HALF_LIFE, kPrior: K_PRIOR }, coefs, slopes, backtest, fixtures };
+    // v3: season calibration — test-set actual/predicted ratio, shrunk with 40 games of prior
+    const calib = {};
+    for (const s of USTATS) { const v = coefs[s] && coefs[s].variant, bt = backtest[s] && backtest[s]['m' + v]; if (bt && isFinite(bt.bias)) calib[s] = +(1 + (bt.bias - 1) * bt.n / (bt.n + 40)).toFixed(3); }
+    return { calib, teamUcl, meta: { built: new Date().toISOString(), today, days, version: 'ucl-edge-v3', uclRows: ucl.length, train: train.length, test: test.length, domesticLeagues: DOMESTIC.filter(l => (dom[l] || []).length), halfLife: HALF_LIFE, kPrior: K_PRIOR }, coefs, slopes, backtest, fixtures };
   }
 
 
@@ -436,13 +455,26 @@ nav button.on{color:var(--amber)}
   function margin(dh, da, m) { let p = 0; for (let i = 0; i < dh.length; i++) for (let j = 0; j < da.length; j++) if (i - j > m) p += dh[i] * da[j]; return p; }
 
   // Means for one fixture given a market (lh, la). Used by the page and the builder.
-  function means(model, fx, lam) {
+  // v3 means: regression x season calibration, then 30% toward this season's UCL averages
+  // ((team for + opponent against) / 2, both teams with 3+ games), then optional attack multipliers
+  // opts.inj = {home, away} (e.g. 0.88 when key forwards are out). Goals stay on the market.
+  const UCL_W = 0.30, UCL_MIN = 3;
+  function means(model, fx, lam, opts) {
+    const o = opts || {}, inj = o.inj || {}, ih = inj.home || 1, ia = inj.away || 1;
     const out = { Goals: { home: lam.lh, away: lam.la, r: null } };
+    const TU = model.teamUcl || {}, th = TU[fx.homeId], ta = TU[fx.awayId];
     for (const s of USTATS) {
       const c = model.coefs[s]; if (!c) continue;
       const st = fx.style[s] || { home: [0, 0], away: [0, 0] };
       const sh = { att: st.home[0], def: st.home[1] }, sa = { att: st.away[0], def: st.away[1] };
-      out[s] = { home: predict(c.b, features(s, lam, sh, sa, 'home', c.variant)), away: predict(c.b, features(s, lam, sh, sa, 'away', c.variant)), r: c.r };
+      const k = (model.calib && model.calib[s]) || 1;
+      let mh = predict(c.b, features(s, lam, sh, sa, 'home', c.variant)) * k, ma = predict(c.b, features(s, lam, sh, sa, 'away', c.variant)) * k;
+      if (o.uclBlend !== false && th && ta && th.n >= UCL_MIN && ta.n >= UCL_MIN && th.for[s] != null && ta.for[s] != null) {
+        mh = (1 - UCL_W) * mh + UCL_W * (th.for[s] + ta.against[s]) / 2;
+        ma = (1 - UCL_W) * ma + UCL_W * (ta.for[s] + th.against[s]) / 2;
+      }
+      if (s !== 'Fouls' && s !== 'Cards') { mh *= ih; ma *= ia; }
+      out[s] = { home: mh, away: ma, r: c.r };
     }
     return out;
   }
@@ -451,6 +483,7 @@ nav button.on{color:var(--amber)}
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
+<script src="playdoit.js"></script>
 <script>
 const UCL = {"meta":{"built":"2026-11-03T18:10:38.639Z","today":"2026-11-03","version":"ucl-edge-v2-espn","uclRows":150,"train":96,"test":54,"domesticLeagues":["eng.1","esp.1","ita.1","ger.1","fra.1","por.1","ned.1","bel.1","tur.1","aut.1","nor.1","sco.1","gre.1","den.1","swe.1"],"halfLife":150,"kPrior":5,"public_source":"Action Network public betting (tickets %, money %), pulled 2026-11-03 12:15 CDMX","polymarket_source":"Polymarket Gamma API mid prices, pulled 2026-11-03 12:11 CDMX"},"coefs":{"Shots":{"b":[2.2757,2.2482,0.3405,0.2829,0.9283],"r":35.8432,"n":150,"variant":2},"Shots on Target":{"b":[1.01,1.0321,0.3746,0.5039,0.805],"r":64.3695,"n":150,"variant":2},"Corners":{"b":[1.086,1.1768,0.3907,0.3295,0.2592],"r":12.2697,"n":150,"variant":2},"Fouls":{"b":[2.8503,2.8884,0.0001,-0.3909,0.4189],"r":336.3219,"n":150,"variant":2},"Cards":{"b":[0.992,1.2018,-0.1219,-0.4796,0.1448],"r":null,"n":150,"variant":2},"Offsides":{"b":[0.057,-0.0777,-0.0242,0.4859],"r":2.7695,"n":150,"variant":1}},"slopes":{"Goals|att":0.6559,"Goals|def":-0.5251,"Shots|att":0.3458,"Shots|def":-0.2913,"Shots on Target|att":0.4572,"Shots on Target|def":-0.3618,"Corners|att":0.3391,"Corners|def":-0.3411,"Fouls|att":-0.072,"Fouls|def":-0.0062,"Cards|att":-0.1189,"Cards|def":0.1775},"backtest":{"Shots":{"m0":{"nll":3.2307,"bias":1.0987,"n":54},"m1":{"nll":3.023,"bias":1.0446,"n":54},"m2":{"nll":2.9641,"bias":1.0405,"n":54}},"Shots on Target":{"m0":{"nll":2.482,"bias":1.0841,"n":54},"m1":{"nll":2.2655,"bias":1.0131,"n":54},"m2":{"nll":2.2499,"bias":1.0164,"n":54}},"Corners":{"m0":{"nll":2.4247,"bias":0.9868,"n":54},"m1":{"nll":2.3489,"bias":0.9462,"n":54},"m2":{"nll":2.347,"bias":0.9474,"n":54}},"Fouls":{"m0":{"nll":2.6303,"bias":1.0474,"n":54},"m1":{"nll":2.6316,"bias":1.087,"n":54},"m2":{"nll":2.6094,"bias":1.0691,"n":54}},"Cards":{"m0":{"nll":1.5741,"bias":1.0421,"n":54},"m1":{"nll":1.557,"bias":1.0582,"n":54},"m2":{"nll":1.5562,"bias":1.0489,"n":54}},"Offsides":{"m0":{"nll":1.9281,"bias":1.3348,"n":54},"m1":{"nll":1.9188,"bias":1.3016,"n":54}},"Goals":{"mkt":1.6256,"n":54}},"fixtures":[{"id":"401915386","kickoff":"2026-11-03T20:00Z","home":"Atlético Madrid","away":"Bayern Munich","homeId":"1068","awayId":"132","homeAbbr":"ATM","awayAbbr":"MUN","venue":"Riyadh Air Metropolitano","dk":{"H":0.3146,"D":0.2492,"A":0.4362,"overround":1.0422,"provider":"DraftKings","ml":[205,285,120],"line":3.5,"pOver":0.4224,"ouOdds":[125,-155]},"info":{"home":{"league":"esp.1","games":18.4,"z":0.387},"away":{"league":"ger.1","games":15.3,"z":0.801}},"style":{"Shots":{"home":[0.01,0.049,true],"away":[0.052,0.038,true]},"Shots on Target":{"home":[-0.004,0.016,true],"away":[0.119,0.065,true]},"Corners":{"home":[0.073,-0.026,true],"away":[0.036,-0.034,true]},"Fouls":{"home":[-0.049,-0.184,true],"away":[-0.049,-0.143,true]},"Cards":{"home":[0.059,-0.249,true],"away":[-0.156,-0.144,true]}},"pm":{"slug":"ucl-atm-bay-2026-11-03","H":0.315,"D":0.245,"A":0.435,"liq":1656425,"vol":155823,"pulled":"2026-11-03T18:11:12.052Z"},"public":{"ml":{"H":[12,10],"D":[3,8],"A":[85,83]},"tot":{"line":3.5,"O":[95,95],"U":[5,5]}}},{"id":"401915387","kickoff":"2026-11-03T20:00Z","home":"Barcelona","away":"Aston Villa","homeId":"83","awayId":"362","homeAbbr":"BAR","awayAbbr":"AVL","venue":"Spotify Camp Nou","dk":{"H":0.7503,"D":0.137,"A":0.1128,"overround":1.0431,"provider":"DraftKings","ml":[-360,600,750],"line":4.5,"pOver":0.4737,"ouOdds":[100,-125]},"info":{"home":{"league":"esp.1","games":18.5,"z":0.753},"away":{"league":"eng.1","games":16.8,"z":-0.007}},"style":{"Shots":{"home":[0.026,-0.112,true],"away":[0.011,0.042,true]},"Shots on Target":{"home":[0.033,0.068,true],"away":[0.005,0.082,true]},"Corners":{"home":[0.017,0.086,true],"away":[-0.03,-0.029,true]},"Fouls":{"home":[-0.108,-0.082,true],"away":[-0.045,0.123,true]},"Cards":{"home":[-0.15,-0.147,true],"away":[-0.055,0.262,true]}},"pm":{"slug":"ucl-fcb-ast-2026-11-03","H":0.765,"D":0.125,"A":0.105,"liq":1153847,"vol":596735,"pulled":"2026-11-03T18:11:12.052Z"},"public":{"ml":{"H":[97,95],"D":[1,2],"A":[2,3]},"tot":{"line":4.5,"O":[92,92],"U":[8,8]}}},{"id":"401915384","kickoff":"2026-11-03T20:00Z","home":"Bodo/Glimt","away":"Lille","homeId":"2980","awayId":"166","homeAbbr":"BODO","awayAbbr":"LILL","venue":"Aspmyra Stadion","dk":{"H":0.5872,"D":0.2219,"A":0.1909,"overround":1.0479,"provider":"DraftKings","ml":[-160,330,400],"line":3.5,"pOver":0.4494,"ouOdds":[110,-140]},"info":{"home":{"league":"nor.1","games":16.8,"z":0.627},"away":{"league":"fra.1","games":15.7,"z":0.298}},"style":{"Shots":{"home":[-0.028,-0.139,true],"away":[-0.139,-0.025,true]},"Shots on Target":{"home":[-0.07,-0.107,true],"away":[-0.089,-0.099,true]},"Corners":{"home":[0.037,-0.33,true],"away":[-0.082,0.001,true]},"Fouls":{"home":[-0.145,-0.06,true],"away":[-0.071,0.109,true]},"Cards":{"home":[-0.602,0.013,true],"away":[0.112,-0.06,true]}},"pm":{"slug":"ucl-bog-lil-2026-11-03","H":0.595,"D":0.225,"A":0.195,"liq":1091542,"vol":105700,"pulled":"2026-11-03T18:11:12.052Z"},"public":{"ml":{"H":[88,85],"D":[2,3],"A":[10,12]},"tot":{"line":3.5,"O":[92,93],"U":[8,7]}}},{"id":"401915307","kickoff":"2026-11-03T20:00Z","home":"Feyenoord Rotterdam","away":"Internazionale","homeId":"142","awayId":"110","homeAbbr":"FEY","awayAbbr":"INT","venue":"De Kuip","dk":{"H":0.2642,"D":0.2377,"A":0.4981,"overround":1.0516,"provider":"DraftKings","ml":[260,300,-110],"line":3.5,"pOver":0.4737,"ouOdds":[100,-125]},"info":{"home":{"league":"ned.1","games":16.8,"z":0.53},"away":{"league":"ita.1","games":18.2,"z":0.603}},"style":{"Shots":{"home":[0.008,0.008,true],"away":[0.095,-0.036,true]},"Shots on Target":{"home":[0.047,-0.008,true],"away":[0.052,-0.008,true]},"Corners":{"home":[0.025,-0.038,true],"away":[0.046,-0.108,true]},"Fouls":{"home":[-0.076,0.091,true],"away":[-0.008,-0.092,true]},"Cards":{"home":[-0.001,-0.036,true],"away":[-0.027,-0.076,true]}},"pm":{"slug":"ucl-fey-int-2026-11-03","H":0.255,"D":0.235,"A":0.505,"liq":1020559,"vol":85852,"pulled":"2026-11-03T18:11:12.052Z"},"public":{"ml":{"H":[7,7],"D":[2,3],"A":[91,89]},"tot":{"line":3.5,"O":[92,93],"U":[8,7]}}},{"id":"401915385","kickoff":"2026-11-03T20:00Z","home":"LASK Linz","away":"Slovan Bratislava","homeId":"4411","awayId":"521","homeAbbr":"LAS","awayAbbr":"SLB","venue":"Raiffeisen Arena (Linz)","dk":{"H":0.7057,"D":0.1666,"A":0.1277,"overround":1.0441,"provider":"DraftKings","ml":[-280,475,650],"line":3.5,"pOver":0.5157,"ouOdds":[-120,-105]},"info":{"home":{"league":"aut.1","games":10.8,"z":0.591},"away":{"league":null,"games":0,"z":null}},"style":{"Shots":{"home":[0.052,-0.003,true],"away":[0,0,false]},"Shots on Target":{"home":[0.052,-0.005,true],"away":[0,0,false]},"Corners":{"home":[-0.068,-0.005,true],"away":[0,0,false]},"Fouls":{"home":[0.033,-0.007,true],"away":[0,0,false]},"Cards":{"home":[-0.143,-0.024,true],"away":[0,0,false]}},"pm":{"slug":"ucl-lin2-sba-2026-11-03","H":0.715,"D":0.165,"A":0.115,"liq":1009762,"vol":59422,"pulled":"2026-11-03T18:11:12.052Z"},"public":{"ml":{"H":[97,92],"D":[1,4],"A":[2,4]},"tot":{"line":3.5,"O":[90,92],"U":[10,8]}}},{"id":"401915308","kickoff":"2026-11-03T20:00Z","home":"Manchester United","away":"AS Roma","homeId":"360","awayId":"104","homeAbbr":"MAN","awayAbbr":"ROMA","venue":"Old Trafford","dk":{"H":0.4412,"D":0.2372,"A":0.3216,"overround":1.0541,"provider":"DraftKings","ml":[115,300,195],"line":3.5,"pOver":0.4224,"ouOdds":[125,-155]},"info":{"home":{"league":"eng.1","games":16.8,"z":0.155},"away":{"league":"ita.1","games":18.2,"z":0.456}},"style":{"Shots":{"home":[0.161,-0.025,true],"away":[-0.018,-0.017,true]},"Shots on Target":{"home":[0.143,0.052,true],"away":[-0.024,0.121,true]},"Corners":{"home":[0.051,-0.012,true],"away":[0.013,-0.021,true]},"Fouls":{"home":[-0.02,-0.001,true],"away":[0.071,-0.022,true]},"Cards":{"home":[0.076,0.019,true],"away":[0.128,0.021,true]}},"pm":{"slug":"ucl-mnu-rom-2026-11-03","H":0.445,"D":0.235,"A":0.325,"liq":2010216,"vol":981845,"pulled":"2026-11-03T18:11:12.052Z"},"public":{"ml":{"H":[32,25],"D":[4,3],"A":[64,71]},"tot":{"line":3.5,"O":[92,94],"U":[8,6]}}},{"id":"401915309","kickoff":"2026-11-03T20:00Z","home":"Villarreal","away":"Paris Saint-Germain","homeId":"102","awayId":"160","homeAbbr":"VIL","awayAbbr":"PSG","venue":"Estadio de la Cerámica","dk":{"H":0.2128,"D":0.2128,"A":0.5745,"overround":1.0444,"provider":"DraftKings","ml":[350,350,-150],"line":3.5,"pOver":0.5052,"ouOdds":[-115,-110]},"info":{"home":{"league":"esp.1","games":18.6,"z":0.207},"away":{"league":"fra.1","games":15.9,"z":0.61}},"style":{"Shots":{"home":[-0.027,-0.012,true],"away":[0.093,-0.009,true]},"Shots on Target":{"home":[0,-0.049,true],"away":[0.122,0.112,true]},"Corners":{"home":[0.057,0.083,true],"away":[-0.009,-0.105,true]},"Fouls":{"home":[-0.044,0.006,true],"away":[-0.287,-0.096,true]},"Cards":{"home":[-0.063,0.146,true],"away":[-0.326,-0.233,true]}},"pm":{"slug":"ucl-vil-psg-2026-11-03","H":0.205,"D":0.215,"A":0.575,"liq":1936428,"vol":605607,"pulled":"2026-11-03T18:11:12.052Z"},"public":{"ml":{"H":[2,2],"D":[0,1],"A":[98,97]},"tot":{"line":3.5,"O":[96,97],"U":[4,3]}}}]};
 const LAB={Goals:'Goles',Shots:'Tiros','Shots on Target':'Tiros a puerta',Corners:'Córners',Fouls:'Faltas',Cards:'Tarjetas',Offsides:'Fueras de juego'};
@@ -465,13 +498,16 @@ const mainLine=m=>Math.max(0.5,Math.round(m-0.5)+0.5);
 const tz='America/Mexico_City';
 const iso=x=>x.replace(/T(\d\d:\d\d)Z$/,'T$1:00Z');
 const hhmm=x=>new Date(iso(x)).toLocaleTimeString('es-MX',{timeZone:tz,hour:'numeric',minute:'2-digit'});
-let FI=0, MODE='picks', LINES={}, LIVE={};
+let FI=0, MODE='pd', LINES={}, LIVE={}, PDX={};
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
 function fx(){ return UCL.fixtures[FI]; }
+function injOf(f){ const v=store.get('uclInj',{})[f.id]||{}; return {home:v.home||1, away:v.away||1}; }
 function calc(f){
-  const mk=UCLM.blendMarket(f,0.5); if(!mk) return null;
-  const mu=UCLM.means(UCL,f,mk), D={};
+  let mk=UCLM.blendMarket(f,0.5);
+  if(!mk && PDX[f.id] && PDX[f.id].mk){ const m=PDX[f.id].mk, lam=UCLM.solveLambda(m); mk={...m,lh:lam.lh,la:lam.la,fitErr:lam.fitErr}; }
+  if(!mk) return null;
+  const mu=UCLM.means(UCL,f,mk,{inj:injOf(f)}), D={};
   for(const s of ORDER){ const m=mu[s]; if(!m) continue; const dh=UCLM.dist(m.home,m.r), da=UCLM.dist(m.away,m.r); D[s]={m,dh,da,dt:UCLM.conv(dh,da)}; }
   return {mk,D};
 }
@@ -490,7 +526,9 @@ function three(name,sub,cells){ const b=Math.max(...cells.map(c=>c[1])); return 
 function context(f,C){
   const mk=C.mk, pmT=f.pm?f.pm.H+f.pm.D+f.pm.A:1, live=LIVE[f.id]||{};
   const rows=[];
-  if(f.dk) rows.push(`<tr><td>DraftKings ${f.dk.ml.map(am).join(' / ')}</td><td>${pct(f.dk.H)}</td><td>${pct(f.dk.D)}</td><td>${pct(f.dk.A)}</td></tr>`);
+  if(f.dk&&f.dk.ml) rows.push(`<tr><td>DraftKings ${f.dk.ml.map(am).join(' / ')}</td><td>${pct(f.dk.H)}</td><td>${pct(f.dk.D)}</td><td>${pct(f.dk.A)}</td></tr>`);
+  const pdm=(f.dk&&f.dk.provider==='Playdoit')?f.dk:(PDX[f.id]&&PDX[f.id].mk);
+  if(pdm) rows.push(`<tr><td>Playdoit ${pdm.dec.map(x=>x.toFixed(2)).join(' / ')}</td><td>${pct(pdm.H)}</td><td>${pct(pdm.D)}</td><td>${pct(pdm.A)}</td></tr>`);
   if(f.pm) rows.push(`<tr><td>Polymarket · $${(f.pm.liq/1e6).toFixed(1)}M</td><td>${pct(f.pm.H/pmT)}</td><td>${pct(f.pm.D/pmT)}</td><td>${pct(f.pm.A/pmT)}</td></tr>`);
   rows.push(`<tr class="bl"><td>Mezcla → justa</td><td>${pct(mk.H)} · ${fair(mk.H)}</td><td>${pct(mk.D)} · ${fair(mk.D)}</td><td>${pct(mk.A)} · ${fair(mk.A)}</td></tr>`);
   if(f.public) rows.push(`<tr><td>Público boletos / dinero</td><td>${f.public.ml.H[0]}% / ${f.public.ml.H[1]}%</td><td>${f.public.ml.D[0]}% / ${f.public.ml.D[1]}%</td><td>${f.public.ml.A[0]}% / ${f.public.ml.A[1]}%</td></tr>`);
@@ -526,7 +564,7 @@ function pickCard(title,sub,items,note){
   return `<div class="ticket"><div class="tHead"><div class="tName">${title}</div><div class="tLam">${sub}</div></div>${rows}${note?`<div class="tLam" style="margin-top:8px">${note}</div>`:''}</div>`;
 }
 function valueVsBook(f,C){
-  if(!f.dk) return '';
+  if(!f.dk||!f.dk.ml) return '';
   const mk=C.mk, rows=[], add=(name,p,dec)=>{ if(!dec) return; const e=dec*p-1; rows.push({name:`${name} — DK ${dec.toFixed(2)}${e>0.02?' 🟢':''}`,p,fair:1/p,fam:'Goals',edge:e}); };
   add(`Gana ${f.home}`,mk.H,amDec(f.dk.ml[0])); add('Empate',mk.D,amDec(f.dk.ml[1])); add(`Gana ${f.away}`,mk.A,amDec(f.dk.ml[2]));
   if(f.dk.line!=null&&f.dk.ouOdds){ const po=UCLM.pOver(C.D.Goals.dt,f.dk.line); add(`Más de ${f.dk.line} goles`,po,amDec(f.dk.ouOdds[0])); add(`Menos de ${f.dk.line} goles`,1-po,amDec(f.dk.ouOdds[1])); }
@@ -537,9 +575,10 @@ function render(){
   const f=fx(), C=calc(f);
   $('tH').textContent=f.home; $('tA').textContent=f.away;
   $('venue').textContent=`${hhmm(f.kickoff)} CDMX · ${f.venue}`;
-  if(!C){ $('ctx').innerHTML='<div class="ticket">Sin momios para este partido.</div>'; $('markets').innerHTML=''; return; }
+  if(!C){ $('ctx').innerHTML='<div class="ticket">Sin momios para este partido todavía. Cargando Playdoit…</div>'; $('markets').innerHTML=''; if(!PDX[f.id]) loadPD(f).then(render); return; }
   $('ctx').innerHTML=context(f,C);
   let h='';
+  if(MODE==='pd'){ $('markets').innerHTML=pdView(f,C); return; }
   if(MODE==='total'){
     for(const s of ORDER){ const X=C.D[s]; if(!X) continue; const tot=X.m.home+X.m.away;
       const dflt=s==='Goals'&&f.dk&&f.dk.line?f.dk.line:mainLine(tot);
@@ -572,6 +611,51 @@ function render(){
   $('markets').innerHTML=h;
 }
 
+// ---------- Playdoit (live lines) ----------
+async function loadPD(f,force){
+  if(PDX[f.id]&&!force&&Date.now()-PDX[f.id].t<90e3) return PDX[f.id];
+  try{
+    if(typeof PD==='undefined') throw new Error('playdoit.js no cargó');
+    const e=f.pdId?{id:f.pdId}:PD.match(await PD.events('ucl'),f.home,f.away,f.kickoff);
+    if(!e){ PDX[f.id]={t:Date.now(),err:'Playdoit no tiene este partido.'}; return PDX[f.id]; }
+    const P=PD.parse(await PD.details(e.id)); PDX[f.id]={t:Date.now(),P,mk:PD.market(P)};
+  }catch(err){ PDX[f.id]={t:Date.now(),err:'No pude leer Playdoit: '+err.message}; }
+  return PDX[f.id];
+}
+const INJ_OPTS=[[1,'Completo'],[0.95,'−5% (1 titular de ataque fuera)'],[0.9,'−10% (2 fuera)'],[0.85,'−15% (crisis)']];
+function setInj(fid,side,v){ const all=store.get('uclInj',{}); all[fid]={...(all[fid]||{}),[side]:+v}; store.set('uclInj',all); render(); }
+function pdView(f,C){
+  const X=PDX[f.id];
+  if(!X){ loadPD(f).then(()=>{ if(MODE==='pd'&&fx()===f) render(); }); return '<div class="ticket"><div class="tLam">Cargando momios de Playdoit…</div></div>'; }
+  if(X.err) return `<div class="ticket"><div class="tName">Playdoit</div><div class="tLam">${X.err}</div><button class="btn" style="margin-top:8px;width:100%" onclick="loadPD(fx(),true).then(render)">Reintentar</button></div>`;
+  const inj=injOf(f), sel=side=>`<select class="sel" style="margin:4px 0" onchange="setInj('${f.id}','${side}',this.value)">${INJ_OPTS.map(([v,l])=>`<option value="${v}" ${Math.abs(v-inj[side])<1e-9?'selected':''}>${l}</option>`).join('')}</select>`;
+  const prob=(stat,side,line)=>{ const d=C.D[stat]; if(!d) return null; return UCLM.pOver(side==='t'?d.dt:side==='h'?d.dh:d.da,line); };
+  let h=`<div class="ticket"><div class="tName">Bajas de ataque</div><div class="tLam">Baja tiros, tiros a puerta, córners y offsides del equipo. Se guarda en este teléfono.</div>
+    <div class="tLam" style="margin-top:6px">${f.home}</div>${sel('home')}<div class="tLam">${f.away}</div>${sel('away')}<div id="injList" class="tLam" style="margin-top:6px"></div></div>`;
+  h+=PD.render(X.P,{prob,home:f.home,away:f.away,goals:{lh:C.mk.lh,la:C.mk.la},x12:{H:C.mk.H,D:C.mk.D,A:C.mk.A},
+    note:`Actualizado ${new Date(X.t).toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'})}. <a href="#" onclick="loadPD(fx(),true).then(render);return false" style="color:var(--amber)">Recargar</a>`});
+  setTimeout(()=>loadInjuries(f),0);
+  return h;
+}
+// API-Football injuries — only if the key was saved on this phone (Liga MX page → Datos)
+const INJ_CACHE={};
+async function loadInjuries(f){
+  const el=$('injList'); if(!el) return;
+  let key=''; try{key=localStorage.getItem('lmxApiFootballKey')||''}catch(e){}
+  if(!key){ el.innerHTML='Para ver lesionados, guarda tu key de API-Football en la página Liga MX → Datos.'; return; }
+  try{
+    if(!INJ_CACHE[f.id]){
+      const api=p=>fetch('https://v3.football.api-sports.io'+p,{headers:{'x-apisports-key':key}}).then(r=>r.json());
+      const day=new Date(iso(f.kickoff)).toLocaleDateString('en-CA',{timeZone:tz});
+      const fl=(await api(`/fixtures?league=2&season=2026&date=${day}&timezone=America/Mexico_City`)).response||[];
+      const hit=fl.find(x=>PD.sim(x.teams.home.name,f.home)>=0.5&&PD.sim(x.teams.away.name,f.away)>=0.5);
+      INJ_CACHE[f.id]=hit?((await api('/injuries?fixture='+hit.fixture.id)).response||[]):[];
+    }
+    const by={}; for(const x of INJ_CACHE[f.id]) (by[x.team.name]=by[x.team.name]||[]).push(x.player.name+(x.player.type==='Missing Fixture'?'':' (duda)'));
+    el.innerHTML=Object.keys(by).length?Object.entries(by).map(([t,l])=>`<b>${t}:</b> ${l.join(', ')}`).join('<br>'):'API-Football no reporta bajas.';
+  }catch(e){ el.textContent='No pude leer lesionados: '+e.message; }
+}
+
 function savePick(name,fairPx,p){ const f=fx(); const R=store.get('uclPicks',[]); R.unshift({id:Date.now(),date:UCL.meta.today,match:`${f.home} vs ${f.away}`,name,fair:fairPx,p,price:null,res:null}); store.set('uclPicks',R); renderReg(); }
 function renderReg(){
   const R=store.get('uclPicks',[]), done=R.filter(r=>r.res==='W'||r.res==='L'), w=done.filter(r=>r.res==='W').length;
@@ -590,11 +674,12 @@ function renderData(){
   <b>1. Fuerza del partido = mercado.</b> Los momios 1X2 y el total de DraftKings (vía ESPN), mezclados 50/50 con Polymarket, se convierten en goles esperados. De ahí salen la superioridad y el ritmo del partido.<br>
   <b>2. Estilo = liga local.</b> Con ${m.domesticLeagues.length} ligas de ESPN se calculan ratings de ataque y defensa por estadística, ajustados por rival y con decaimiento temporal (vida media ${m.halfLife} días). A cada rating se le quita la parte que explica el nivel del equipo; lo que queda es estilo (p. ej. "más córners de lo que su nivel indica").<br>
   <b>3. Capa UCL.</b> Regresión Poisson por estadística sobre ${m.uclRows} partidos de UCL con momios (ago-2025 a hoy): base local/visita + superioridad + ritmo + estilo. Dispersión binomial negativa estimada de los residuos.<br>
-  <b>Límites:</b> no hay datos de la liga ucraniana (Shakhtar = estilo neutral); los fueras de juego no tienen dato local; no hay ajuste por árbitro ni alineaciones.</div></div>
+  <b>4. V3 (nov-2026).</b> Calibración de temporada (real/predicho en el test, encogido con 40 partidos): ${Object.entries(UCL.calib||{}).map(([k,v])=>LAB[k]+' ×'+v).join(', ')}. Luego 30% hacia los promedios de UCL de esta temporada ((a favor + en contra del rival)/2). Si ESPN no trae momios, la fuerza sale del 1X2 y total de goles de Playdoit. Pestaña Playdoit: momios en vivo vs modelo, con ajuste manual por bajas.<br>
+  <b>Límites:</b> no hay datos de la liga ucraniana (Shakhtar = estilo neutral); los fueras de juego no tienen dato local; no hay ajuste por árbitro; las alineaciones no se leen solas.</div></div>
   <div class="ticket"><div class="tName">Backtest</div><div class="tLam" style="margin:6px 0">Ajustado con ${m.train} partidos antes de jul-2026; evaluado en los ${m.test} de la fase de liga 2026-27. Log loss medio por equipo-partido (menor = mejor).</div>
   <table class="mk"><tr><th>Stat</th><th>Promedio UCL</th><th>Solo mercado</th><th>Mercado + estilo</th></tr>${['Shots','Shots on Target','Corners','Fouls','Cards','Offsides'].map(row).join('')}</table>
   <div class="tLam" style="margin-top:6px">El estilo ayuda sobre todo en tiros y tiros a puerta; en córners, faltas y tarjetas la mejora es pequeña. Goles: log loss del mercado ${b.Goals.mkt.toFixed(3)}.</div></div>
-  <div class="ticket"><div class="tName">Fuentes</div><div class="tLam" style="margin-top:6px">ESPN (marcadores, box scores, momios DraftKings) · Polymarket (Gamma API) · Action Network (% público, snapshot ${m.public_source?m.public_source.split('pulled ')[1]:''}). Modelo construido ${m.built.slice(0,16).replace('T',' ')} UTC.</div>
+  <div class="ticket"><div class="tName">Fuentes</div><div class="tLam" style="margin-top:6px">ESPN (marcadores, box scores, momios DraftKings) · Polymarket (Gamma API) · Action Network (% público, snapshot ${m.public_source?m.public_source.split('pulled ')[1]:''}). Modelo construido ${m.built.slice(0,16).replace('T',' ')} UTC (se actualiza solo cada 3 horas).</div>
   <button class="btn" style="margin-top:10px;width:100%" onclick="refreshAll()">Actualizar momios</button></div>`;
 }
 
@@ -624,6 +709,7 @@ function init(){
     for(const v of ['mainView','regView','dataView']) $(v).style.display=v===b.dataset.view?(v==='mainView'?'block':'flex'):'none'; });
   const next=UCL.fixtures.findIndex(f=>Date.parse(iso(f.kickoff))>Date.now()-100*60e3); FI=next<0?0:next; sel.value=FI;
   render(); renderReg(); renderData(); refreshAll();
+  Promise.all(UCL.fixtures.filter(f=>!f.dk).map(f=>loadPD(f))).then(()=>render());
 }
 init();
 </script>

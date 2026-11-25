@@ -254,8 +254,23 @@
     const sums = await pool(done, 6, e => getJSON(`${BASE}uefa.champions/summary?event=${e.id}`));
     const ucl = done.map((e, i) => sums[i] ? uclRow(e, sums[i]) : null).filter(r => r && !r.extra && r.mkt && r.h.Shots != null && r.a.Shots != null);
     log('UCL rows with odds ' + ucl.length + ' of ' + done.length);
+    const teamUcl = {};
+    done.forEach((e, i) => {
+      const r = sums[i] ? uclRow(e, sums[i]) : null;
+      if (!r || r.t < TEST_FROM || r.h.Shots == null || r.a.Shots == null) return;
+      for (const [me, op] of [[r.h, r.a], [r.a, r.h]]) {
+        const T = teamUcl[me.id] = teamUcl[me.id] || { name: me.name, n: 0, for: {}, against: {} };
+        T.n++;
+        for (const s of ['Shots', 'Shots on Target', 'Corners', 'Offsides']) {
+          if (me[s] != null && isFinite(me[s])) T.for[s] = (T.for[s] || 0) + me[s];
+          if (op[s] != null && isFinite(op[s])) T.against[s] = (T.against[s] || 0) + op[s];
+        }
+      }
+    });
+    for (const T of Object.values(teamUcl)) for (const k of ['for', 'against']) for (const s in T[k]) T[k][s] = +(T[k][s] / T.n).toFixed(2);
     // fixtures today
-    const tj = await getJSON(`${BASE}uefa.champions/scoreboard?dates=${today.replace(/-/g, '')}`);
+    const days = opts.days || 1, endDay = new Date(Date.parse(today + 'T12:00:00Z') + (days - 1) * DAY).toISOString().slice(0, 10);
+    const tj = await getJSON(`${BASE}uefa.champions/scoreboard?dates=${today.replace(/-/g, '')}${days > 1 ? '-' + endDay.replace(/-/g, '') : ''}&limit=100`);
     const todayEv = (tj.events || []).filter(e => !e.status.type.completed);
     const tsums = await pool(todayEv, 6, e => getJSON(`${BASE}uefa.champions/summary?event=${e.id}`));
 
@@ -305,7 +320,10 @@
       return { id: e.id, kickoff: e.date, home: H.team.displayName, away: A.team.displayName, homeId: hid, awayId: aid, homeAbbr: H.team.abbreviation, awayAbbr: A.team.abbreviation, venue: (c.venue || {}).fullName || '', dk: mkt, info: { home: info(hid), away: info(aid) },
         style: Object.fromEntries(USTATS.filter(s => s !== 'Offsides').map(s => { const a = styleFor(hid, s, now), b = styleFor(aid, s, now); return [s, { home: [+a.att.toFixed(3), +a.def.toFixed(3), a.ok], away: [+b.att.toFixed(3), +b.def.toFixed(3), b.ok] }]; })) };
     });
-    return { meta: { built: new Date().toISOString(), today, version: 'ucl-edge-v2-espn', uclRows: ucl.length, train: train.length, test: test.length, domesticLeagues: DOMESTIC.filter(l => (dom[l] || []).length), halfLife: HALF_LIFE, kPrior: K_PRIOR }, coefs, slopes, backtest, fixtures };
+    // v3: season calibration — test-set actual/predicted ratio, shrunk with 40 games of prior
+    const calib = {};
+    for (const s of USTATS) { const v = coefs[s] && coefs[s].variant, bt = backtest[s] && backtest[s]['m' + v]; if (bt && isFinite(bt.bias)) calib[s] = +(1 + (bt.bias - 1) * bt.n / (bt.n + 40)).toFixed(3); }
+    return { calib, teamUcl, meta: { built: new Date().toISOString(), today, days, version: 'ucl-edge-v3', uclRows: ucl.length, train: train.length, test: test.length, domesticLeagues: DOMESTIC.filter(l => (dom[l] || []).length), halfLife: HALF_LIFE, kPrior: K_PRIOR }, coefs, slopes, backtest, fixtures };
   }
 
 
@@ -338,13 +356,26 @@
   function margin(dh, da, m) { let p = 0; for (let i = 0; i < dh.length; i++) for (let j = 0; j < da.length; j++) if (i - j > m) p += dh[i] * da[j]; return p; }
 
   // Means for one fixture given a market (lh, la). Used by the page and the builder.
-  function means(model, fx, lam) {
+  // v3 means: regression x season calibration, then 30% toward this season's UCL averages
+  // ((team for + opponent against) / 2, both teams with 3+ games), then optional attack multipliers
+  // opts.inj = {home, away} (e.g. 0.88 when key forwards are out). Goals stay on the market.
+  const UCL_W = 0.30, UCL_MIN = 3;
+  function means(model, fx, lam, opts) {
+    const o = opts || {}, inj = o.inj || {}, ih = inj.home || 1, ia = inj.away || 1;
     const out = { Goals: { home: lam.lh, away: lam.la, r: null } };
+    const TU = model.teamUcl || {}, th = TU[fx.homeId], ta = TU[fx.awayId];
     for (const s of USTATS) {
       const c = model.coefs[s]; if (!c) continue;
       const st = fx.style[s] || { home: [0, 0], away: [0, 0] };
       const sh = { att: st.home[0], def: st.home[1] }, sa = { att: st.away[0], def: st.away[1] };
-      out[s] = { home: predict(c.b, features(s, lam, sh, sa, 'home', c.variant)), away: predict(c.b, features(s, lam, sh, sa, 'away', c.variant)), r: c.r };
+      const k = (model.calib && model.calib[s]) || 1;
+      let mh = predict(c.b, features(s, lam, sh, sa, 'home', c.variant)) * k, ma = predict(c.b, features(s, lam, sh, sa, 'away', c.variant)) * k;
+      if (o.uclBlend !== false && th && ta && th.n >= UCL_MIN && ta.n >= UCL_MIN && th.for[s] != null && ta.for[s] != null) {
+        mh = (1 - UCL_W) * mh + UCL_W * (th.for[s] + ta.against[s]) / 2;
+        ma = (1 - UCL_W) * ma + UCL_W * (ta.for[s] + th.against[s]) / 2;
+      }
+      if (s !== 'Fouls' && s !== 'Cards') { mh *= ih; ma *= ia; }
+      out[s] = { home: mh, away: ma, r: c.r };
     }
     return out;
   }

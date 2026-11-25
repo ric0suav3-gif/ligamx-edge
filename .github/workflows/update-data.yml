@@ -1,0 +1,52 @@
+name: update-data
+# Rebuilds Liga MX (ESPN) and UCL (ESPN + Playdoit) data and the two pages.
+# Times are UTC; Mexico City is UTC-6: 07:10, 10:40, 12:50 and 17:10 CDMX.
+on:
+  schedule:
+    - cron: '10 13 * * *'
+    - cron: '40 16 * * *'
+    - cron: '50 18 * * *'
+    - cron: '10 23 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Liga MX from ESPN
+        id: ligamx
+        continue-on-error: true
+        run: python scripts/sync_ligamx_espn.py
+      - name: UCL model from ESPN + Playdoit
+        id: ucl
+        continue-on-error: true
+        run: |
+          node ucl/build_node.js --days 7
+          python ucl/build_page.py data/ucl_latest.json
+      - name: Commit and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "ligamx-edge-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html "ligamx edge.html" ucl.html data/ucl_latest.json data/ligamx_espn_latest.json data/ligamx_base_v30.json || true
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Auto-update data $(date -u +%Y-%m-%dT%H:%MZ) [ligamx: ${{ steps.ligamx.outcome }}, ucl: ${{ steps.ucl.outcome }}]"
+          git push
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" || echo "Pages build request failed (the push may still trigger it)"
+      - name: Fail if both updates failed
+        if: steps.ligamx.outcome == 'failure' && steps.ucl.outcome == 'failure'
+        run: exit 1

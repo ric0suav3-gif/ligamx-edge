@@ -65,7 +65,7 @@ nav button.on{color:var(--amber)}
 </head>
 <body>
 <header>
-  <h1>UCL <span>Edge</span> <span class="tag">V2</span></h1>
+  <h1>UCL <span>Edge</span> <span class="tag">V3</span></h1>
   <div id="dataDate"></div>
 </header>
 
@@ -77,7 +77,8 @@ nav button.on{color:var(--amber)}
   </div>
   <div id="ctx"></div>
   <div class="tabs">
-    <button class="tab on" data-mode="picks">Picks</button>
+    <button class="tab on" data-mode="pd">Playdoit</button>
+    <button class="tab" data-mode="picks">Picks</button>
     <button class="tab" data-mode="total">Totales</button>
     <button class="tab" data-mode="team">Equipo</button>
     <button class="tab" data-mode="h2h">H2H</button>
@@ -98,6 +99,7 @@ nav button.on{color:var(--amber)}
 <script>
 /*__MODEL_JS__*/
 </script>
+<script src="playdoit.js"></script>
 <script>
 const UCL = /*__DATA__*/;
 const LAB={Goals:'Goles',Shots:'Tiros','Shots on Target':'Tiros a puerta',Corners:'Córners',Fouls:'Faltas',Cards:'Tarjetas',Offsides:'Fueras de juego'};
@@ -112,13 +114,16 @@ const mainLine=m=>Math.max(0.5,Math.round(m-0.5)+0.5);
 const tz='America/Mexico_City';
 const iso=x=>x.replace(/T(\d\d:\d\d)Z$/,'T$1:00Z');
 const hhmm=x=>new Date(iso(x)).toLocaleTimeString('es-MX',{timeZone:tz,hour:'numeric',minute:'2-digit'});
-let FI=0, MODE='picks', LINES={}, LIVE={};
+let FI=0, MODE='pd', LINES={}, LIVE={}, PDX={};
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
 function fx(){ return UCL.fixtures[FI]; }
+function injOf(f){ const v=store.get('uclInj',{})[f.id]||{}; return {home:v.home||1, away:v.away||1}; }
 function calc(f){
-  const mk=UCLM.blendMarket(f,0.5); if(!mk) return null;
-  const mu=UCLM.means(UCL,f,mk), D={};
+  let mk=UCLM.blendMarket(f,0.5);
+  if(!mk && PDX[f.id] && PDX[f.id].mk){ const m=PDX[f.id].mk, lam=UCLM.solveLambda(m); mk={...m,lh:lam.lh,la:lam.la,fitErr:lam.fitErr}; }
+  if(!mk) return null;
+  const mu=UCLM.means(UCL,f,mk,{inj:injOf(f)}), D={};
   for(const s of ORDER){ const m=mu[s]; if(!m) continue; const dh=UCLM.dist(m.home,m.r), da=UCLM.dist(m.away,m.r); D[s]={m,dh,da,dt:UCLM.conv(dh,da)}; }
   return {mk,D};
 }
@@ -137,7 +142,9 @@ function three(name,sub,cells){ const b=Math.max(...cells.map(c=>c[1])); return 
 function context(f,C){
   const mk=C.mk, pmT=f.pm?f.pm.H+f.pm.D+f.pm.A:1, live=LIVE[f.id]||{};
   const rows=[];
-  if(f.dk) rows.push(`<tr><td>DraftKings ${f.dk.ml.map(am).join(' / ')}</td><td>${pct(f.dk.H)}</td><td>${pct(f.dk.D)}</td><td>${pct(f.dk.A)}</td></tr>`);
+  if(f.dk&&f.dk.ml) rows.push(`<tr><td>DraftKings ${f.dk.ml.map(am).join(' / ')}</td><td>${pct(f.dk.H)}</td><td>${pct(f.dk.D)}</td><td>${pct(f.dk.A)}</td></tr>`);
+  const pdm=(f.dk&&f.dk.provider==='Playdoit')?f.dk:(PDX[f.id]&&PDX[f.id].mk);
+  if(pdm) rows.push(`<tr><td>Playdoit ${pdm.dec.map(x=>x.toFixed(2)).join(' / ')}</td><td>${pct(pdm.H)}</td><td>${pct(pdm.D)}</td><td>${pct(pdm.A)}</td></tr>`);
   if(f.pm) rows.push(`<tr><td>Polymarket · $${(f.pm.liq/1e6).toFixed(1)}M</td><td>${pct(f.pm.H/pmT)}</td><td>${pct(f.pm.D/pmT)}</td><td>${pct(f.pm.A/pmT)}</td></tr>`);
   rows.push(`<tr class="bl"><td>Mezcla → justa</td><td>${pct(mk.H)} · ${fair(mk.H)}</td><td>${pct(mk.D)} · ${fair(mk.D)}</td><td>${pct(mk.A)} · ${fair(mk.A)}</td></tr>`);
   if(f.public) rows.push(`<tr><td>Público boletos / dinero</td><td>${f.public.ml.H[0]}% / ${f.public.ml.H[1]}%</td><td>${f.public.ml.D[0]}% / ${f.public.ml.D[1]}%</td><td>${f.public.ml.A[0]}% / ${f.public.ml.A[1]}%</td></tr>`);
@@ -173,7 +180,7 @@ function pickCard(title,sub,items,note){
   return `<div class="ticket"><div class="tHead"><div class="tName">${title}</div><div class="tLam">${sub}</div></div>${rows}${note?`<div class="tLam" style="margin-top:8px">${note}</div>`:''}</div>`;
 }
 function valueVsBook(f,C){
-  if(!f.dk) return '';
+  if(!f.dk||!f.dk.ml) return '';
   const mk=C.mk, rows=[], add=(name,p,dec)=>{ if(!dec) return; const e=dec*p-1; rows.push({name:`${name} — DK ${dec.toFixed(2)}${e>0.02?' 🟢':''}`,p,fair:1/p,fam:'Goals',edge:e}); };
   add(`Gana ${f.home}`,mk.H,amDec(f.dk.ml[0])); add('Empate',mk.D,amDec(f.dk.ml[1])); add(`Gana ${f.away}`,mk.A,amDec(f.dk.ml[2]));
   if(f.dk.line!=null&&f.dk.ouOdds){ const po=UCLM.pOver(C.D.Goals.dt,f.dk.line); add(`Más de ${f.dk.line} goles`,po,amDec(f.dk.ouOdds[0])); add(`Menos de ${f.dk.line} goles`,1-po,amDec(f.dk.ouOdds[1])); }
@@ -184,9 +191,10 @@ function render(){
   const f=fx(), C=calc(f);
   $('tH').textContent=f.home; $('tA').textContent=f.away;
   $('venue').textContent=`${hhmm(f.kickoff)} CDMX · ${f.venue}`;
-  if(!C){ $('ctx').innerHTML='<div class="ticket">Sin momios para este partido.</div>'; $('markets').innerHTML=''; return; }
+  if(!C){ $('ctx').innerHTML='<div class="ticket">Sin momios para este partido todavía. Cargando Playdoit…</div>'; $('markets').innerHTML=''; if(!PDX[f.id]) loadPD(f).then(render); return; }
   $('ctx').innerHTML=context(f,C);
   let h='';
+  if(MODE==='pd'){ $('markets').innerHTML=pdView(f,C); return; }
   if(MODE==='total'){
     for(const s of ORDER){ const X=C.D[s]; if(!X) continue; const tot=X.m.home+X.m.away;
       const dflt=s==='Goals'&&f.dk&&f.dk.line?f.dk.line:mainLine(tot);
@@ -219,6 +227,51 @@ function render(){
   $('markets').innerHTML=h;
 }
 
+// ---------- Playdoit (live lines) ----------
+async function loadPD(f,force){
+  if(PDX[f.id]&&!force&&Date.now()-PDX[f.id].t<90e3) return PDX[f.id];
+  try{
+    if(typeof PD==='undefined') throw new Error('playdoit.js no cargó');
+    const e=f.pdId?{id:f.pdId}:PD.match(await PD.events('ucl'),f.home,f.away,f.kickoff);
+    if(!e){ PDX[f.id]={t:Date.now(),err:'Playdoit no tiene este partido.'}; return PDX[f.id]; }
+    const P=PD.parse(await PD.details(e.id)); PDX[f.id]={t:Date.now(),P,mk:PD.market(P)};
+  }catch(err){ PDX[f.id]={t:Date.now(),err:'No pude leer Playdoit: '+err.message}; }
+  return PDX[f.id];
+}
+const INJ_OPTS=[[1,'Completo'],[0.95,'−5% (1 titular de ataque fuera)'],[0.9,'−10% (2 fuera)'],[0.85,'−15% (crisis)']];
+function setInj(fid,side,v){ const all=store.get('uclInj',{}); all[fid]={...(all[fid]||{}),[side]:+v}; store.set('uclInj',all); render(); }
+function pdView(f,C){
+  const X=PDX[f.id];
+  if(!X){ loadPD(f).then(()=>{ if(MODE==='pd'&&fx()===f) render(); }); return '<div class="ticket"><div class="tLam">Cargando momios de Playdoit…</div></div>'; }
+  if(X.err) return `<div class="ticket"><div class="tName">Playdoit</div><div class="tLam">${X.err}</div><button class="btn" style="margin-top:8px;width:100%" onclick="loadPD(fx(),true).then(render)">Reintentar</button></div>`;
+  const inj=injOf(f), sel=side=>`<select class="sel" style="margin:4px 0" onchange="setInj('${f.id}','${side}',this.value)">${INJ_OPTS.map(([v,l])=>`<option value="${v}" ${Math.abs(v-inj[side])<1e-9?'selected':''}>${l}</option>`).join('')}</select>`;
+  const prob=(stat,side,line)=>{ const d=C.D[stat]; if(!d) return null; return UCLM.pOver(side==='t'?d.dt:side==='h'?d.dh:d.da,line); };
+  let h=`<div class="ticket"><div class="tName">Bajas de ataque</div><div class="tLam">Baja tiros, tiros a puerta, córners y offsides del equipo. Se guarda en este teléfono.</div>
+    <div class="tLam" style="margin-top:6px">${f.home}</div>${sel('home')}<div class="tLam">${f.away}</div>${sel('away')}<div id="injList" class="tLam" style="margin-top:6px"></div></div>`;
+  h+=PD.render(X.P,{prob,home:f.home,away:f.away,goals:{lh:C.mk.lh,la:C.mk.la},x12:{H:C.mk.H,D:C.mk.D,A:C.mk.A},
+    note:`Actualizado ${new Date(X.t).toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'})}. <a href="#" onclick="loadPD(fx(),true).then(render);return false" style="color:var(--amber)">Recargar</a>`});
+  setTimeout(()=>loadInjuries(f),0);
+  return h;
+}
+// API-Football injuries — only if the key was saved on this phone (Liga MX page → Datos)
+const INJ_CACHE={};
+async function loadInjuries(f){
+  const el=$('injList'); if(!el) return;
+  let key=''; try{key=localStorage.getItem('lmxApiFootballKey')||''}catch(e){}
+  if(!key){ el.innerHTML='Para ver lesionados, guarda tu key de API-Football en la página Liga MX → Datos.'; return; }
+  try{
+    if(!INJ_CACHE[f.id]){
+      const api=p=>fetch('https://v3.football.api-sports.io'+p,{headers:{'x-apisports-key':key}}).then(r=>r.json());
+      const day=new Date(iso(f.kickoff)).toLocaleDateString('en-CA',{timeZone:tz});
+      const fl=(await api(`/fixtures?league=2&season=2026&date=${day}&timezone=America/Mexico_City`)).response||[];
+      const hit=fl.find(x=>PD.sim(x.teams.home.name,f.home)>=0.5&&PD.sim(x.teams.away.name,f.away)>=0.5);
+      INJ_CACHE[f.id]=hit?((await api('/injuries?fixture='+hit.fixture.id)).response||[]):[];
+    }
+    const by={}; for(const x of INJ_CACHE[f.id]) (by[x.team.name]=by[x.team.name]||[]).push(x.player.name+(x.player.type==='Missing Fixture'?'':' (duda)'));
+    el.innerHTML=Object.keys(by).length?Object.entries(by).map(([t,l])=>`<b>${t}:</b> ${l.join(', ')}`).join('<br>'):'API-Football no reporta bajas.';
+  }catch(e){ el.textContent='No pude leer lesionados: '+e.message; }
+}
+
 function savePick(name,fairPx,p){ const f=fx(); const R=store.get('uclPicks',[]); R.unshift({id:Date.now(),date:UCL.meta.today,match:`${f.home} vs ${f.away}`,name,fair:fairPx,p,price:null,res:null}); store.set('uclPicks',R); renderReg(); }
 function renderReg(){
   const R=store.get('uclPicks',[]), done=R.filter(r=>r.res==='W'||r.res==='L'), w=done.filter(r=>r.res==='W').length;
@@ -237,11 +290,12 @@ function renderData(){
   <b>1. Fuerza del partido = mercado.</b> Los momios 1X2 y el total de DraftKings (vía ESPN), mezclados 50/50 con Polymarket, se convierten en goles esperados. De ahí salen la superioridad y el ritmo del partido.<br>
   <b>2. Estilo = liga local.</b> Con ${m.domesticLeagues.length} ligas de ESPN se calculan ratings de ataque y defensa por estadística, ajustados por rival y con decaimiento temporal (vida media ${m.halfLife} días). A cada rating se le quita la parte que explica el nivel del equipo; lo que queda es estilo (p. ej. "más córners de lo que su nivel indica").<br>
   <b>3. Capa UCL.</b> Regresión Poisson por estadística sobre ${m.uclRows} partidos de UCL con momios (ago-2025 a hoy): base local/visita + superioridad + ritmo + estilo. Dispersión binomial negativa estimada de los residuos.<br>
-  <b>Límites:</b> no hay datos de la liga ucraniana (Shakhtar = estilo neutral); los fueras de juego no tienen dato local; no hay ajuste por árbitro ni alineaciones.</div></div>
+  <b>4. V3 (nov-2026).</b> Calibración de temporada (real/predicho en el test, encogido con 40 partidos): ${Object.entries(UCL.calib||{}).map(([k,v])=>LAB[k]+' ×'+v).join(', ')}. Luego 30% hacia los promedios de UCL de esta temporada ((a favor + en contra del rival)/2). Si ESPN no trae momios, la fuerza sale del 1X2 y total de goles de Playdoit. Pestaña Playdoit: momios en vivo vs modelo, con ajuste manual por bajas.<br>
+  <b>Límites:</b> no hay datos de la liga ucraniana (Shakhtar = estilo neutral); los fueras de juego no tienen dato local; no hay ajuste por árbitro; las alineaciones no se leen solas.</div></div>
   <div class="ticket"><div class="tName">Backtest</div><div class="tLam" style="margin:6px 0">Ajustado con ${m.train} partidos antes de jul-2026; evaluado en los ${m.test} de la fase de liga 2026-27. Log loss medio por equipo-partido (menor = mejor).</div>
   <table class="mk"><tr><th>Stat</th><th>Promedio UCL</th><th>Solo mercado</th><th>Mercado + estilo</th></tr>${['Shots','Shots on Target','Corners','Fouls','Cards','Offsides'].map(row).join('')}</table>
   <div class="tLam" style="margin-top:6px">El estilo ayuda sobre todo en tiros y tiros a puerta; en córners, faltas y tarjetas la mejora es pequeña. Goles: log loss del mercado ${b.Goals.mkt.toFixed(3)}.</div></div>
-  <div class="ticket"><div class="tName">Fuentes</div><div class="tLam" style="margin-top:6px">ESPN (marcadores, box scores, momios DraftKings) · Polymarket (Gamma API) · Action Network (% público, snapshot ${m.public_source?m.public_source.split('pulled ')[1]:''}). Modelo construido ${m.built.slice(0,16).replace('T',' ')} UTC.</div>
+  <div class="ticket"><div class="tName">Fuentes</div><div class="tLam" style="margin-top:6px">ESPN (marcadores, box scores, momios DraftKings) · Polymarket (Gamma API) · Action Network (% público, snapshot ${m.public_source?m.public_source.split('pulled ')[1]:''}). Modelo construido ${m.built.slice(0,16).replace('T',' ')} UTC (se actualiza solo cada 3 horas).</div>
   <button class="btn" style="margin-top:10px;width:100%" onclick="refreshAll()">Actualizar momios</button></div>`;
 }
 
@@ -271,6 +325,7 @@ function init(){
     for(const v of ['mainView','regView','dataView']) $(v).style.display=v===b.dataset.view?(v==='mainView'?'block':'flex'):'none'; });
   const next=UCL.fixtures.findIndex(f=>Date.parse(iso(f.kickoff))>Date.now()-100*60e3); FI=next<0?0:next; sel.value=FI;
   render(); renderReg(); renderData(); refreshAll();
+  Promise.all(UCL.fixtures.filter(f=>!f.dk).map(f=>loadPD(f))).then(()=>render());
 }
 init();
 </script>
