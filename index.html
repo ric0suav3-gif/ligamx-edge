@@ -932,16 +932,17 @@ function pdLigaView(home,away){
   if(!X){ loadPDLiga(home,away).then(()=>{ if(mode==='pd') render(); }); return '<div class="ticket"><div class="tLam">Cargando momios de Playdoit…</div></div>'; }
   if(X.err) return `<div class="ticket"><div class="tName">Playdoit</div><div class="tLam">${X.err}</div><button class="btn" style="margin-top:8px;width:100%" onclick="loadPDLiga(homeSel.value,awaySel.value,true).then(render)">Reintentar</button></div>`;
   const D={};
+  if(!X.lam && PD.lambdas) X.lam=PD.lambdas(PD.market(X.P));
   const prob=(stat,side,line)=>{
-    if(!STATS.includes(stat)) return null;
-    if(!D[stat]){ const {h,a,r}=lambdas(stat,home,away); const dh=dist(h,r), da=dist(a,r); D[stat]={dh,da,dt:conv(dh,da)}; }
+    if(!STATS.includes(stat)&&stat!=='Goals') return null;
+    if(!D[stat]){ let {h,a,r}=lambdas(stat,home,away); if(stat==='Goals'&&X.lam){ h=X.lam.lh; a=X.lam.la; r=null; } const dh=dist(h,r), da=dist(a,r); D[stat]={dh,da,dt:conv(dh,da)}; }
     return pOver(side==='t'?D[stat].dt:side==='h'?D[stat].dh:D[stat].da,line);
   };
   // goals, 1X2 and 1UP: Playdoit's own 1X2 + total line → expected goals (the Liga MX goal model
   // runs far from the market in liguilla); props stay on the model
-  if(!X.lam && PD.lambdas) X.lam=PD.lambdas(PD.market(X.P));
   const g0=lambdas('Goals',home,away), g=X.lam||{lh:g0.h,la:g0.a};
-  const m1=model1X2(home,away);
+  let m1=model1X2(home,away);
+  if(X.lam){ const dh=dist(g.lh,null), da=dist(g.la,null); let H=0,Dw=0; for(let i=0;i<dh.length;i++) for(let j=0;j<da.length;j++){ const p=dh[i]*da[j]; if(i>j) H+=p; else if(i===j) Dw+=p; } m1={H,D:Dw,A:1-H-Dw}; }
   return PD.render(X.P,{prob,home:short(home),away:short(away),goals:g,x12:m1,
     note:`Actualizado ${new Date(X.t).toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'})}. <a href="#" onclick="loadPDLiga(homeSel.value,awaySel.value,true).then(render);return false" style="color:#f5b53f">Recargar</a>`});
 }
