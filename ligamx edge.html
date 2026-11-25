@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b1210">
 <!-- BUILD: LigaMX Edge V33 · 2026-10-20 · ESPN no-key stats + liguilla stakes + Polymarket 1X2 -->
-<title>LigaMX Edge V33 · ESPN + Polymarket</title>
+<title>LigaMX Edge V34 · ESPN + Polymarket</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -937,8 +937,12 @@ function pdLigaView(home,away){
     if(!D[stat]){ const {h,a,r}=lambdas(stat,home,away); const dh=dist(h,r), da=dist(a,r); D[stat]={dh,da,dt:conv(dh,da)}; }
     return pOver(side==='t'?D[stat].dt:side==='h'?D[stat].dh:D[stat].da,line);
   };
-  const g=lambdas('Goals',home,away);
-  return PD.render(X.P,{prob,home:short(home),away:short(away),goals:{lh:g.h,la:g.a},x12:model1X2(home,away),
+  // goals, 1X2 and 1UP: Playdoit's own 1X2 + total line → expected goals (the Liga MX goal model
+  // runs far from the market in liguilla); props stay on the model
+  if(!X.lam) X.lam=PD.lambdas(PD.market(X.P));
+  const g0=lambdas('Goals',home,away), g=X.lam||{lh:g0.h,la:g0.a};
+  const m1=model1X2(home,away);
+  return PD.render(X.P,{prob,home:short(home),away:short(away),goals:g,x12:m1,
     note:`Actualizado ${new Date(X.t).toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'})}. <a href="#" onclick="loadPDLiga(homeSel.value,awaySel.value,true).then(render);return false" style="color:#f5b53f">Recargar</a>`});
 }
 function bump(key,dir){ lines[key]=Math.max(0.5, lines[key]+dir*(1)); render(); }
