@@ -1,3 +1,12 @@
+
+# Liga MX Edge V34 / UCL Edge V3 (November 25)
+
+- **Auto-update.** `.github/workflows/update-data.yml` runs at 07:10, 10:40, 12:50 and 17:10 Mexico City time (and on demand from the Actions tab → update-data → Run workflow). It replays new Liga MX games from ESPN (`scripts/sync_ligamx_espn.py`), rebuilds the UCL model for the next 7 days (`node ucl/build_node.js` → `data/ucl_latest.json` → `ucl.html`), commits and asks GitHub Pages to publish. No keys needed.
+- **Playdoit tab** (first tab on both pages). `playdoit.js` reads Playdoit's live lines from the phone (Altenar widget API, public): team and match shots, shots on target, corners, offsides, cards, goals, 1X2, 1UP (Súper Pago Anticipado) and BTTS. Each line shows Playdoit's price, the probability and EV. The probability is 50% model + 50% Playdoit's no-vig price, because raw model edges on props were far too big. A market where the model is 20+ points away from Playdoit's main line is flagged and kept out of the value list. GitHub's servers are blocked by Playdoit (403), so lines are only fetched on the phone.
+- **UCL V3 model.** Season calibration from the test set (actual/predicted, shrunk with 40 games: shots ×1.02, SOT ×0.98, corners ×0.96, offsides ×1.17), then 30% toward this season's UCL averages ((team for + opponent against)/2). If ESPN has no odds, match strength comes from Playdoit's 1X2 and goal line. The Playdoit tab has a manual "Bajas de ataque" setting per team and lists API-Football injuries when the key is saved on the phone.
+- **Liga MX goals in the Playdoit tab** come from Playdoit's own 1X2 + total (the Liga MX goal model runs far from the market in liguilla). A model saved on the phone is now used only if it has newer data than the page.
+- When `playdoit.js` changes, bump the `?v=` on its `<script>` tag in `index.html` and `web/ucl_template.html` so phones don't keep the old copy.
+
 # Liga MX Edge V33
 
 The [dashboard](index.html) projects Liga MX goals, shots, shots on target, corners, fouls, cards and offsides. Fixtures and completed-match statistics come from ESPN's public soccer feed; **no API-Football key is required**. Model prices are fair-price estimates, not sportsbook quotes or guaranteed edges. Check the exact line and price at your book before betting.
