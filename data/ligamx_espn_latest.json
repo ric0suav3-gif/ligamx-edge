@@ -1,7 +1,7 @@
 {
   "source": "ESPN",
-  "generatedAt": "2026-11-08T00:51:56.400543+00:00",
-  "todayMexico": "2026-11-07",
+  "generatedAt": "2026-11-25T16:25:56.223404+00:00",
+  "todayMexico": "2026-11-25",
   "matches": [
     {
       "id": "401876996",
@@ -929,8 +929,7 @@
         "Red": 0,
         "Offsides": 4,
         "Cards": 2
-      },
-      "referee": "Mario Terrazas Chávez"
+      }
     },
     {
       "id": "401876963",
@@ -959,8 +958,7 @@
         "Red": 0,
         "Offsides": 0,
         "Cards": 2
-      },
-      "referee": "Luis Enrique Santander Aguirre"
+      }
     },
     {
       "id": "401876959",
@@ -989,8 +987,7 @@
         "Red": 0,
         "Offsides": 3,
         "Cards": 1
-      },
-      "referee": "Katia Itzel García"
+      }
     },
     {
       "id": "401876962",
@@ -1019,8 +1016,7 @@
         "Red": 0,
         "Offsides": 0,
         "Cards": 2
-      },
-      "referee": "Salvador Pérez Villalobos"
+      }
     },
     {
       "id": "401876961",
@@ -1049,8 +1045,7 @@
         "Red": 0,
         "Offsides": 3,
         "Cards": 3
-      },
-      "referee": "Adonai Gonzalez"
+      }
     },
     {
       "id": "401876960",
@@ -1079,8 +1074,7 @@
         "Red": 0,
         "Offsides": 1,
         "Cards": 1
-      },
-      "referee": "Vicente Reynoso Arce"
+      }
     },
     {
       "id": "401876958",
@@ -1109,8 +1103,7 @@
         "Red": 0,
         "Offsides": 3,
         "Cards": 2
-      },
-      "referee": "Víctor Alfonso Cáceres Hernández"
+      }
     },
     {
       "id": "401876957",
@@ -1139,8 +1132,7 @@
         "Red": 0,
         "Offsides": 1,
         "Cards": 2
-      },
-      "referee": "Yonatan Peinado"
+      }
     },
     {
       "id": "401876956",
@@ -1169,8 +1161,7 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 2
-      },
-      "referee": "Guillermo Pacheco Larios"
+      }
     },
     {
       "id": "401876954",
@@ -1199,8 +1190,7 @@
         "Red": 1,
         "Offsides": 3,
         "Cards": 2
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876953",
@@ -1229,8 +1219,7 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 4
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876952",
@@ -1259,8 +1248,7 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 4
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876955",
@@ -1289,8 +1277,7 @@
         "Red": 0,
         "Offsides": 3,
         "Cards": 3
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876951",
@@ -1319,8 +1306,7 @@
         "Red": 1,
         "Offsides": 2,
         "Cards": 4
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876950",
@@ -1349,8 +1335,7 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 1
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876948",
@@ -1379,8 +1364,7 @@
         "Red": 0,
         "Offsides": 4,
         "Cards": 1
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876949",
@@ -1409,8 +1393,7 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 4
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876947",
@@ -1439,8 +1422,7 @@
         "Red": 0,
         "Offsides": 3,
         "Cards": 1
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876946",
@@ -1469,8 +1451,7 @@
         "Red": 1,
         "Offsides": 0,
         "Cards": 2
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876945",
@@ -1499,8 +1480,7 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 1
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876944",
@@ -1529,8 +1509,7 @@
         "Red": 0,
         "Offsides": 3,
         "Cards": 2
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876942",
@@ -1559,8 +1538,7 @@
         "Red": 1,
         "Offsides": 2,
         "Cards": 3
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876943",
@@ -1589,8 +1567,7 @@
         "Red": 1,
         "Offsides": 0,
         "Cards": 1
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876940",
@@ -1619,8 +1596,7 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 0
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876941",
@@ -1649,8 +1625,7 @@
         "Red": 0,
         "Offsides": 0,
         "Cards": 4
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876939",
@@ -1679,8 +1654,7 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 4
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876938",
@@ -1709,8 +1683,7 @@
         "Red": 0,
         "Offsides": 3,
         "Cards": 3
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876934",
@@ -1739,8 +1712,7 @@
         "Red": 0,
         "Offsides": 1,
         "Cards": 1
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876936",
@@ -1769,8 +1741,7 @@
         "Red": 0,
         "Offsides": 1,
         "Cards": 2
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876937",
@@ -1799,8 +1770,7 @@
         "Red": 0,
         "Offsides": 0,
         "Cards": 0
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876935",
@@ -1829,8 +1799,7 @@
         "Red": 0,
         "Offsides": 1,
         "Cards": 1
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876931",
@@ -1859,8 +1828,7 @@
         "Red": 0,
         "Offsides": 1,
         "Cards": 0
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876932",
@@ -1889,8 +1857,7 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 1
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876933",
@@ -1919,8 +1886,7 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 2
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876929",
@@ -1949,8 +1915,7 @@
         "Red": 1,
         "Offsides": 0,
         "Cards": 2
-      },
-      "referee": null
+      }
     },
     {
       "id": "401876930",
@@ -1979,11 +1944,10 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 3
-      },
-      "referee": null
+      }
     },
     {
-      "id": "af1551011",
+      "id": "401876928",
       "date": "2026-10-23",
       "kickoff": "2026-10-24T01:00Z",
       "home": {
@@ -2002,18 +1966,17 @@
         "name": "FC Juarez",
         "Goals": 1,
         "Shots": 24,
-        "Shots on Target": 4,
+        "Shots on Target": 5,
         "Corners": 5,
         "Fouls": 7,
         "Yellow": 2,
         "Red": 0,
         "Offsides": 0,
         "Cards": 2
-      },
-      "referee": "Martin Molina Astorga"
+      }
     },
     {
-      "id": "af1551012",
+      "id": "401876927",
       "date": "2026-10-23",
       "kickoff": "2026-10-24T03:00Z",
       "home": {
@@ -2039,11 +2002,10 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 1
-      },
-      "referee": "Ismael Rosario Lopez Penuelas"
+      }
     },
     {
-      "id": "af1551013",
+      "id": "401876926",
       "date": "2026-10-24",
       "kickoff": "2026-10-24T23:00Z",
       "home": {
@@ -2069,11 +2031,10 @@
         "Red": 0,
         "Offsides": 5,
         "Cards": 3
-      },
-      "referee": "Fernando Hernandez Gomez"
+      }
     },
     {
-      "id": "af1551014",
+      "id": "401876925",
       "date": "2026-10-24",
       "kickoff": "2026-10-25T01:00Z",
       "home": {
@@ -2099,18 +2060,17 @@
         "Red": 0,
         "Offsides": 0,
         "Cards": 0
-      },
-      "referee": "Victor Alfonso Caceres Hernandez"
+      }
     },
     {
-      "id": "af1551015",
+      "id": "401876924",
       "date": "2026-10-24",
       "kickoff": "2026-10-25T03:10Z",
       "home": {
         "name": "Pumas UNAM",
         "Goals": 1,
-        "Shots": 14,
-        "Shots on Target": 2,
+        "Shots": 16,
+        "Shots on Target": 3,
         "Corners": 6,
         "Fouls": 17,
         "Yellow": 3,
@@ -2124,16 +2084,15 @@
         "Shots": 14,
         "Shots on Target": 8,
         "Corners": 2,
-        "Fouls": 12,
+        "Fouls": 11,
         "Yellow": 3,
         "Red": 0,
         "Offsides": 5,
         "Cards": 3
-      },
-      "referee": "Jorge Abraham Camacho Peregrina"
+      }
     },
     {
-      "id": "af1551016",
+      "id": "401876923",
       "date": "2026-10-25",
       "kickoff": "2026-10-25T23:00Z",
       "home": {
@@ -2151,7 +2110,7 @@
       "away": {
         "name": "Puebla",
         "Goals": 3,
-        "Shots": 11,
+        "Shots": 12,
         "Shots on Target": 4,
         "Corners": 3,
         "Fouls": 13,
@@ -2159,11 +2118,10 @@
         "Red": 1,
         "Offsides": 0,
         "Cards": 2
-      },
-      "referee": "Abraham de Jesus Quirarte Contreras"
+      }
     },
     {
-      "id": "af1551018",
+      "id": "401876921",
       "date": "2026-10-25",
       "kickoff": "2026-10-26T01:00Z",
       "home": {
@@ -2181,19 +2139,18 @@
       "away": {
         "name": "Cruz Azul",
         "Goals": 3,
-        "Shots": 15,
+        "Shots": 14,
         "Shots on Target": 7,
         "Corners": 6,
-        "Fouls": 9,
+        "Fouls": 8,
         "Yellow": 1,
         "Red": 0,
-        "Offsides": 1,
+        "Offsides": 2,
         "Cards": 1
-      },
-      "referee": "Cesar Arturo Ramos"
+      }
     },
     {
-      "id": "af1551017",
+      "id": "401876922",
       "date": "2026-10-25",
       "kickoff": "2026-10-26T01:05Z",
       "home": {
@@ -2219,11 +2176,10 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 2
-      },
-      "referee": "Maximiliano Quintero Hernandez"
+      }
     },
     {
-      "id": "af1551019",
+      "id": "401876920",
       "date": "2026-10-25",
       "kickoff": "2026-10-26T03:10Z",
       "home": {
@@ -2232,10 +2188,10 @@
         "Shots": 15,
         "Shots on Target": 7,
         "Corners": 3,
-        "Fouls": 16,
+        "Fouls": 15,
         "Yellow": 2,
         "Red": 0,
-        "Offsides": 4,
+        "Offsides": 5,
         "Cards": 2
       },
       "away": {
@@ -2249,11 +2205,10 @@
         "Red": 0,
         "Offsides": 0,
         "Cards": 4
-      },
-      "referee": "Luis Enrique Santander Aguirre"
+      }
     },
     {
-      "id": "af1550952",
+      "id": "401876986",
       "date": "2026-10-28",
       "kickoff": "2026-10-29T03:00Z",
       "home": {
@@ -2279,41 +2234,10 @@
         "Red": 1,
         "Offsides": 0,
         "Cards": 5
-      },
-      "referee": "Fernando Hernandez Gomez"
+      }
     },
     {
-      "id": "af1551020",
-      "date": "2026-10-30",
-      "kickoff": "2026-10-31T01:00Z",
-      "home": {
-        "name": "Atlético de San Luis",
-        "Goals": 0,
-        "Shots": 22,
-        "Shots on Target": 4,
-        "Corners": 7,
-        "Fouls": 7,
-        "Yellow": 1,
-        "Red": 0,
-        "Offsides": 3,
-        "Cards": 1
-      },
-      "away": {
-        "name": "Atlas",
-        "Goals": 1,
-        "Shots": 8,
-        "Shots on Target": 1,
-        "Corners": 4,
-        "Fouls": 23,
-        "Yellow": 4,
-        "Red": 0,
-        "Offsides": 0,
-        "Cards": 4
-      },
-      "referee": "Katia García"
-    },
-    {
-      "id": "af1551021",
+      "id": "401876918",
       "date": "2026-10-30",
       "kickoff": "2026-10-31T01:00Z",
       "home": {
@@ -2339,11 +2263,39 @@
         "Red": 0,
         "Offsides": 1,
         "Cards": 2
-      },
-      "referee": "Marco Antonio Ortiz Nava"
+      }
     },
     {
-      "id": "af1551022",
+      "id": "401876919",
+      "date": "2026-10-30",
+      "kickoff": "2026-10-31T01:00Z",
+      "home": {
+        "name": "Atlético de San Luis",
+        "Goals": 0,
+        "Shots": 22,
+        "Shots on Target": 4,
+        "Corners": 7,
+        "Fouls": 7,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Atlas",
+        "Goals": 1,
+        "Shots": 8,
+        "Shots on Target": 1,
+        "Corners": 4,
+        "Fouls": 23,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 4
+      }
+    },
+    {
+      "id": "401876917",
       "date": "2026-10-30",
       "kickoff": "2026-10-31T03:00Z",
       "home": {
@@ -2369,11 +2321,10 @@
         "Red": 0,
         "Offsides": 1,
         "Cards": 2
-      },
-      "referee": "Oscar Mejia Garcia"
+      }
     },
     {
-      "id": "af1551023",
+      "id": "401876916",
       "date": "2026-10-31",
       "kickoff": "2026-10-31T23:00Z",
       "home": {
@@ -2381,7 +2332,7 @@
         "Goals": 3,
         "Shots": 21,
         "Shots on Target": 7,
-        "Corners": 4,
+        "Corners": 5,
         "Fouls": 17,
         "Yellow": 2,
         "Red": 0,
@@ -2399,11 +2350,10 @@
         "Red": 1,
         "Offsides": 0,
         "Cards": 2
-      },
-      "referee": "Victor Alfonso Caceres Hernandez"
+      }
     },
     {
-      "id": "af1551025",
+      "id": "401876914",
       "date": "2026-10-31",
       "kickoff": "2026-11-01T01:05Z",
       "home": {
@@ -2429,11 +2379,10 @@
         "Red": 0,
         "Offsides": 0,
         "Cards": 2
-      },
-      "referee": "Jorge Abraham Camacho Peregrina"
+      }
     },
     {
-      "id": "af1551024",
+      "id": "401876915",
       "date": "2026-10-31",
       "kickoff": "2026-11-01T01:07Z",
       "home": {
@@ -2459,18 +2408,17 @@
         "Red": 0,
         "Offsides": 2,
         "Cards": 1
-      },
-      "referee": "Adonai Escobedo Gonzalez"
+      }
     },
     {
-      "id": "af1551026",
+      "id": "401876913",
       "date": "2026-10-31",
       "kickoff": "2026-11-01T03:10Z",
       "home": {
         "name": "América",
         "Goals": 2,
         "Shots": 15,
-        "Shots on Target": 6,
+        "Shots on Target": 5,
         "Corners": 6,
         "Fouls": 14,
         "Yellow": 3,
@@ -2481,7 +2429,7 @@
       "away": {
         "name": "Toluca",
         "Goals": 2,
-        "Shots": 18,
+        "Shots": 17,
         "Shots on Target": 7,
         "Corners": 5,
         "Fouls": 14,
@@ -2489,11 +2437,10 @@
         "Red": 1,
         "Offsides": 1,
         "Cards": 2
-      },
-      "referee": "Luis Enrique Santander Aguirre"
+      }
     },
     {
-      "id": "af1551027",
+      "id": "401876912",
       "date": "2026-11-01",
       "kickoff": "2026-11-01T23:00Z",
       "home": {
@@ -2519,11 +2466,10 @@
         "Red": 0,
         "Offsides": 1,
         "Cards": 3
-      },
-      "referee": "Daniel Quintero Huitron"
+      }
     },
     {
-      "id": "af1551028",
+      "id": "401876911",
       "date": "2026-11-01",
       "kickoff": "2026-11-02T01:10Z",
       "home": {
@@ -2549,11 +2495,39 @@
         "Red": 0,
         "Offsides": 3,
         "Cards": 5
-      },
-      "referee": "Jesus Rafael Lopez Valle"
+      }
     },
     {
-      "id": "af1551029",
+      "id": "401876909",
+      "date": "2026-11-06",
+      "kickoff": "2026-11-07T01:00Z",
+      "home": {
+        "name": "Necaxa",
+        "Goals": 1,
+        "Shots": 17,
+        "Shots on Target": 5,
+        "Corners": 5,
+        "Fouls": 7,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Tijuana",
+        "Goals": 0,
+        "Shots": 18,
+        "Shots on Target": 3,
+        "Corners": 6,
+        "Fouls": 8,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401876910",
       "date": "2026-11-06",
       "kickoff": "2026-11-07T01:00Z",
       "home": {
@@ -2579,41 +2553,10 @@
         "Red": 0,
         "Offsides": 0,
         "Cards": 3
-      },
-      "referee": "Victor Alfonso Caceres Hernandez"
+      }
     },
     {
-      "id": "af1551030",
-      "date": "2026-11-06",
-      "kickoff": "2026-11-07T01:00Z",
-      "home": {
-        "name": "Necaxa",
-        "Goals": 1,
-        "Shots": 16,
-        "Shots on Target": 5,
-        "Corners": 5,
-        "Fouls": 7,
-        "Yellow": 1,
-        "Red": 0,
-        "Offsides": 1,
-        "Cards": 1
-      },
-      "away": {
-        "name": "Tijuana",
-        "Goals": 0,
-        "Shots": 18,
-        "Shots on Target": 3,
-        "Corners": 6,
-        "Fouls": 8,
-        "Yellow": 2,
-        "Red": 0,
-        "Offsides": 2,
-        "Cards": 2
-      },
-      "referee": "Adonai Escobedo Gonzalez"
-    },
-    {
-      "id": "af1551031",
+      "id": "401876908",
       "date": "2026-11-06",
       "kickoff": "2026-11-07T03:00Z",
       "home": {
@@ -2639,8 +2582,471 @@
         "Red": 0,
         "Offsides": 1,
         "Cards": 2
+      }
+    },
+    {
+      "id": "401876907",
+      "date": "2026-11-07",
+      "kickoff": "2026-11-07T23:00Z",
+      "home": {
+        "name": "Atlas",
+        "Goals": 1,
+        "Shots": 11,
+        "Shots on Target": 6,
+        "Corners": 7,
+        "Fouls": 12,
+        "Yellow": 3,
+        "Red": 1,
+        "Offsides": 3,
+        "Cards": 4
       },
-      "referee": "Marco Antonio Ortiz Nava"
+      "away": {
+        "name": "Pachuca",
+        "Goals": 4,
+        "Shots": 15,
+        "Shots on Target": 8,
+        "Corners": 5,
+        "Fouls": 15,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876905",
+      "date": "2026-11-07",
+      "kickoff": "2026-11-08T01:00Z",
+      "home": {
+        "name": "Toluca",
+        "Goals": 4,
+        "Shots": 10,
+        "Shots on Target": 7,
+        "Corners": 6,
+        "Fouls": 9,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Monterrey",
+        "Goals": 0,
+        "Shots": 7,
+        "Shots on Target": 2,
+        "Corners": 6,
+        "Fouls": 12,
+        "Yellow": 5,
+        "Red": 1,
+        "Offsides": 1,
+        "Cards": 6
+      }
+    },
+    {
+      "id": "401876906",
+      "date": "2026-11-07",
+      "kickoff": "2026-11-08T01:00Z",
+      "home": {
+        "name": "Tigres UANL",
+        "Goals": 2,
+        "Shots": 19,
+        "Shots on Target": 8,
+        "Corners": 10,
+        "Fouls": 13,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 3
+      },
+      "away": {
+        "name": "Cruz Azul",
+        "Goals": 3,
+        "Shots": 18,
+        "Shots on Target": 7,
+        "Corners": 4,
+        "Fouls": 13,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 4
+      }
+    },
+    {
+      "id": "401876904",
+      "date": "2026-11-07",
+      "kickoff": "2026-11-08T03:10Z",
+      "home": {
+        "name": "Pumas UNAM",
+        "Goals": 2,
+        "Shots": 16,
+        "Shots on Target": 3,
+        "Corners": 4,
+        "Fouls": 18,
+        "Yellow": 6,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 6
+      },
+      "away": {
+        "name": "América",
+        "Goals": 2,
+        "Shots": 12,
+        "Shots on Target": 2,
+        "Corners": 2,
+        "Fouls": 14,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 4,
+        "Cards": 3
+      }
+    },
+    {
+      "id": "401876903",
+      "date": "2026-11-08",
+      "kickoff": "2026-11-09T00:00Z",
+      "home": {
+        "name": "Querétaro",
+        "Goals": 0,
+        "Shots": 21,
+        "Shots on Target": 5,
+        "Corners": 9,
+        "Fouls": 11,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 5,
+        "Cards": 3
+      },
+      "away": {
+        "name": "Puebla",
+        "Goals": 2,
+        "Shots": 9,
+        "Shots on Target": 3,
+        "Corners": 0,
+        "Fouls": 12,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 3
+      }
+    },
+    {
+      "id": "401876902",
+      "date": "2026-11-08",
+      "kickoff": "2026-11-09T02:10Z",
+      "home": {
+        "name": "León",
+        "Goals": 1,
+        "Shots": 8,
+        "Shots on Target": 5,
+        "Corners": 2,
+        "Fouls": 10,
+        "Yellow": 2,
+        "Red": 1,
+        "Offsides": 3,
+        "Cards": 3
+      },
+      "away": {
+        "name": "Guadalajara",
+        "Goals": 1,
+        "Shots": 18,
+        "Shots on Target": 6,
+        "Corners": 6,
+        "Fouls": 10,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401876988",
+      "date": "2026-11-14",
+      "kickoff": "2026-11-14T23:00Z",
+      "home": {
+        "name": "Querétaro",
+        "Goals": 0,
+        "Shots": 12,
+        "Shots on Target": 2,
+        "Corners": 4,
+        "Fouls": 19,
+        "Yellow": 4,
+        "Red": 2,
+        "Offsides": 2,
+        "Cards": 6
+      },
+      "away": {
+        "name": "Monterrey",
+        "Goals": 1,
+        "Shots": 16,
+        "Shots on Target": 5,
+        "Corners": 6,
+        "Fouls": 14,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401877054",
+      "date": "2026-11-20",
+      "kickoff": "2026-11-21T01:00Z",
+      "home": {
+        "name": "Puebla",
+        "Goals": 1,
+        "Shots": 10,
+        "Shots on Target": 2,
+        "Corners": 2,
+        "Fouls": 19,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Atlético de San Luis",
+        "Goals": 1,
+        "Shots": 19,
+        "Shots on Target": 8,
+        "Corners": 7,
+        "Fouls": 4,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 6,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401877053",
+      "date": "2026-11-20",
+      "kickoff": "2026-11-21T03:00Z",
+      "home": {
+        "name": "FC Juarez",
+        "Goals": 3,
+        "Shots": 16,
+        "Shots on Target": 7,
+        "Corners": 9,
+        "Fouls": 12,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 2
+      },
+      "away": {
+        "name": "Atlas",
+        "Goals": 3,
+        "Shots": 18,
+        "Shots on Target": 10,
+        "Corners": 9,
+        "Fouls": 13,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401877052",
+      "date": "2026-11-20",
+      "kickoff": "2026-11-21T03:10Z",
+      "home": {
+        "name": "Tijuana",
+        "Goals": 1,
+        "Shots": 16,
+        "Shots on Target": 7,
+        "Corners": 5,
+        "Fouls": 12,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 4,
+        "Cards": 3
+      },
+      "away": {
+        "name": "Atlante",
+        "Goals": 0,
+        "Shots": 10,
+        "Shots on Target": 3,
+        "Corners": 9,
+        "Fouls": 18,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 4
+      }
+    },
+    {
+      "id": "401877050",
+      "date": "2026-11-21",
+      "kickoff": "2026-11-21T22:50Z",
+      "home": {
+        "name": "Pachuca",
+        "Goals": 2,
+        "Shots": 20,
+        "Shots on Target": 6,
+        "Corners": 5,
+        "Fouls": 10,
+        "Yellow": 3,
+        "Red": 0,
+        "Offsides": 6,
+        "Cards": 3
+      },
+      "away": {
+        "name": "Toluca",
+        "Goals": 0,
+        "Shots": 9,
+        "Shots on Target": 3,
+        "Corners": 2,
+        "Fouls": 9,
+        "Yellow": 2,
+        "Red": 1,
+        "Offsides": 3,
+        "Cards": 3
+      }
+    },
+    {
+      "id": "401877051",
+      "date": "2026-11-21",
+      "kickoff": "2026-11-21T23:00Z",
+      "home": {
+        "name": "Santos",
+        "Goals": 1,
+        "Shots": 6,
+        "Shots on Target": 2,
+        "Corners": 4,
+        "Fouls": 15,
+        "Yellow": 0,
+        "Red": 1,
+        "Offsides": 0,
+        "Cards": 1
+      },
+      "away": {
+        "name": "León",
+        "Goals": 2,
+        "Shots": 20,
+        "Shots on Target": 5,
+        "Corners": 5,
+        "Fouls": 12,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 2
+      }
+    },
+    {
+      "id": "401877049",
+      "date": "2026-11-21",
+      "kickoff": "2026-11-22T01:00Z",
+      "home": {
+        "name": "Pumas UNAM",
+        "Goals": 0,
+        "Shots": 11,
+        "Shots on Target": 4,
+        "Corners": 6,
+        "Fouls": 21,
+        "Yellow": 2,
+        "Red": 1,
+        "Offsides": 3,
+        "Cards": 3
+      },
+      "away": {
+        "name": "Monterrey",
+        "Goals": 2,
+        "Shots": 11,
+        "Shots on Target": 6,
+        "Corners": 2,
+        "Fouls": 11,
+        "Yellow": 0,
+        "Red": 1,
+        "Offsides": 2,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401877048",
+      "date": "2026-11-21",
+      "kickoff": "2026-11-22T03:00Z",
+      "home": {
+        "name": "Tigres UANL",
+        "Goals": 1,
+        "Shots": 14,
+        "Shots on Target": 4,
+        "Corners": 6,
+        "Fouls": 10,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 2
+      },
+      "away": {
+        "name": "América",
+        "Goals": 0,
+        "Shots": 10,
+        "Shots on Target": 4,
+        "Corners": 5,
+        "Fouls": 16,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 0,
+        "Cards": 4
+      }
+    },
+    {
+      "id": "401877047",
+      "date": "2026-11-22",
+      "kickoff": "2026-11-22T23:07Z",
+      "home": {
+        "name": "Guadalajara",
+        "Goals": 1,
+        "Shots": 12,
+        "Shots on Target": 8,
+        "Corners": 3,
+        "Fouls": 6,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 1
+      },
+      "away": {
+        "name": "Cruz Azul",
+        "Goals": 0,
+        "Shots": 15,
+        "Shots on Target": 3,
+        "Corners": 5,
+        "Fouls": 16,
+        "Yellow": 4,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 4
+      }
+    },
+    {
+      "id": "401877046",
+      "date": "2026-11-22",
+      "kickoff": "2026-11-23T01:10Z",
+      "home": {
+        "name": "Querétaro",
+        "Goals": 2,
+        "Shots": 8,
+        "Shots on Target": 4,
+        "Corners": 5,
+        "Fouls": 9,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 2
+      },
+      "away": {
+        "name": "Necaxa",
+        "Goals": 2,
+        "Shots": 13,
+        "Shots on Target": 4,
+        "Corners": 6,
+        "Fouls": 9,
+        "Yellow": 0,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 0
+      }
     }
   ],
   "grades": [
@@ -2750,397 +3156,362 @@
     }
   ],
   "standings": {
-    "América": [
-      29,
-      15,
-      36,
-      21
-    ],
     "Guadalajara": [
-      29,
-      15,
-      25,
-      14
+      33,
+      17,
+      27,
+      15
     ],
     "Cruz Azul": [
-      29,
-      15,
-      34,
+      32,
+      17,
+      37,
+      27
+    ],
+    "América": [
+      30,
+      17,
+      38,
       24
     ],
     "Atlas": [
+      28,
+      17,
+      30,
+      33
+    ],
+    "Toluca": [
       27,
-      16,
+      17,
+      35,
+      23
+    ],
+    "Monterrey": [
       27,
-      29
+      17,
+      29,
+      25
+    ],
+    "León": [
+      26,
+      17,
+      25,
+      22
+    ],
+    "Pachuca": [
+      25,
+      17,
+      31,
+      20
+    ],
+    "Tijuana": [
+      25,
+      17,
+      26,
+      22
     ],
     "Santos": [
       25,
-      16,
-      23,
-      20
-    ],
-    "Toluca": [
+      17,
       24,
-      15,
-      31,
-      21
-    ],
-    "Tijuana": [
-      22,
-      16,
-      25,
       22
-    ],
-    "León": [
-      22,
-      15,
-      22,
-      20
-    ],
-    "Monterrey": [
-      21,
-      14,
-      26,
-      21
     ],
     "Pumas UNAM": [
-      20,
-      15,
-      22,
-      24
+      21,
+      17,
+      24,
+      28
     ],
     "Querétaro": [
+      21,
+      17,
       20,
-      14,
-      18,
-      21
-    ],
-    "Pachuca": [
-      22,
-      16,
-      28,
-      20
-    ],
-    "Atlético de San Luis": [
-      19,
-      16,
-      19,
-      24
+      26
     ],
     "Puebla": [
-      16,
-      15,
+      20,
       17,
-      23
+      20,
+      24
+    ],
+    "Atlético de San Luis": [
+      20,
+      17,
+      20,
+      25
     ],
     "Tigres UANL": [
-      15,
-      15,
-      15,
-      22
+      18,
+      17,
+      18,
+      25
+    ],
+    "Necaxa": [
+      14,
+      17,
+      19,
+      30
     ],
     "Atlante": [
       14,
-      16,
-      16,
-      26
-    ],
-    "Necaxa": [
-      13,
-      16,
       17,
-      28
+      16,
+      27
     ],
     "FC Juarez": [
-      11,
+      12,
+      17,
       16,
-      13,
-      34
+      37
     ]
   },
   "fixtures": [
     {
-      "kickoff": "2026-11-08T01:00Z",
-      "home": "Tigres UANL",
-      "away": "Cruz Azul"
-    },
-    {
-      "kickoff": "2026-11-08T01:00Z",
+      "kickoff": "2026-11-26T01:00Z",
       "home": "Toluca",
-      "away": "Monterrey"
-    },
-    {
-      "kickoff": "2026-11-08T03:10Z",
-      "home": "Pumas UNAM",
-      "away": "América"
-    },
-    {
-      "kickoff": "2026-11-09T00:00Z",
-      "home": "Querétaro",
-      "away": "Puebla"
-    },
-    {
-      "kickoff": "2026-11-09T02:10Z",
-      "home": "León",
-      "away": "Guadalajara"
-    },
-    {
-      "kickoff": "2026-11-14T23:00Z",
-      "home": "Querétaro",
-      "away": "Monterrey"
-    },
-    {
-      "kickoff": "2026-11-21T01:00Z",
-      "home": "Puebla",
-      "away": "Atlético de San Luis"
-    },
-    {
-      "kickoff": "2026-11-21T03:00Z",
-      "home": "Tijuana",
-      "away": "Atlante"
-    },
-    {
-      "kickoff": "2026-11-21T03:00Z",
-      "home": "FC Juarez",
       "away": "Atlas"
     },
     {
-      "kickoff": "2026-11-21T23:00Z",
-      "home": "Santos",
-      "away": "León"
-    },
-    {
-      "kickoff": "2026-11-21T23:00Z",
-      "home": "Pachuca",
-      "away": "Toluca"
-    },
-    {
-      "kickoff": "2026-11-22T01:00Z",
-      "home": "Pumas UNAM",
-      "away": "Monterrey"
-    },
-    {
-      "kickoff": "2026-11-22T03:00Z",
-      "home": "Tigres UANL",
+      "kickoff": "2026-11-26T03:10Z",
+      "home": "Monterrey",
       "away": "América"
     },
     {
-      "kickoff": "2026-11-22T23:07Z",
-      "home": "Guadalajara",
+      "kickoff": "2026-11-27T01:00Z",
+      "home": "Pachuca",
+      "away": "Guadalajara"
+    },
+    {
+      "kickoff": "2026-11-27T03:10Z",
+      "home": "León",
       "away": "Cruz Azul"
     },
     {
-      "kickoff": "2026-11-23T01:00Z",
-      "home": "Querétaro",
-      "away": "Necaxa"
+      "kickoff": "2026-11-29T01:00Z",
+      "home": "Atlas",
+      "away": "Toluca"
+    },
+    {
+      "kickoff": "2026-11-29T03:10Z",
+      "home": "América",
+      "away": "Monterrey"
+    },
+    {
+      "kickoff": "2026-11-30T01:07Z",
+      "home": "Guadalajara",
+      "away": "Pachuca"
+    },
+    {
+      "kickoff": "2026-11-30T03:00Z",
+      "home": "Cruz Azul",
+      "away": "León"
     }
   ],
   "stakes": {
-    "as_of": "2026-11-07",
+    "as_of": "2026-11-25",
     "format": "Apertura 2026: 17 jornadas, top 8 directo a cuartos, sin play-in",
     "sims": 20000,
-    "remaining_fixtures": 15,
+    "remaining_fixtures": 8,
     "k_goals": 0.06,
     "leverage_full": 0.35,
     "teams": {
-      "América": {
-        "pts": 29,
-        "gp": 15,
+      "Guadalajara": {
+        "pts": 33,
+        "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.9944,
+        "p_top4": 1.0,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
         "motivation": 0.0,
-        "next": "@ Pumas UNAM"
+        "next": "@ Pachuca"
       },
-      "Guadalajara": {
-        "pts": 29,
-        "gp": 15,
+      "Cruz Azul": {
+        "pts": 32,
+        "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.9912,
+        "p_top4": 0.9921,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
         "motivation": 0.0,
         "next": "@ León"
       },
-      "Cruz Azul": {
-        "pts": 29,
-        "gp": 15,
+      "América": {
+        "pts": 30,
+        "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.9889,
+        "p_top4": 0.867,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
         "motivation": 0.0,
-        "next": "@ Tigres UANL"
+        "next": "@ Monterrey"
       },
       "Atlas": {
-        "pts": 27,
-        "gp": 16,
+        "pts": 28,
+        "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.3615,
+        "p_top4": 0.3852,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
         "motivation": 0.0,
-        "next": "@ FC Juarez"
-      },
-      "Santos": {
-        "pts": 25,
-        "gp": 16,
-        "p_top8": 0.8749,
-        "p_top4": 0.1716,
-        "p_top8_if_win": 1.0,
-        "p_top8_if_loss": 0.3845,
-        "leverage": 0.6155,
-        "motivation": 1.0,
-        "next": "vs León"
-      },
-      "Toluca": {
-        "pts": 24,
-        "gp": 15,
-        "p_top8": 0.875,
-        "p_top4": 0.3093,
-        "p_top8_if_win": 1.0,
-        "p_top8_if_loss": 0.6345,
-        "leverage": 0.3655,
-        "motivation": 1.0,
-        "next": "vs Monterrey"
-      },
-      "Tijuana": {
-        "pts": 22,
-        "gp": 16,
-        "p_top8": 0.3554,
-        "p_top4": 0.0,
-        "p_top8_if_win": 0.6158,
-        "p_top8_if_loss": 0.0,
-        "leverage": 0.6158,
-        "motivation": 1.0,
-        "next": "vs Atlante"
-      },
-      "León": {
-        "pts": 22,
-        "gp": 15,
-        "p_top8": 0.3323,
-        "p_top4": 0.0204,
-        "p_top8_if_win": 0.6313,
-        "p_top8_if_loss": 0.1217,
-        "leverage": 0.5096,
-        "motivation": 1.0,
-        "next": "vs Guadalajara"
-      },
-      "Monterrey": {
-        "pts": 21,
-        "gp": 14,
-        "p_top8": 0.5802,
-        "p_top4": 0.1163,
-        "p_top8_if_win": 0.8687,
-        "p_top8_if_loss": 0.3967,
-        "leverage": 0.472,
-        "motivation": 1.0,
         "next": "@ Toluca"
       },
-      "Pumas UNAM": {
-        "pts": 20,
-        "gp": 15,
-        "p_top8": 0.1419,
-        "p_top4": 0.0,
-        "p_top8_if_win": 0.4107,
-        "p_top8_if_loss": 0.0085,
-        "leverage": 0.4022,
-        "motivation": 1.0,
+      "Toluca": {
+        "pts": 27,
+        "gp": 17,
+        "p_top8": 1.0,
+        "p_top4": 0.4546,
+        "p_top8_if_win": 1.0,
+        "p_top8_if_loss": 1.0,
+        "leverage": 0.0,
+        "motivation": 0.0,
+        "next": "vs Atlas"
+      },
+      "Monterrey": {
+        "pts": 27,
+        "gp": 17,
+        "p_top8": 1.0,
+        "p_top4": 0.1664,
+        "p_top8_if_win": 1.0,
+        "p_top8_if_loss": 1.0,
+        "leverage": 0.0,
+        "motivation": 0.0,
         "next": "vs América"
       },
-      "Querétaro": {
-        "pts": 20,
-        "gp": 14,
-        "p_top8": 0.4395,
-        "p_top4": 0.0464,
-        "p_top8_if_win": 0.6773,
-        "p_top8_if_loss": 0.1918,
-        "leverage": 0.4855,
-        "motivation": 1.0,
-        "next": "vs Puebla"
-      },
-      "Pachuca": {
-        "pts": 22,
-        "gp": 16,
-        "p_top8": 0.4007,
-        "p_top4": 0.0,
-        "p_top8_if_win": 0.9086,
-        "p_top8_if_loss": 0.0055,
-        "leverage": 0.9031,
-        "motivation": 1.0,
-        "next": "vs Toluca"
-      },
-      "Atlético de San Luis": {
-        "pts": 19,
-        "gp": 16,
-        "p_top8": 0.0,
-        "p_top4": 0.0,
-        "p_top8_if_win": 0.0,
-        "p_top8_if_loss": 0.0,
-        "leverage": 0.0,
-        "motivation": 0.0,
-        "next": "@ Puebla"
-      },
-      "Puebla": {
-        "pts": 16,
-        "gp": 15,
-        "p_top8": 0.0,
-        "p_top4": 0.0,
-        "p_top8_if_win": 0.0,
-        "p_top8_if_loss": 0.0,
-        "leverage": 0.0,
-        "motivation": 0.0,
-        "next": "@ Querétaro"
-      },
-      "Tigres UANL": {
-        "pts": 15,
-        "gp": 15,
-        "p_top8": 0.0,
-        "p_top4": 0.0,
-        "p_top8_if_win": 0.0,
-        "p_top8_if_loss": 0.0,
+      "León": {
+        "pts": 26,
+        "gp": 17,
+        "p_top8": 1.0,
+        "p_top4": 0.0699,
+        "p_top8_if_win": 1.0,
+        "p_top8_if_loss": 1.0,
         "leverage": 0.0,
         "motivation": 0.0,
         "next": "vs Cruz Azul"
       },
-      "Atlante": {
-        "pts": 14,
-        "gp": 16,
-        "p_top8": 0.0,
+      "Pachuca": {
+        "pts": 25,
+        "gp": 17,
+        "p_top8": 0.9993,
+        "p_top4": 0.0646,
+        "p_top8_if_win": 1.0,
+        "p_top8_if_loss": 0.998,
+        "leverage": 0.002,
+        "motivation": 0.006,
+        "next": "vs Guadalajara"
+      },
+      "Tijuana": {
+        "pts": 25,
+        "gp": 17,
+        "p_top8": 0.0006,
         "p_top4": 0.0,
-        "p_top8_if_win": 0.0,
-        "p_top8_if_loss": 0.0,
+        "p_top8_if_win": null,
+        "p_top8_if_loss": null,
         "leverage": 0.0,
         "motivation": 0.0,
-        "next": "@ Tijuana"
+        "next": null
+      },
+      "Santos": {
+        "pts": 25,
+        "gp": 17,
+        "p_top8": 0.0,
+        "p_top4": 0.0,
+        "p_top8_if_win": null,
+        "p_top8_if_loss": null,
+        "leverage": 0.0,
+        "motivation": 0.0,
+        "next": null
+      },
+      "Pumas UNAM": {
+        "pts": 21,
+        "gp": 17,
+        "p_top8": 0.0,
+        "p_top4": 0.0,
+        "p_top8_if_win": null,
+        "p_top8_if_loss": null,
+        "leverage": 0.0,
+        "motivation": 0.0,
+        "next": null
+      },
+      "Querétaro": {
+        "pts": 21,
+        "gp": 17,
+        "p_top8": 0.0,
+        "p_top4": 0.0,
+        "p_top8_if_win": null,
+        "p_top8_if_loss": null,
+        "leverage": 0.0,
+        "motivation": 0.0,
+        "next": null
+      },
+      "Puebla": {
+        "pts": 20,
+        "gp": 17,
+        "p_top8": 0.0,
+        "p_top4": 0.0,
+        "p_top8_if_win": null,
+        "p_top8_if_loss": null,
+        "leverage": 0.0,
+        "motivation": 0.0,
+        "next": null
+      },
+      "Atlético de San Luis": {
+        "pts": 20,
+        "gp": 17,
+        "p_top8": 0.0,
+        "p_top4": 0.0,
+        "p_top8_if_win": null,
+        "p_top8_if_loss": null,
+        "leverage": 0.0,
+        "motivation": 0.0,
+        "next": null
+      },
+      "Tigres UANL": {
+        "pts": 18,
+        "gp": 17,
+        "p_top8": 0.0,
+        "p_top4": 0.0,
+        "p_top8_if_win": null,
+        "p_top8_if_loss": null,
+        "leverage": 0.0,
+        "motivation": 0.0,
+        "next": null
       },
       "Necaxa": {
-        "pts": 13,
-        "gp": 16,
+        "pts": 14,
+        "gp": 17,
         "p_top8": 0.0,
         "p_top4": 0.0,
-        "p_top8_if_win": 0.0,
-        "p_top8_if_loss": 0.0,
+        "p_top8_if_win": null,
+        "p_top8_if_loss": null,
         "leverage": 0.0,
         "motivation": 0.0,
-        "next": "@ Querétaro"
+        "next": null
+      },
+      "Atlante": {
+        "pts": 14,
+        "gp": 17,
+        "p_top8": 0.0,
+        "p_top4": 0.0,
+        "p_top8_if_win": null,
+        "p_top8_if_loss": null,
+        "leverage": 0.0,
+        "motivation": 0.0,
+        "next": null
       },
       "FC Juarez": {
-        "pts": 11,
-        "gp": 16,
+        "pts": 12,
+        "gp": 17,
         "p_top8": 0.0,
         "p_top4": 0.0,
-        "p_top8_if_win": 0.0,
-        "p_top8_if_loss": 0.0,
+        "p_top8_if_win": null,
+        "p_top8_if_loss": null,
         "leverage": 0.0,
         "motivation": 0.0,
-        "next": "vs Atlas"
+        "next": null
       }
     }
   }
