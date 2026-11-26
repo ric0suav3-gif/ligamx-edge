@@ -1,6 +1,6 @@
 {
   "source": "ESPN",
-  "generatedAt": "2026-11-26T01:57:17.717513+00:00",
+  "generatedAt": "2026-11-26T04:58:08.498669+00:00",
   "todayMexico": "2026-11-25",
   "matches": [
     {
@@ -3267,11 +3267,6 @@
   },
   "fixtures": [
     {
-      "kickoff": "2026-11-26T01:00Z",
-      "home": "Toluca",
-      "away": "Atlas"
-    },
-    {
       "kickoff": "2026-11-26T03:10Z",
       "home": "Monterrey",
       "away": "América"
@@ -3311,7 +3306,7 @@
     "as_of": "2026-11-25",
     "format": "Apertura 2026: 17 jornadas, top 8 directo a cuartos, sin play-in",
     "sims": 20000,
-    "remaining_fixtures": 8,
+    "remaining_fixtures": 7,
     "k_goals": 0.06,
     "leverage_full": 0.35,
     "teams": {
@@ -3330,7 +3325,7 @@
         "pts": 32,
         "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.9921,
+        "p_top4": 1.0,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
@@ -3341,7 +3336,7 @@
         "pts": 30,
         "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.867,
+        "p_top4": 0.9052,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
@@ -3352,29 +3347,29 @@
         "pts": 28,
         "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.3852,
+        "p_top4": 0.2421,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
         "motivation": 0.0,
-        "next": "@ Toluca"
+        "next": "vs Toluca"
       },
       "Toluca": {
         "pts": 27,
         "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.4546,
+        "p_top4": 0.3135,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
         "motivation": 0.0,
-        "next": "vs Atlas"
+        "next": "@ Atlas"
       },
       "Monterrey": {
         "pts": 27,
         "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.1664,
+        "p_top4": 0.2925,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
@@ -3385,7 +3380,7 @@
         "pts": 26,
         "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.0699,
+        "p_top4": 0.1075,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
@@ -3395,18 +3390,18 @@
       "Pachuca": {
         "pts": 25,
         "gp": 17,
-        "p_top8": 0.9993,
-        "p_top4": 0.0646,
+        "p_top8": 0.9989,
+        "p_top4": 0.1393,
         "p_top8_if_win": 1.0,
-        "p_top8_if_loss": 0.998,
-        "leverage": 0.002,
-        "motivation": 0.006,
+        "p_top8_if_loss": 0.9966,
+        "leverage": 0.0034,
+        "motivation": 0.01,
         "next": "vs Guadalajara"
       },
       "Tijuana": {
         "pts": 25,
         "gp": 17,
-        "p_top8": 0.0006,
+        "p_top8": 0.0011,
         "p_top4": 0.0,
         "p_top8_if_win": null,
         "p_top8_if_loss": null,
