@@ -1,7 +1,7 @@
 {
   "source": "ESPN",
-  "generatedAt": "2026-11-26T04:58:08.498669+00:00",
-  "todayMexico": "2026-11-25",
+  "generatedAt": "2026-11-26T22:17:03.919159+00:00",
+  "todayMexico": "2026-11-26",
   "matches": [
     {
       "id": "401876996",
@@ -3047,6 +3047,64 @@
         "Offsides": 3,
         "Cards": 0
       }
+    },
+    {
+      "id": "401931986",
+      "date": "2026-11-25",
+      "kickoff": "2026-11-26T01:00Z",
+      "home": {
+        "name": "Toluca",
+        "Goals": 2,
+        "Shots": 19,
+        "Shots on Target": 6,
+        "Corners": 7,
+        "Fouls": 7,
+        "Yellow": 2,
+        "Red": 0,
+        "Offsides": 2,
+        "Cards": 2
+      },
+      "away": {
+        "name": "Atlas",
+        "Goals": 0,
+        "Shots": 11,
+        "Shots on Target": 5,
+        "Corners": 5,
+        "Fouls": 7,
+        "Yellow": 1,
+        "Red": 0,
+        "Offsides": 3,
+        "Cards": 1
+      }
+    },
+    {
+      "id": "401931998",
+      "date": "2026-11-25",
+      "kickoff": "2026-11-26T03:10Z",
+      "home": {
+        "name": "Monterrey",
+        "Goals": 0,
+        "Shots": 8,
+        "Shots on Target": 1,
+        "Corners": 3,
+        "Fouls": 5,
+        "Yellow": 0,
+        "Red": 1,
+        "Offsides": 3,
+        "Cards": 1
+      },
+      "away": {
+        "name": "América",
+        "Goals": 0,
+        "Shots": 19,
+        "Shots on Target": 8,
+        "Corners": 12,
+        "Fouls": 21,
+        "Yellow": 6,
+        "Red": 0,
+        "Offsides": 1,
+        "Cards": 6
+      }
     }
   ],
   "grades": [
@@ -3267,11 +3325,6 @@
   },
   "fixtures": [
     {
-      "kickoff": "2026-11-26T03:10Z",
-      "home": "Monterrey",
-      "away": "América"
-    },
-    {
       "kickoff": "2026-11-27T01:00Z",
       "home": "Pachuca",
       "away": "Guadalajara"
@@ -3303,10 +3356,10 @@
     }
   ],
   "stakes": {
-    "as_of": "2026-11-25",
+    "as_of": "2026-11-26",
     "format": "Apertura 2026: 17 jornadas, top 8 directo a cuartos, sin play-in",
     "sims": 20000,
-    "remaining_fixtures": 7,
+    "remaining_fixtures": 6,
     "k_goals": 0.06,
     "leverage_full": 0.35,
     "teams": {
@@ -3336,18 +3389,18 @@
         "pts": 30,
         "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.9052,
+        "p_top4": 0.9485,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
         "motivation": 0.0,
-        "next": "@ Monterrey"
+        "next": "vs Monterrey"
       },
       "Atlas": {
         "pts": 28,
         "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.2421,
+        "p_top4": 0.319,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
@@ -3358,7 +3411,7 @@
         "pts": 27,
         "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.3135,
+        "p_top4": 0.3982,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
@@ -3369,18 +3422,18 @@
         "pts": 27,
         "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.2925,
+        "p_top4": 0.0612,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
         "motivation": 0.0,
-        "next": "vs América"
+        "next": "@ América"
       },
       "León": {
         "pts": 26,
         "gp": 17,
         "p_top8": 1.0,
-        "p_top4": 0.1075,
+        "p_top4": 0.1218,
         "p_top8_if_win": 1.0,
         "p_top8_if_loss": 1.0,
         "leverage": 0.0,
@@ -3390,18 +3443,18 @@
       "Pachuca": {
         "pts": 25,
         "gp": 17,
-        "p_top8": 0.9989,
-        "p_top4": 0.1393,
+        "p_top8": 0.9994,
+        "p_top4": 0.1512,
         "p_top8_if_win": 1.0,
-        "p_top8_if_loss": 0.9966,
-        "leverage": 0.0034,
-        "motivation": 0.01,
+        "p_top8_if_loss": 0.9982,
+        "leverage": 0.0018,
+        "motivation": 0.005,
         "next": "vs Guadalajara"
       },
       "Tijuana": {
         "pts": 25,
         "gp": 17,
-        "p_top8": 0.0011,
+        "p_top8": 0.0006,
         "p_top4": 0.0,
         "p_top8_if_win": null,
         "p_top8_if_loss": null,
